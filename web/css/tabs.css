@@ -1,0 +1,64 @@
+/*
+ *    This file is part of LGDEditTool (LGDET).
+ *
+ *    LGDET is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    any later version.
+ *
+ *    LGDET is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* 
+    Document   : jquery.autocomplete
+    Created on : 17.02.2012, 20:38:53
+    Author     : J. Nathanael Philipp
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+#tabs { margin: 0 !important;
+	padding: 0;
+	height: 30px;
+	border-bottom: 1px solid #666;}
+
+#tabs li { float: left;
+	padding: 0;
+	margin: 0;
+	list-style-type: none;}
+
+#tabs a { float: left;
+	font-size: 13px;
+	display: block;
+	padding: 5px 30px;
+	text-decoration: none;
+	border: 1px solid #666;
+	border-bottom: 0px;
+	height: 18px;
+	background-color: #efefef;
+	color: #777;
+	margin-right: 2px;
+	position: relative;
+	top: 1px;
+	outline: 0;
+	-moz-border-radius: 4px 4px 0 0;}
+
+#tabs a:hover { background-color: #F7F7F7;
+	color: #333;}
+
+#tabs a.current { background-color: #ddd;
+	border-bottom: 1px solid #ddd;
+	color: #000;
+	cursor: default;}
+
+#panes div { border: 1px solid #666;
+	border-width: 0 1px 1px 1px;
+	min-height: 150px;
+	padding: 15px 20px;
+	background-color: #ddd;}

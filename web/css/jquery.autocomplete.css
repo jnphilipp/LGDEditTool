@@ -1,0 +1,50 @@
+/*
+ *    This file is part of LGDEditTool (LGDET).
+ *
+ *    LGDET is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    any later version.
+ *
+ *    LGDET is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* 
+    Document   : jquery.autocomplete
+    Created on : 17.02.2012, 20:38:53
+    Author     : J. Nathanael Philipp
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.ac_results { padding: 0px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;}
+
+.ac_results ul { width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;}
+
+.ac_results li { margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	font: menu;
+	font-size: 12px;
+	line-height: 16px;
+	overflow: hidden;}
+
+.ac_loading { background: white url('indicator.gif') right center no-repeat;}
+.ac_odd { background-color: #eee;}
+.ac_over { background-color: #0A246A;
+	color: white;}

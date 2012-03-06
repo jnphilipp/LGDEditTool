@@ -1,0 +1,41 @@
+            LGDEditTool
+
+An Open Source LinkedGeoData edition tool
+==================================================
+
+I.   Requirements
+II.  Compiling LGDEditTool
+III. Start LGDEditTool
+IV.  Troubleshooting
+V.   Help, Feedback & Bug Reports
+VI.  About
+
+
+I.    Requirements
+==================================================
+You need an Java Version 1.6.0_22 or later, an
+Apache Tomcat 7.0.14.0 or later.
+
+II.   Compiling LGDEditTool
+==================================================
+NetBeans Project.
+
+III.  Start LGDEditTool
+==================================================
+
+IV.   Troubleshooting
+==================================================
+In need of help or for more information please
+feel free to send a mail to
+philipp@studserv.uni-leipzig.de.
+
+V.    Help, Feedback & Bug Reports
+==================================================
+For Help, Feedback or Bug Reports, please send
+a mail to philipp@studserv.uni-leipzig.de.
+
+
+VI.   About
+==================================================
+Content is (C) 2012 swp12-10
+Website: http://pcai042.informatik.uni-leipzig.de/~swp12-10/

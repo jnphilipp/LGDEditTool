@@ -1,0 +1,55 @@
+/*
+ *    This file is part of LGDEditTool (LGDET).
+ *
+ *    LGDET is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    any later version.
+ *
+ *    LGDET is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* 
+    Document   : jquery.autocomplete
+    Created on : 17.02.2012, 20:38:53
+    Author     : J. Nathanael Philipp
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+body { background-color: white;}
+h1 { font-family: cursive, monospace;
+	text-align: center;
+	font-size: 200%;
+	font-weight: bold;
+	color: #6c7b8b;}
+
+a { font-family: monospace;
+	font-size: 10pt;
+	font-weight: normal;
+	color: black;
+	text-decoration: none;}
+
+a:hover { color: blue;
+	font-weight: bold;}
+
+table { border-collapse: collapse;}
+
+th,
+td { min-width: 5em;
+	padding: 5px;
+	border: 1px solid #000;}
+
+th.edit,
+td.edit { min-width: 5em;
+	padding: 5px;
+	border: 0px solid #000;}
+
+div { font-family: monospace;
+	font-size: 10pt;}

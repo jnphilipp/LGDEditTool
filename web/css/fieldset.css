@@ -1,0 +1,54 @@
+/*
+ *    This file is part of LGDEditTool (LGDET).
+ *
+ *    LGDET is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    any later version.
+ *
+ *    LGDET is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+/* 
+    Document   : jquery.autocomplete
+    Created on : 17.02.2012, 20:38:53
+    Author     : J. Nathanael Philipp
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+fieldset { font-family: monospace;
+	font-size: 10pt;
+	font-weight: normal;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid rgba(106, 105, 106, 0.6);
+	webkit-box-shadow: 0px 0px 0px 0px rgba(106, 105, 106, 0.5);
+	-moz-box-shadow: 0px 0px 0px 0px rgba(106, 105, 106, 0.5);
+	box-shadow: 0px 0px 0px 0px rgba(106, 105, 106, 0.5);}
+
+fieldset legend { margin-left: 2em;}
+fieldset.search ul { list-style: none;}
+fieldset.search input[type=text] { 
+	border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;
+	width: 40em;}
+
+fieldset.search input[type=submit] { font-family: monospace;
+	font-size: 11pt;
+	text-align: center;
+	border: 1px solid #666;
+	background: #efefef;
+	color: #777;}
+
+fieldset.search input[type=submit]:hover { background: #F7F7F7;
+	color: #333;
+	font-weight: bold;}

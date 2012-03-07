@@ -136,5 +136,6 @@
 			}
 			%>
 		</div>
+		<small>© swp12-10</small>
 	</body>
 </html>

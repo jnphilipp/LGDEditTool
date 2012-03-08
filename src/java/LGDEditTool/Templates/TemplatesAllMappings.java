@@ -77,21 +77,22 @@ public class TemplatesAllMappings {
                 //insert table foot
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
-                
-                //show more
-                
-                if(type.equalsIgnoreCase("k")){
-                    Integer nextsite=Integer.valueOf(site)+1;
-                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=km&site="+ nextsite.toString() + "\">show more</a>\n"));
-                }
-                if(type.equalsIgnoreCase("kv")){
-                    Integer nextsite=Integer.valueOf(site)+1;
-                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">show more</a>\n"));
-                }
-               }catch(Exception e){};
+			   }catch(Exception e){};
             }
+
+			//show more
+			if ( type.equalsIgnoreCase("k") ) {
+				Integer nextsite=Integer.valueOf(site)+1;
+				al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=km&site="+ nextsite.toString() + "\">show more</a>\n"));
+			}
+			else if ( type.equalsIgnoreCase("kv") ) {
+				Integer nextsite=Integer.valueOf(site)+1;
+				al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">show more</a>\n"));
+			}
+			
             for(int i=0;i<al.size();i++){s+=al.get(i);}
-            al.clear();
+			al.clear();
+			
             return s;
            
         }

@@ -18,6 +18,7 @@
 package LGDEditTool.Templates;
 
 import LGDEditTool.db.DatabaseBremen;
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import java.util.ArrayList;
 /**
  *
@@ -34,10 +35,13 @@ public class TemplatesAllMappings {
             s+="\t\t<a href=\"?tab=all&type=k\">K-mappings</a>";
             s+="\t\t<a href=\"?tab=all&type=kv\">KV-mappings</a>";
             
+            if(site.equals("")==false){if(Integer.valueOf(site)<1){site="1";}}  //set negativ site value to 1
+                
+            
             if(type.equalsIgnoreCase("k")){
                try{
                 //insert tablehead
-		String tableHead = "\t\t\t\t<h2>Edit-History</h2>\n";
+		String tableHead = "\t\t\t\t<h2>List of all K-Mappings</h2>\n";
 		tableHead += "\t\t\t\t<table>\n";
 		tableHead += "\t\t\t\t\t<tr>\n";
 		tableHead += "\t\t\t\t\t\t<th>k</th>\n";
@@ -59,7 +63,7 @@ public class TemplatesAllMappings {
             else if(type.equalsIgnoreCase("kv")){
                try{
                 //insert tablehead
-		String tableHead = "\t\t\t\t<h2>Edit-History</h2>\n";
+		String tableHead = "\t\t\t\t<h2>List of all KV-Mappings</h2>\n";
 		tableHead += "\t\t\t\t<table>\n";
 		tableHead += "\t\t\t\t\t<tr>\n";
 		tableHead += "\t\t\t\t\t\t<th>k</th>\n";
@@ -77,19 +81,28 @@ public class TemplatesAllMappings {
                 //insert table foot
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
-                
-                //show more
-                
-                if(type.equalsIgnoreCase("k")){
-                    Integer nextsite=Integer.valueOf(site)+1;
-                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=km&site="+ nextsite.toString() + "\">show more</a>\n"));
-                }
-                if(type.equalsIgnoreCase("kv")){
-                    Integer nextsite=Integer.valueOf(site)+1;
-                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">show more</a>\n"));
-                }
                }catch(Exception e){};
             }
+            
+            //show more
+                
+            if(type.equalsIgnoreCase("k")){
+                if(Integer.valueOf(site)>1){
+                    Integer prevsite=Integer.valueOf(site)-1;
+                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=k&site="+ prevsite.toString() + "\">prev</a>\n\n     "));
+                }
+                Integer nextsite=Integer.valueOf(site)+1;
+                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=k&site="+ nextsite.toString() + "\">next</a>\n"));
+            }
+            if(type.equalsIgnoreCase("kv")){
+                if(Integer.valueOf(site)>1){
+                    Integer prevsite=Integer.valueOf(site)-1;
+                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ prevsite.toString() + "\">prev</a>\n"));
+                }
+                Integer nextsite=Integer.valueOf(site)+1;
+                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">next</a>\n"));
+            }
+            
             for(int i=0;i<al.size();i++){s+=al.get(i);}
             al.clear();
             return s;

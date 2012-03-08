@@ -25,12 +25,12 @@
 <%@page import="java.sql.Connection" %>
 <%@page import="java.sql.DriverManager" %>
 <%@page import="java.sql.SQLException" %>
+<%@page import="java.util.Calendar"%>
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
 <%@page import="LGDEditTool.Templates.TemplatesMapping" %>
 <%@page import="LGDEditTool.Templates.TemplatesAllMappings" %>
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
-<%@page import="java.util.Calendar"%>
 <% request.setCharacterEncoding("UTF-8"); %>
 
 <!DOCTYPE HTML>
@@ -137,9 +137,9 @@
                             
                             out.println("</div>");
 			%>
-			<div>
+			<!--<div>
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>
+			</div>-->
 			<%
 			}
 			else if ( request.getParameter("tab").toString().equals("history") ) {
@@ -147,9 +147,9 @@
                             out.println(TemplatesEditHistory.editHistory());
                             out.println("</div>");
 			%>
-			<div>
+			<!--<div>
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>
+			</div>-->
 			<%
 			}
 			%>

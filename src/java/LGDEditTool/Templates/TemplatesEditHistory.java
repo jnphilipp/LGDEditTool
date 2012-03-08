@@ -33,6 +33,7 @@ public class TemplatesEditHistory {
 	 * Template for EditHistory.
 	 */
 	static public String editHistory() {
+		al.clear();
                 //insert tablehead
 		String tableHead = "\t\t\t\t<h2>Edit-History</h2>\n";
 		tableHead += "\t\t\t\t<table>\n";

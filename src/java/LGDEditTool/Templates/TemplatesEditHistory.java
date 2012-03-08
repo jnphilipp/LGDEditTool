@@ -58,6 +58,7 @@ public class TemplatesEditHistory {
                 //array to string for return
                 String s=new String();
                 for(int i=0;i<al.size();i++){s+=al.get(i);}  
+                al.clear();
 		return s;
 	}
     
@@ -70,7 +71,7 @@ public class TemplatesEditHistory {
 	 * @param comment comment
          * @param user user
 	 */
-        static public void fillEditHistoryArray(String time, String type, String action, String comment, String user){
+        static private void fillEditHistoryArray(String time, String type, String action, String comment, String user){
             String s = "";
 
             s += "\t\t\t\t\t<tr>\n";
@@ -89,7 +90,7 @@ public class TemplatesEditHistory {
         /**
 	 * gets edithistory from DB
 	 */
-        static public void searchDB(){
+        static private void searchDB(){
             //static data only for prototype
             
             String[][] testdata={       { "2012-01-05","k-mapping","edit","wrong","abc"},
@@ -102,8 +103,7 @@ public class TemplatesEditHistory {
             
             for(int i=0;i<5;i++)
             {
-                fillEditHistoryArray(testdata[i][0],testdata[i][1],testdata[i][2],testdata[i]
-[3],testdata[i][4]);
+                fillEditHistoryArray(testdata[i][0],testdata[i][1],testdata[i][2],testdata[i][3],testdata[i][4]);
             }
            
         }

@@ -28,6 +28,9 @@
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
 <%@page import="LGDEditTool.Templates.TemplatesMapping" %>
+<%@page import="LGDEditTool.Templates.TemplatesAllMappings" %>
+<%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
+<%@page import="java.util.Calendar"%>
 <% request.setCharacterEncoding("UTF-8"); %>
 
 <!DOCTYPE HTML>
@@ -121,6 +124,18 @@
 			<%
 			}
 			else if ( request.getParameter("tab").toString().equals("all") ) {
+                            out.println("<div>");
+                            if(request.getParameter("type")==null){
+                                out.println(TemplatesAllMappings.listAllMappings("", ""));
+                            }
+                            else if(request.getParameter("site")==null){
+                                out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), "1"));
+                            }
+                            else {
+                                out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), request.getParameter("site").toString()));
+                            }
+                            
+                            out.println("</div>");
 			%>
 			<div>
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -128,6 +143,9 @@
 			<%
 			}
 			else if ( request.getParameter("tab").toString().equals("history") ) {
+                            out.println("<div>");
+                            out.println(TemplatesEditHistory.editHistory());
+                            out.println("</div>");
 			%>
 			<div>
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

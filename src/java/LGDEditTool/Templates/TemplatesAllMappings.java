@@ -26,17 +26,13 @@ import java.util.ArrayList;
 public class TemplatesAllMappings {
     
     static ArrayList<String> al = new ArrayList<String>();
-    /**
+        /**
 	 * Template for EditHistory.
 	 */
 	static public String listAllMappings(String type,String site) {
             String s = new String();
-            //s+="\t\t<button type=\"button\" name=\"kmapping\" target=\"?tab=all&type=k\">K-mappings</button>";
-            //s+="\t\t<button type=\"button\" name=\"kvmapping\" target=\"?tab=all&type=kv\">KV-mappings</button>\n";
             s+="\t\t<a href=\"?tab=all&type=k\">K-mappings</a>";
             s+="\t\t<a href=\"?tab=all&type=kv\">KV-mappings</a>";
-            
-            
             
             if(type.equalsIgnoreCase("k")){
                try{
@@ -55,7 +51,7 @@ public class TemplatesAllMappings {
                 //insert edithistory from db
                 listAllKMappings(Integer.parseInt(site));
                 
-                //inser table foot
+                //insert table foot
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
                }catch(Exception e){};
@@ -78,7 +74,7 @@ public class TemplatesAllMappings {
                 //insert edithistory from db
                 listAllKVMappings(Integer.parseInt(site));
                 
-                //inser table foot
+                //insert table foot
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
                 
@@ -86,20 +82,21 @@ public class TemplatesAllMappings {
                 
                 if(type.equalsIgnoreCase("k")){
                     Integer nextsite=Integer.valueOf(site)+1;
-                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=k&site="+ nextsite.toString() + "\">show more</a>\n"));
+                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=km&site="+ nextsite.toString() + "\">show more</a>\n"));
                 }
-                else if(type.equalsIgnoreCase("kv")){
+                if(type.equalsIgnoreCase("kv")){
                     Integer nextsite=Integer.valueOf(site)+1;
                     al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">show more</a>\n"));
                 }
                }catch(Exception e){};
             }
             for(int i=0;i<al.size();i++){s+=al.get(i);}
+            al.clear();
             return s;
            
         }
         
-        static public void listAllKMappings(int site) throws Exception{
+        static private void listAllKMappings(int site) throws Exception{
             String s = new String();
             DatabaseBremen database = new DatabaseBremen();
             
@@ -113,7 +110,7 @@ public class TemplatesAllMappings {
         }
         
         
-        static public void listAllKVMappings(int site) throws Exception{
+        static private void listAllKVMappings(int site) throws Exception{
             String s = new String();
             DatabaseBremen database = new DatabaseBremen();
             
@@ -134,7 +131,7 @@ public class TemplatesAllMappings {
 	 * @param affectedEntities affected Entities
 	 * @return String
 	 */
-	static public void addkMapping(String k, String property, String object, String affectedEntities) {
+	static private void addkMapping(String k, String property, String object, String affectedEntities) {
 		String s = new String();
 		s += "\t\t\t\t\t<tr>\n";
 		s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
@@ -156,7 +153,7 @@ public class TemplatesAllMappings {
 	 * @param affectedEntities affected Entities
 	 * @return String
 	 */
-	static public void addkvMapping(String k, String v, String property, String object, String affectedEntities) {
+	static private void addkvMapping(String k, String v, String property, String object, String affectedEntities) {
 		String s = new String();
 		s += "\t\t\t\t\t<tr>\n";
 		s += "\t\t\t\t\t\t<td>" + k + "</td>\n";

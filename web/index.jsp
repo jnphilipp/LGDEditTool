@@ -29,6 +29,7 @@
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
 <%@page import="LGDEditTool.Templates.TemplatesMapping" %>
+<%@page import="LGDEditTool.Templates.TemplatesUnmappedTags" %>
 <%@page import="LGDEditTool.Templates.TemplatesAllMappings" %>
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
 <% request.setCharacterEncoding("UTF-8"); %>
@@ -117,6 +118,9 @@
 			<%
 			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
+                            out.println("<div>");
+                            out.println(TemplatesUnmappedTags.unmappedTags("1", "1"));
+                            out.println("</div>");
 			%>
 			<div>
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

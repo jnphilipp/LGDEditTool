@@ -177,7 +177,6 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t</tr>\n";
                 al.add(s);
 		
-	}
-
+        }
     
 }

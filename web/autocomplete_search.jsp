@@ -46,17 +46,17 @@ try {
 		out.println(a[i][0].toString() + " (" + a[i][1].toString() + ")");
 	}*/
 
-	Object[][] a = database.execute("SELECT k, count(k) FROM lgd_map_resource_k WHERE UPPER(k) LIKE UPPER('%" + query + "%') GROUP BY k ORDER BY k");
+	Object[][] a = database.execute("SELECT k, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_k WHERE k='barrier' GROUP BY k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('%" + query.toUpperCase() + "%') GROUP BY k ORDER BY k");
 
 	for ( int i = 0; i < a.length; i++ ) {
 		out.println(a[i][0].toString() + " (" + a[i][1].toString() + ")");
 	}
 
-	a = database.execute("SELECT k, count(k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('%" + query + "%') GROUP BY k ORDER BY k");
+	/*a = database.execute("SELECT k, count(k) FROM lgd_map_resource_kv WHERE UPPER(object) LIKE UPPER('%" + query.toUpperCase() + "%') GROUP BY object ORDER BY object");
 
 	for ( int i = 0; i < a.length; i++ ) {
-		out.println(a[i][0].toString() + " (" + a[i][1].toString() + ")");
-	}
+		out.println(a[i][0].toString() + " (kv:" + a[i][1].toString() + ")");
+	}*/
 
 	/*a = database.execute("SELECT v, count(v) FROM lgd_map_resource_kv WHERE UPPER(v) LIKE UPPER('%" + query + "%') GROUP BY v ORDER BY v");
 
@@ -64,7 +64,7 @@ try {
 		out.println(a[i][0].toString() + " (" + a[i][1].toString() + ")");
 	}*/
 
-	database.close();
+	database.disconnect();
 }
 catch ( Exception e ) {
 	out.println(e.toString());

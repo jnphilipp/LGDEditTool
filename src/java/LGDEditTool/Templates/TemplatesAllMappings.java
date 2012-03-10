@@ -108,31 +108,32 @@ al.add(tableHead);
            
         }
         
-        static private void listAllKMappings(int site) throws Exception{
-            String s = new String();
-            DatabaseBremen database = new DatabaseBremen();
-            
-            database.connect();
-Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k GROUP BY k,property,object");
+	static private void listAllKMappings(int site) throws Exception {
+		String s = new String();
+		DatabaseBremen database = new DatabaseBremen();
+		database.connect();
 
-for (int i=(site-1)*20;i<site*20;i++) {
-                        addkMapping(a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[0][3].toString());
-}
-database.close();
-        }
-        
-        
-        static private void listAllKVMappings(int site) throws Exception{
-            String s = new String();
-            DatabaseBremen database = new DatabaseBremen();
-            
-            database.connect();
-Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k,v,property,object");
+		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k GROUP BY k,property,object");
 
-for (int i=(site-1)*20;i<site*20;i++) {
-                        addkvMapping(a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[0][4].toString());
-}
-database.close();
+		for ( int i = (site -1) * 20; i < site * 20; i++ ) {
+			addkMapping(a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[0][3].toString());
+		}
+
+		database.disconnect();
+	}
+
+	static private void listAllKVMappings(int site) throws Exception {
+		String s = new String();
+		DatabaseBremen database = new DatabaseBremen();
+
+		database.connect();
+		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k,v,property,object");
+
+		for ( int i = (site -1) * 20; i < site * 20; i++ ) {
+			addkvMapping(a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[0][4].toString());
+		}
+
+		database.disconnect();
         }
     
      /**

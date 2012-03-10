@@ -27,12 +27,19 @@
 <%@page import="java.sql.SQLException" %>
 <%@page import="java.util.Calendar"%>
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
+<%@page import="LGDEditTool.SiteHandling.RequestHandling" %>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
 <%@page import="LGDEditTool.Templates.TemplatesMapping" %>
 <%@page import="LGDEditTool.Templates.TemplatesUnmappedTags" %>
 <%@page import="LGDEditTool.Templates.TemplatesAllMappings" %>
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
-<% request.setCharacterEncoding("UTF-8"); %>
+<% request.setCharacterEncoding("UTF-8");
+	String search = "";
+	if ( request.getParameter("search") != null )
+		search = request.getParameter("search").substring(0, (request.getParameter("search").lastIndexOf(" ") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf(" ")));
+
+	RequestHandling.doRequestHandling(request);
+%>
 
 <!DOCTYPE HTML>
 <html lang="de">
@@ -41,6 +48,7 @@
 		<link rel="stylesheet" href="./css/main.css" />
 		<link rel="stylesheet" href="./css/tabs.css" />
 		<link rel="stylesheet" href="./css/fieldset.css" />
+		<link rel="stylesheet" href="./css/mapping.css" />
 		<link rel="stylesheet" href="./css/jquery.autocomplete.css" />
 		<link rel="shortcut icon" href="http://linkedgeodata.org/files/lgdlogo.png" />
 		<title>LGDEditTool</title>
@@ -50,6 +58,20 @@
 			$(function() {
 				$("#search").autocomplete("autocomplete_search.jsp")
 			});
+
+			function toggle_visibility(id) {
+				var e = document.getElementById(id);
+				var s = document.getElementById(id + 'a');
+
+				if ( e.style.display == 'none' ) {
+					e.style.display = 'table-row';
+					s.style.display = 'none';
+				}
+				else {
+					e.style.display = 'none';
+					s.style.display = 'table-row';
+				}
+			}
 		</script>
 	</head>
 	<body>
@@ -57,17 +79,15 @@
 
 		<ul id="tabs">
 			<% if ( request.getParameter("tab") == null ) { %>
-			<li><a class="current" href="?tab=search">Search</a></li>
-			<li><a href="?tab=mappings">Mappings</a></li>
-			<li><a href="?tab=ontologie">Ontologie</a></li>
+			<li><a class="current" href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
+			<li><a href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>" >Ontologie</a></li>
 			<li><a href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a href="?tab=all">All Mappings</a></li>
 			<li><a href="?tab=history">Edit-History</a></li>
 			<% }
 				else { %>
-			<li><a <% if ( request.getParameter("tab").toString().equals("search") ) { out.print("class=\"current\""); } %> href="?tab=search">Search</a></li>
-			<li><a <% if ( request.getParameter("tab").toString().equals("mappings") ) { out.print("class=\"current\""); } %> href="?tab=mappings">Mappings</a></li>
-			<li><a <% if ( request.getParameter("tab").toString().equals("ontologie") ) { out.print("class=\"current\""); } %> href="?tab=ontologie">Ontologie</a></li>
+			<li><a <% if ( request.getParameter("tab").toString().equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
+			<li><a <% if ( request.getParameter("tab").toString().equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
 			<li><a <% if ( request.getParameter("tab").toString().equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").toString().equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").toString().equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history">Edit-History</a></li>
@@ -77,14 +97,16 @@
 		<div id="panes">
 			<%
 			if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
-				if ( request.getParameter("search") == null ) {
+				if ( search.equals("") ) {
 					out.println("<div>");
 					out.println(TemplatesSearch.search());
 					out.println("</div>");
 				}
 				else {
 					out.println("<div>");
-					out.println(TemplatesMapping.kMappingSearch(request.getParameter("search")));
+					out.println(TemplatesSearch.search());
+					out.println("\t\t\t\t<br /><br />");
+					out.println(TemplatesSearch.searchResult(search));
 					//out.println(TemplatesMapping.kMapping("amenity", "rdf:type", "lgdo:Bakery", "300k"));
 					//out.println(TemplatesMapping.kvMapping("amenity", "bakery", "rdf:type", "lgdo:Bakery", "10k"));
 					out.println("\t\t\t</div>");

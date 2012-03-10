@@ -77,50 +77,44 @@ public class TemplatesUnmappedTags {
         
        return s;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    static private void listAllKMappings(int site) throws Exception{
-            String s = new String();
-            DatabaseBremen database = new DatabaseBremen();
-            
-            database.connect();
+
+	static private void listAllKMappings(int site) throws Exception {
+		String s = new String();
+		DatabaseBremen database = new DatabaseBremen();
+		database.connect();
+
 		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k GROUP BY k,property,object");
-                int count=0;
+
+		int count=0;
 		for (int i=0;i<a.length;i++) {
-                        if(a[i][1].toString().equals("") || a[i][2].toString().equals("") ){
-                            addkMapping(a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[0][3].toString());
-                            count++;
-                            if(count==20){break;}
-                        }
+			if(a[i][1].toString().equals("") || a[i][2].toString().equals("") ) {
+				addkMapping(a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[0][3].toString());
+				count++;
+				if(count==20){break;}
+			}
 		}
-		database.close();
-        }
-        
-        
-        static private void listAllKVMappings(int site) throws Exception{
-            String s = new String();
-            DatabaseBremen database = new DatabaseBremen();
-            
-            database.connect();
-		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k,v,property,object");	
-                int count=0;
+
+		database.disconnect();
+	}
+
+	static private void listAllKVMappings(int site) throws Exception {
+		String s = new String();
+		DatabaseBremen database = new DatabaseBremen();
+		database.connect();
+
+		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k,v,property,object");
+		int count=0;
+
 		for (int i=0;i<a.length;i++) {
-                    if(a[i][1].toString().equals("") || a[i][2].toString().equals("") || a[i][3].toString().equals("") ){
-                        addkvMapping(a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[0][4].toString());
-                        count++;
-                        if(count==20){break;}
-                    } 
+			if(a[i][1].toString().equals("") || a[i][2].toString().equals("") || a[i][3].toString().equals("") ){
+				addkvMapping(a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[0][4].toString());
+				count++;
+				if(count==20){break;}
+			} 
 		}
-		database.close();
-        }
+
+		database.disconnect();
+	}
     
         
         /**

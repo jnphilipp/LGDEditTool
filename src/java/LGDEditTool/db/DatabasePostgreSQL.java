@@ -89,7 +89,7 @@ public class DatabasePostgreSQL {
 	* Closes the connection to the database.
 	* @throws SQLException
 	*/
-	public void close() throws SQLException {
+	public void disconnect() throws SQLException {
 		if ( this.connection != null ) {
 			this.statement.close();
 			this.connection.close();

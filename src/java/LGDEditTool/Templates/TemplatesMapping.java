@@ -130,7 +130,7 @@ public class TemplatesMapping {
 		}
 		re += "\t\t\t\t</table>\n";
 
-		database.close();
+		database.disconnect();
 		//re = TemplatesMapping.kMapping("amenity", "rdf:type", "lgdo:Bakery", "300k");
 		//re += TemplatesMapping.kvMapping("amenity", "bakery", "rdf:type", "lgdo:Bakery", "10k");
 		return re;

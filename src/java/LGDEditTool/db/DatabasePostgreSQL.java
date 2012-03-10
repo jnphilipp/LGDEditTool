@@ -65,7 +65,7 @@ public class DatabasePostgreSQL {
 	* @param user user
 	* @param passwd password
 	* @param ssl using SSL
-	* @return <code>true</code> if connection was established else it returns <code>flase</code>
+	* @return <code>true</code> if connection was established else it returns <code>false</code>
 	* @throws SQLException
 	*/
 	public boolean connect(String database, String user, String passwd, boolean ssl) throws SQLException {

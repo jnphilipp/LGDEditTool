@@ -36,7 +36,7 @@ public class DatabaseBremen extends DatabasePostgreSQL {
 
 	/**
 	* Establishes a connection to the Bremen database.
-	* @return <code>true</code> if connection was established else it returns <code>flase</code>
+	* @return <code>true</code> if connection was established else it returns <code>false</code>
 	* @throws SQLException
 	*/
 	public boolean connect() throws SQLException {

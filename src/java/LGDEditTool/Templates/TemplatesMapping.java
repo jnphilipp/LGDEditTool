@@ -72,7 +72,8 @@ public class TemplatesMapping {
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>object</th>\n";
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
-		re += "\t\t\t\t\t\t<th class=\"edit\"></th>\n";
+		re += "\t\t\t\t\t\t<th>Edit</th>\n";
+		re += "\t\t\t\t\t\t<th>Delete</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 		re += "\t\t\t\t\t<tr>\n";
 		re += "\t\t\t\t\t\t<td>" + k + "</td>\n";
@@ -80,7 +81,8 @@ public class TemplatesMapping {
 		re += "\t\t\t\t\t\t<td>" + property + "</td>\n";
 		re += "\t\t\t\t\t\t<td>" + object + "</td>\n";
 		re += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t<td class=\"edit\"><a href=\"?tab=mappings&k=" + k + "&v=" + v + "\">Edit/Delete</a></td>\n";
+		re += "\t\t\t\t\t\t<td><a href=\"?tab=mappings&k=" + k + "&v=" + v + "\">Edit</a></td>\n";
+		re += "\t\t\t\t\t\t<td><a href=\"?tab=mappings&k=" + k + "&v=" + v + "\">Delete</a></td>\n";
 		re += "\t\t\t\t\t</tr>\n";
 		re += "\t\t\t\t</table>\n";
 		return re;
@@ -110,7 +112,8 @@ public class TemplatesMapping {
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>object</th>\n";
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
-		re += "\t\t\t\t\t\t<th class=\"edit\"></th>\n";
+		re += "\t\t\t\t\t\t<th>Edit</th>\n";
+		re += "\t\t\t\t\t\t<th>Delete</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
 		for ( int i = 0; i < a.length; i++ ) {
@@ -121,7 +124,8 @@ public class TemplatesMapping {
 			re += "\t\t\t\t\t\t<td></td>\n";
 			re += "\t\t\t\t\t\t<td></td>\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][2].toString() + "</td>\n";
-			re += "\t\t\t\t\t\t<td class=\"edit\"><a href=\"?tab=mappings&k=" + a[i][0].toString() + "&v=" + a[i][1].toString() + "\">Edit/Delete</a></td>\n";
+			re += "\t\t\t\t\t\t<td><a href=\"?tab=mappings&k=" + a[i][0].toString() + "&v=" + a[i][1].toString() + "\">Edit</a></td>\n";
+			re += "\t\t\t\t\t\t<td><a href=\"?tab=mappings&k=" + a[i][0].toString() + "&v=" + a[i][1].toString() + "\">Delete</a></td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 		}
 		re += "\t\t\t\t</table>\n";

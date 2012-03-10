@@ -33,7 +33,7 @@ h1 { font-family: cursive, monospace;
 a { font-family: monospace;
 	font-size: 10pt;
 	font-weight: normal;
-	color: black;
+	color: blue;
 	text-decoration: none;}
 
 a:hover { color: blue;
@@ -45,11 +45,6 @@ th,
 td { min-width: 5em;
 	padding: 5px;
 	border: 1px solid #000;}
-
-th.edit,
-td.edit { min-width: 5em;
-	padding: 5px;
-	border: 0px solid #000;}
 
 div { font-family: monospace;
 	font-size: 10pt;}

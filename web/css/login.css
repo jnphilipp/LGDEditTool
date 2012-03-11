@@ -1,0 +1,82 @@
+/*
+ *    This file is part of LGDEditTool (LGDET).
+ *
+ *    LGDET is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    any later version.
+ *
+ *    LGDET is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ 
+/* 
+    Document   : login
+    Created on : 11.03.2012, 11:55:50
+    Author     : J. Nathanael Philipp
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+div.login article { display: none;
+	position: fixed;
+	-o-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-icab-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-khtml-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-moz-box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	-webkit-box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	-o-border-radius: 8px;
+	-icab-border-radius: 8px;
+	-khtml-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	-webkit-transition: visibility 0s ease-in-out 0.7s, opacity 0.7s ease-in-out;
+	-moz-transition: visibility 0s ease-in-out 0.7s, opacity 0.7s ease-in-out;
+	transition: visibility 0s ease-in-out 7.5s, opacity 0.7s ease-in-out;}
+
+div.login:hover article { display: block;
+	z-index: 1;
+	top: 0.5em;
+	right: 0.5em;
+	width: 23em;
+	padding: 8px;
+	border: 1px solid rgba(93, 87, 98, 0.6);
+	background: rgba(200, 200, 200, 0.5);
+	-webkit-transition-delay: 0s;
+	-moz-transition-delay: 0s;
+	transition-delay: 0s;}
+
+div.login fieldset legend { margin-left: 1em;
+	font-family: monospace;
+	font-size: 11pt;
+	color: black;}
+
+div.login fieldset ul { list-style: none;}
+div.login fieldset li { margin-top: 0.5em;}
+div.login fieldset label { font-family: monospace;
+	color: black;}
+
+div.login fieldset input[type=password],
+div.login fieldset input[type=text] { 
+	border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;
+	width: 15em;}
+
+div.login fieldset input[type=submit] { font-family: monospace;
+	font-size: 11pt;
+	text-align: center;
+	border: 1px solid #666;
+	background: #efefef;
+	color: #777;}
+
+div.login fieldset input[type=submit]:hover { background: #F7F7F7;
+	color: #333;
+	font-weight: bold;}

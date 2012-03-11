@@ -46,7 +46,7 @@ try {
 		out.println(a[i][0].toString() + " (" + a[i][1].toString() + ")");
 	}*/
 
-	Object[][] a = database.execute("SELECT k, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_k WHERE k='barrier' GROUP BY k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('%" + query.toUpperCase() + "%') GROUP BY k ORDER BY k");
+	Object[][] a = database.execute("SELECT k, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_k WHERE k=(lgd_map_resource_kv.k) GROUP BY k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('%" + query.toUpperCase() + "%') GROUP BY k ORDER BY k");
 
 	for ( int i = 0; i < a.length; i++ ) {
 		out.println(a[i][0].toString() + " (" + a[i][1].toString() + ")");

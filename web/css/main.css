@@ -39,11 +39,11 @@ a { font-family: monospace;
 a:hover { color: blue;
 	font-weight: bold;}
 
-table { border-collapse: collapse;}
+table.table { border-collapse: collapse;
+	width: 100%;}
 
-th,
-td { min-width: 5em;
-	padding: 5px;
+table.table th,
+table.table td { padding: 5px;
 	border: 1px solid #000;}
 
 div { font-family: monospace;

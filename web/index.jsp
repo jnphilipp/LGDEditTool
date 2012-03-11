@@ -15,6 +15,7 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="java.security.MessageDigest"%>
 <%-- 
     Document   : index
     Created on : 02.02.2012, 07:52:15
@@ -27,6 +28,7 @@
 <%@page import="java.sql.SQLException" %>
 <%@page import="java.util.Calendar"%>
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
+<%@page import="LGDEditTool.SiteHandling.User"%>
 <%@page import="LGDEditTool.SiteHandling.RequestHandling" %>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
 <%@page import="LGDEditTool.Templates.TemplatesMapping" %>
@@ -35,10 +37,18 @@
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
 <% request.setCharacterEncoding("UTF-8");
 	String search = "";
+	boolean captcha = true;
 	if ( request.getParameter("search") != null )
 		search = request.getParameter("search").substring(0, (request.getParameter("search").lastIndexOf(" ") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf(" ")));
 
-	RequestHandling.doRequestHandling(request);
+	User user = User.createUser(request);
+
+	if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null ) {
+		captcha = RequestHandling.checkCaptcha(request);
+	}
+
+	if ( request.getParameter("captcha") == null && captcha )
+		RequestHandling.doRequestHandling(request, response, user);
 %>
 
 <!DOCTYPE HTML>
@@ -49,6 +59,8 @@
 		<link rel="stylesheet" href="./css/tabs.css" />
 		<link rel="stylesheet" href="./css/fieldset.css" />
 		<link rel="stylesheet" href="./css/mapping.css" />
+		<link rel="stylesheet" href="./css/login.css" />
+		<link rel="stylesheet" href="./css/captcha.css" />
 		<link rel="stylesheet" href="./css/jquery.autocomplete.css" />
 		<link rel="shortcut icon" href="http://linkedgeodata.org/files/lgdlogo.png" />
 		<title>LGDEditTool</title>
@@ -62,19 +74,51 @@
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
 				var s = document.getElementById(id + 'a');
+				var u = document.getElementById(id + 'u');
 
 				if ( e.style.display == 'none' ) {
 					e.style.display = 'table-row';
+					u.style.display = 'table-row';
 					s.style.display = 'none';
 				}
 				else {
 					e.style.display = 'none';
+					u.style.display = 'none';
 					s.style.display = 'table-row';
 				}
 			}
+
+			 var RecaptchaOptions = {theme : 'white'};
 		</script>
 	</head>
 	<body>
+		<% if ( user == null || !user.isLoggedIn() ) { %>
+		<div class="login" style="float: right;">
+			<a>Login</a>
+			<article>
+				<fieldset>
+					<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
+					<form action="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>" method="post" accept-charset="UTF-8">
+						<ul>
+							<li>
+								<label>Login or Email</label>
+								<input type="text" name="user" required />
+							</li>
+							<li>
+								<label>Password (<a style="font-size: 9pt;">forgot password</a>)</label>
+								<input type="password" name="password" required />
+							</li>
+							<li><input type="submit" name="login" value="Log in" /></li>
+						</ul>
+					</form>
+				</fieldset>
+			</article>
+		</div>
+		<% } else { %>
+		<div class="login" style="float: right;">
+			<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
+		</div>
+		<% } %>
 		<h1>LGDEditTool</h1>
 
 		<ul id="tabs">
@@ -98,85 +142,49 @@
 			<%
 			if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
-					out.println("<div>");
+					out.println("<div class=\"pane\">");
 					out.println(TemplatesSearch.search());
-					out.println("</div>");
-				}
-				else {
-					out.println("<div>");
-					out.println(TemplatesSearch.search());
-					out.println("\t\t\t\t<br /><br />");
-					out.println(TemplatesSearch.searchResult(search));
-					//out.println(TemplatesMapping.kMapping("amenity", "rdf:type", "lgdo:Bakery", "300k"));
-					//out.println(TemplatesMapping.kvMapping("amenity", "bakery", "rdf:type", "lgdo:Bakery", "10k"));
 					out.println("\t\t\t</div>");
 				}
-			}
-			else if ( request.getParameter("tab").toString().equals("mappings") ) {
-				if ( request.getParameter("v") != null ) {
-					out.println("<div>");
-					out.println("k:" + request.getParameter("k").toString());
-					out.println("v:" + request.getParameter("v").toString());
-					out.println("</div>");
-				}
-				else if ( request.getParameter("k") != null ) {
-					out.println("<div>");
-					out.println("k:" + request.getParameter("k").toString());
-					out.println("</div>");
-				}
 				else {
-			%>
-			<div>
-			Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>
-			<%
+					out.println("<div class=\"pane\">");
+					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+						out.println(TemplatesSearch.captcha(request, search));
+					out.println(TemplatesSearch.search());
+					out.println("\t\t\t\t<br /><br />");
+					out.println(TemplatesSearch.searchResult(search, user));
+					out.println("\t\t\t</div>");
 				}
 			}
 			else if ( request.getParameter("tab").toString().equals("ontologie") ) {
 			%>
-			<div>
+			<div class="pane">
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 			</div>
 			<%
 			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
-                            out.println("<div>");
-                            out.println(TemplatesUnmappedTags.unmappedTags("1", "1"));
-                            out.println("</div>");
-			%>
-			<div>
-				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>
-			<%
+				out.println("<div class=\"pane\">");
+				out.println(TemplatesUnmappedTags.unmappedTags("1", "1"));
+				out.println("</div>");
 			}
 			else if ( request.getParameter("tab").toString().equals("all") ) {
-                            out.println("<div>");
-                            if(request.getParameter("type")==null){
-                                out.println(TemplatesAllMappings.listAllMappings("", ""));
-                            }
-                            else if(request.getParameter("site")==null){
-                                out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), "1"));
-                            }
-                            else {
-                                out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), request.getParameter("site").toString()));
-                            }
-                            
-                            out.println("</div>");
-			%>
-			<!--<div>
-				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>-->
-			<%
+				out.println("<div class=\"pane\">");
+				if(request.getParameter("type")==null){
+					out.println(TemplatesAllMappings.listAllMappings("", ""));
+				}
+				else if(request.getParameter("site")==null){
+					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), "1"));
+				}
+				else {
+					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), request.getParameter("site").toString()));
+				}
+				out.println("</div>");
 			}
 			else if ( request.getParameter("tab").toString().equals("history") ) {
-                            out.println("<div>");
-                            out.println(TemplatesEditHistory.editHistory());
-                            out.println("</div>");
-			%>
-			<!--<div>
-				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>-->
-			<%
+				out.println("<div class=\"pane\">");
+				out.println(TemplatesEditHistory.editHistory());
+				out.println("</div>");
 			}
 			%>
 		</div>

@@ -37,8 +37,7 @@ fieldset { font-family: monospace;
 
 fieldset legend { margin-left: 2em;}
 fieldset.search ul { list-style: none;}
-fieldset.search input[type=text] { 
-	border: 1px solid rgba(106, 105, 106, 0.6);
+fieldset.search input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
 	font-family: monospace;
 	width: 40em;}
 

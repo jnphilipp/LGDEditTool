@@ -17,37 +17,70 @@
 
 package LGDEditTool.SiteHandling;
 
+import java.security.MessageDigest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import LGDEditTool.db.DatabaseBremen;
 
 /**
  *
  * @author J. Nathanael Philipp
  * @version 1.0
  */
-public class User {
+public final class User {
+	private static User user;
+
 	private String username = "";
 	private boolean loggedIn = false;
+	private boolean admin = false;
 
-	public User(HttpServletRequest request) {
+	private User() {}
+
+	public static synchronized User getInstance() {
+		if ( user == null )
+			user = new User();
+
+		return user;
+	}
+
+	public void createUser(HttpServletRequest request) throws Exception {
 		Cookie[] cookies = request.getCookies();
 
 		for ( int i = 0; i < cookies.length; i++ ) {
 			if ( cookies[i].getName().equals("lgd_username") )
 				this.username = cookies[i].getValue();
-			else if ( cookies[i].getName().equals("lgd_loggedIn") )
-				this.loggedIn = Boolean.valueOf(cookies[i].getValue());
+			else if ( cookies[i].getName().equals("lgd_loggedIn") ) {
+				MessageDigest md = MessageDigest.getInstance("MD5");
+				md.update((this.username + Boolean.toString(true)).getBytes());
+
+				byte byteData[] = md.digest();
+				//convert the byte to hex
+				StringBuffer sb = new StringBuffer();
+				for (int j = 0; j < byteData.length; j++) {
+					sb.append(Integer.toString((byteData[j] & 0xff) + 0x100, 16).substring(1));
+				}
+				this.loggedIn = cookies[i].getValue().equals(sb.toString());
+			}
+		}
+
+		if ( this.loggedIn ) {
+			DatabaseBremen db = new DatabaseBremen();
+			db.connect();
+			Object[][] a = db.execute("SELECT admin FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");//this.username += "|" + a[0][0].toString();
+			this.admin = Boolean.parseBoolean(a[0][0].toString());
+			db.disconnect();
 		}
 	}
 
-	public User(String username) {
+	public void createUser(String username) {
 		this.username = username;
 	}
 
-	public User(String username, boolean loggedIn) {
+	public void createUser(String username, boolean loggedIn, boolean admin) {
 		this.username = username;
 		this.loggedIn = loggedIn;
+		this.admin = admin;
 	}
 
 	public String getUsername() {
@@ -58,24 +91,40 @@ public class User {
 		return this.loggedIn;
 	}
 
-	public void logout() {
-		this.loggedIn = false;
+	public boolean isAdmin() {
+		return this.admin;
 	}
 
-	public void createCookie(HttpServletResponse response) {
+	public void logout() {
+		this.loggedIn = false;
+		this.admin = false;
+	}
+
+	public void createCookie(HttpServletResponse response) throws Exception {
 		Cookie u = new Cookie("lgd_username", this.username);
 		u.setMaxAge(365 * 24 * 60 * 60);
-		Cookie l = new Cookie("lgd_loggedIn", Boolean.toString(this.loggedIn));
+
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		md.update((this.username + Boolean.toString(this.loggedIn)).getBytes());
+
+		byte byteData[] = md.digest();
+		//convert the byte to hex
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < byteData.length; i++) {
+			sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+		}
+
+		Cookie l = new Cookie("lgd_loggedIn", sb.toString());
 		l.setMaxAge(60 *60);
 
 		response.addCookie(u);
 		response.addCookie(l);
 	}
 
-	public static User createUser(HttpServletRequest request) {
+	/*public static User createUser(HttpServletRequest request) throws Exception {
 		Cookie[] c = request.getCookies();
 		boolean create = false;
-		User user = null;
+		User user = User.getInstance();
 
 		
 		if ( c == null)
@@ -86,8 +135,8 @@ public class User {
 				create = true;
 
 		if ( create )
-			user = new User(request);
+			user.createUser(request);
 
 		return user;
-	}
+	}*/
 }

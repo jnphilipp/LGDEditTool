@@ -15,6 +15,7 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="LGDEditTool.Templates.TemplatesShowMessage"%>
 <%@page import="java.security.MessageDigest"%>
 <%-- 
     Document   : index
@@ -37,18 +38,25 @@
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
 <% request.setCharacterEncoding("UTF-8");
 	String search = "";
+	String message = "";
 	boolean captcha = true;
+
 	if ( request.getParameter("search") != null )
 		search = request.getParameter("search").substring(0, (request.getParameter("search").lastIndexOf(" ") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf(" ")));
 
-	User user = User.createUser(request);
+	User user = User.getInstance();
+	user.createUser(request);
 
 	if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null ) {
 		captcha = RequestHandling.checkCaptcha(request);
 	}
 
 	if ( request.getParameter("captcha") == null && captcha )
-		RequestHandling.doRequestHandling(request, response, user);
+		message = RequestHandling.doRequestHandling(request, response, user);
+
+/*	if ( message.equals("Login successful.") ) {
+		out.println(user.isLoggedIn());
+	}*/
 %>
 
 <!DOCTYPE HTML>
@@ -92,7 +100,10 @@
 		</script>
 	</head>
 	<body>
-		<% if ( user == null || !user.isLoggedIn() ) { %>
+		<% if ( !message.equals("") ) {
+			out.println(TemplatesShowMessage.showMessage(message));
+		}
+if ( (user == null || !user.isLoggedIn()) /*&& !message.equals("Login successful.")*/ ) { %>
 		<div class="login" style="float: right;">
 			<a>Login</a>
 			<article>
@@ -116,7 +127,7 @@
 		</div>
 		<% } else { %>
 		<div class="login" style="float: right;">
-			<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
+			<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : request.getParameter("tab"))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
@@ -135,7 +146,10 @@
 			<li><a <% if ( request.getParameter("tab").toString().equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").toString().equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").toString().equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history">Edit-History</a></li>
-			<% } %>
+			<% if ( user.isAdmin() ) {
+					out.println("<li><a " + (request.getParameter("tab").toString().equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
+				}
+			} %>
 		</ul>
 
 		<div id="panes">
@@ -185,6 +199,13 @@
 				out.println("<div class=\"pane\">");
 				out.println(TemplatesEditHistory.editHistory());
 				out.println("</div>");
+			}
+			else if ( request.getParameter("tab").toString().equals("settings") ) {
+			%>
+			<div class="pane">
+				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			</div>
+			<%
 			}
 			%>
 		</div>

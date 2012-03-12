@@ -34,11 +34,13 @@ public class RequestHandling {
 	/**
 	 * Handling Requests.
 	 * @param request Request
+	 * @return message
 	 * @throws Exception 
 	 */
-	public static void doRequestHandling(HttpServletRequest request, HttpServletResponse response, User user) throws Exception {
+	public static String doRequestHandling(HttpServletRequest request, HttpServletResponse response, User user) throws Exception {
 		DatabaseBremen database = new DatabaseBremen();
 		database.connect();
+		String re = "";
 
 		if ( request.getParameter("user") != null && request.getParameter("password") != null && request.getParameter("login") != null ) {
 			MessageDigest md = MessageDigest.getInstance("MD5");
@@ -51,19 +53,22 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE (username='" + request.getParameter("user") + "' or email='" + request.getParameter("user") + "') AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT email, admin FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND password='" + sb + "'");
 
 			if ( a.length == 0 ) {
-				user = null;
+				user.createUser("", false, false);
+				re = "Login or password incorrect.";
 			}
 			else {
-				user = new User(a[0][0].toString(), true);
+				user.createUser(a[0][0].toString(), true, Boolean.parseBoolean(a[0][1].toString()));
 				user.createCookie(response);
+				re = "Login successful.";
 			}
 		}
 		else if ( request.getParameter("logout") != null ) {
 			user.logout();
 			user.createCookie(response);
+			re = "Logout successful.";
 		}
 		else if ( request.getParameter("kmapping") != null && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
@@ -73,6 +78,8 @@ public class RequestHandling {
 			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES ((SELECT MAX(id) + 1 FROM lgd_map_resource_k_history), '" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', (SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id;");
 
 			database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
+
+			re = "Successful changed K-Mapping.";
 		}///////////////////////////////////////////////////////////////////////
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("k") != null  && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
@@ -82,9 +89,12 @@ public class RequestHandling {
 			a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES ((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', (SELECT last_history_id FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id;");
 
 			database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
+
+			re = "Successful changed KV-Mapping.";
 		}
 
 		database.disconnect();
+		return re;
 	}
 
 	public static boolean checkCaptcha(HttpServletRequest request) {

@@ -46,6 +46,9 @@ public final class User {
 
 	public void createUser(HttpServletRequest request) throws Exception {
 		Cookie[] cookies = request.getCookies();
+                
+                if ( cookies == null )
+                    return;
 
 		if ( cookies == null )
 			return;

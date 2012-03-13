@@ -188,13 +188,15 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab").toString().equals("all") ) {
 				out.println("<div class=\"pane\">");
 				if(request.getParameter("type")==null){
-					out.println(TemplatesAllMappings.listAllMappings("", ""));
+					out.println(TemplatesAllMappings.listAllMappings("", "",user));
 				}
 				else if(request.getParameter("site")==null){
-					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), "1"));
+					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), "1",user));
 				}
 				else {
-					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), request.getParameter("site").toString()));
+					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), request.getParameter("site").toString(),user));
+                                        if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+						out.println(TemplatesAllMappings.captcha(request, request.getParameter("type").toString(), request.getParameter("site").toString()));
 				}
 				out.println("</div>");
 			}

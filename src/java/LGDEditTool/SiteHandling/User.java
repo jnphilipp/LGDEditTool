@@ -46,6 +46,9 @@ public final class User {
 
 	public void createUser(HttpServletRequest request) throws Exception {
 		Cookie[] cookies = request.getCookies();
+                
+                if ( cookies == null )
+                    return;
 
 		for ( int i = 0; i < cookies.length; i++ ) {
 			if ( cookies[i].getName().equals("lgd_username") )

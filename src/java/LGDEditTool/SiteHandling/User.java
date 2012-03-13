@@ -47,6 +47,9 @@ public final class User {
 	public void createUser(HttpServletRequest request) throws Exception {
 		Cookie[] cookies = request.getCookies();
 
+		if ( cookies == null )
+			return;
+
 		for ( int i = 0; i < cookies.length; i++ ) {
 			if ( cookies[i].getName().equals("lgd_username") )
 				this.username = cookies[i].getValue();
@@ -67,7 +70,7 @@ public final class User {
 		if ( this.loggedIn ) {
 			DatabaseBremen db = new DatabaseBremen();
 			db.connect();
-			Object[][] a = db.execute("SELECT admin FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");//this.username += "|" + a[0][0].toString();
+			Object[][] a = db.execute("SELECT admin FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");
 			this.admin = Boolean.parseBoolean(a[0][0].toString());
 			db.disconnect();
 		}
@@ -120,23 +123,4 @@ public final class User {
 		response.addCookie(u);
 		response.addCookie(l);
 	}
-
-	/*public static User createUser(HttpServletRequest request) throws Exception {
-		Cookie[] c = request.getCookies();
-		boolean create = false;
-		User user = User.getInstance();
-
-		
-		if ( c == null)
-			return user;
-
-		for ( int i = 0; i < c.length; i++ )
-			if ( c[i].getName().equals("lgd_username") )
-				create = true;
-
-		if ( create )
-			user.createUser(request);
-
-		return user;
-	}*/
 }

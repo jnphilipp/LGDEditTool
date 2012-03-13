@@ -12,3 +12,5 @@ ALTER TABLE lgd_map_resource_kv ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_kv_history(id);
 ALTER TABLE lgd_map_resource_kv_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_kv_history(id);
+
+ALTER TABLE lgd_user ADD CONSTRAINT username UNIQUE(username);

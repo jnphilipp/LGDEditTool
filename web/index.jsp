@@ -81,8 +81,11 @@
 
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
-				var s = document.getElementById(id + 'a');
 				var u = document.getElementById(id + 'u');
+
+				if ( id.indexOf("d") != -1 )
+					id = id.replace("d", "");
+				var s = document.getElementById(id + 'a');
 
 				if ( e.style.display == 'none' ) {
 					e.style.display = 'table-row';
@@ -103,8 +106,8 @@
 		<% if ( !message.equals("") ) {
 			out.println(TemplatesShowMessage.showMessage(message));
 		}
-if ( (user == null || !user.isLoggedIn()) /*&& !message.equals("Login successful.")*/ ) { %>
-		<div class="login" style="float: right;">
+if ( (user == null || !user.isLoggedIn()) ) { %>
+		<div class="login" style="right: 20px; position: absolute;">
 			<a>Login</a>
 			<article>
 				<fieldset>
@@ -126,8 +129,8 @@ if ( (user == null || !user.isLoggedIn()) /*&& !message.equals("Login successful
 			</article>
 		</div>
 		<% } else { %>
-		<div class="login" style="float: right;">
-			<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : request.getParameter("tab"))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
+		<div class="login" style="right: 20px; position: absolute;">
+			<a>Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : request.getParameter("tab"))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
@@ -163,7 +166,7 @@ if ( (user == null || !user.isLoggedIn()) /*&& !message.equals("Login successful
 				else {
 					out.println("<div class=\"pane\">");
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-						out.println(TemplatesSearch.captcha(request, search));
+					out.println(TemplatesSearch.captcha(request, search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
 					out.println(TemplatesSearch.searchResult(search, user));

@@ -40,11 +40,18 @@ a:hover { color: blue;
 	font-weight: bold;}
 
 table.table { border-collapse: collapse;
-	width: 100%;}
+	width: 100%;
+	max-width: 100%;
+	table-layout: fixed;}
 
 table.table th,
 table.table td { padding: 5px;
-	border: 1px solid #000;}
+	border: 1px solid #000;
+	overflow: hidden;}
+
+table.table td:hover { background: white;
+	color: red;
+	overflow: visible;}
 
 div { font-family: monospace;
 	font-size: 10pt;}
@@ -56,8 +63,6 @@ article.message { display: block;
 	position: fixed;
 	top: 0.5em;
 	left: 34%;
-	/*text-align: center;
-	margin: 0 auto;*/
 	width: 20em;
 	padding: 8px;
 	border: 1px solid rgba(93, 87, 98, 0.6);

@@ -37,7 +37,7 @@ public class TemplatesEditHistory {
     	/**
 	 * Template for EditHistory.
 	 */
-	static public String editHistory(int ksite,int kvsite,User user) {
+	static public String editHistory(String ksite,String kvsite,User user) {
 		al.clear();
                 
                 //kmappings
@@ -59,12 +59,21 @@ public class TemplatesEditHistory {
 		           
                 //insert edithistory from db for k-mappings
                 try{
-                    searchKHistoryDB(ksite,kvsite,user);
+                    searchKHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user);
                 }catch(Exception e){}
                 
                 //inser table foot
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
+                
+                if(Integer.valueOf(ksite)>1){
+                    Integer prevsite=Integer.valueOf(ksite)-1;
+                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">prev</a>\n\n "));
+                }
+                Integer nextsite=Integer.valueOf(ksite)+1;
+                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=history&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
+            
+            
                 
                 //kmappings
                 //insert tablehead
@@ -86,14 +95,20 @@ public class TemplatesEditHistory {
 		           
                 //insert edithistory from db for kv-mappings
                 try{
-                   searchKVHistoryDB(ksite,kvsite,user);
+                   searchKVHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user);
                 }catch(Exception e){}
                 
                 //inser table foot
                 tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);                
                 
-                
+                if(Integer.valueOf(kvsite)>1){
+                    Integer prevsite=Integer.valueOf(kvsite)-1;
+                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">prev</a>\n\n "));
+                }
+                Integer nextsite2=Integer.valueOf(kvsite)+1;
+                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n"));
+            
                 
                 
                 //array to string for return
@@ -116,7 +131,7 @@ public class TemplatesEditHistory {
                 //CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
 		Object[][] a = database.execute("SELECT k, property, object, count(k),user_id,comment,timestamp,history_id, id FROM lgd_map_resource_k_history GROUP BY k,property,object,user_id,comment,timestamp,history_id,id ORDER BY timestamp DESC Limit 10 OFFSET "+((ksite-1)*10));
                 
-		for ( int i = 0; i <  20; i++ ) {
+		for ( int i = 0; i <  10; i++ ) {
                     String action=new String("");
                     int flag=0;
                     Object[][] b = database.execute("SELECT * FROM lgd_map_resource_k WHERE last_history_id="+(a[i][8].toString()));
@@ -126,7 +141,7 @@ public class TemplatesEditHistory {
                     if(b.length == 0 && c.length == 0){action="delete";}else{action="edit";}
 			addkMapping(i,a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(),action,a[i][4].toString(),a[i][5].toString(),a[i][6].toString(),user,ksite,kvsite);
 		}
-
+                
 		database.disconnect();
            
         }

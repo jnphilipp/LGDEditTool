@@ -120,7 +120,7 @@ static public String listAllMappings(String type,String site,User user) {
 		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k GROUP BY k,property,object ORDER BY k Limit 20 OFFSET "+((site-1)*20));
 
 		for ( int i = 0; i <  20; i++ ) {
-			addkMapping(i,a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[0][3].toString(),user,site);
+			addkMapping(i,a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(),user,site);
 		}
 
 		database.disconnect();
@@ -134,7 +134,7 @@ static public String listAllMappings(String type,String site,User user) {
 		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k,v,property,object ORDER BY k,v Limit 20 OFFSET "+((site-1)*20));
 
 		for ( int i = 0; i < 20; i++ ) {
-			addkvMapping(i,a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[0][4].toString(),user,site);
+			addkvMapping(i,a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(),user,site);
 		}
 
 		database.disconnect();
@@ -171,22 +171,7 @@ static private void addkMapping(int id,String k, String property, String object,
     s += "\t\t\t\t\t\t\t<td><a>Delete</a></td>\n";
     s += "\t\t\t\t\t\t</tr>\n";
     
-    if ( user == null ) {
-        s += "\t\t\t\t\t\t<tr id=\"k" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
-        s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-        s += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-        s += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" required />\n";
-        s += "\t\t\t\t\t\t\t</td>\n";
-        s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-        s += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-        s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-        s += "\t\t\t\t\t\t\t</td>\n";
-        s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-        s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />";
-        s += "\t\t\t\t\t\t\t</td>\n";
-        s += "\t\t\t\t\t\t</tr>\n";
-    }
-    else if ( !user.isLoggedIn() ) {
+    if ( !user.isLoggedIn() ) {
         s += "\t\t\t\t\t\t<tr id=\"k" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
 	s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
 	s += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
@@ -253,22 +238,7 @@ static private void addkvMapping(int id,String k, String v, String property, Str
     s += "\t\t\t\t\t\t\t<td><a>Delete</a></td>\n";
     s += "\t\t\t\t\t\t</tr>\n";
 
-    if ( user == null ) {
-	s += "\t\t\t\t\t\t<tr id=\"kv" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
-	s += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
-	s += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-	s += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" required />\n";
-	s += "\t\t\t\t\t\t\t</td>\n";
-	s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-	s += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-	s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-	s += "\t\t\t\t\t\t\t</td>\n";
-	s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />";
-	s += "\t\t\t\t\t\t\t</td>\n";
-        s += "\t\t\t\t\t\t</tr>\n";
-    }
-    else if ( !user.isLoggedIn() ) {
+    if ( !user.isLoggedIn() ) {
 	s += "\t\t\t\t\t\t<tr id=\"kv" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
 	s += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
 	s += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
@@ -279,7 +249,7 @@ static private void addkvMapping(int id,String k, String v, String property, Str
 	s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
 	s += "\t\t\t\t\t\t\t</td>\n";
 	s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />";
+	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />";
 	s += "\t\t\t\t\t\t\t</td>\n";
 	s += "\t\t\t\t\t\t</tr>\n";
     }
@@ -290,7 +260,7 @@ static private void addkvMapping(int id,String k, String v, String property, Str
         s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
         s += "\t\t\t\t\t\t\t</td>\n";
         s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-        s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />\n";
+        s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />\n";
         s +=  "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\""+ user.getUsername() + "\"/>\n";
         s += "\t\t\t\t\t\t\t</td>\n";
         s += "\t\t\t\t\t\t</tr>\n";
@@ -308,27 +278,33 @@ static private void addkvMapping(int id,String k, String v, String property, Str
 		re += "\t\t\t\t\t<form action=\"?tab=all&type="+ type +"&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
 		re += "\t\t\t\t\t\t<ul>\n";
 		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
-		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"" + (request.getParameter("kmapping") != null ? "kmapping" : "kvmapping") + "\" value=\"Send\" /></li>\n";
+		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"" + (request.getParameter("kmapping") != null ? "kmapping" : "kvmapping") + "captcha\" value=\"Send\" /></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 
 		if ( request.getParameter("kmapping") != null ) {
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
+                        re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
+                        if ( !request.getParameter("kmapping").equals("Delete") ) {
+                            re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
+                            re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
+                        }
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kmapping\" value=\"" + request.getParameter("kmapping") + "\" />\n";
 		}
 		else if ( request.getParameter("kvmapping") != null ) {
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + request.getParameter("v") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
+			if ( !request.getParameter("kvmapping").equals("Delete") ) {
+                            re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
+                            re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
+                        }
+                        re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kvmapping\" value=\"" + request.getParameter("kvmapping") + "\" />\n";
 		}
 
 		re += "\t\t\t\t\t</form>\n";

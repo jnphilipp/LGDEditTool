@@ -202,7 +202,10 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("history") ) {
 				out.println("<div class=\"pane\">");
-				out.println(TemplatesEditHistory.editHistory());
+				out.println(TemplatesEditHistory.editHistory(1,1,user));
+                                if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+				out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite").toString(), request.getParameter("kvsite").toString()));
+				
 				out.println("</div>");
 			}
 			else if ( request.getParameter("tab").toString().equals("settings") ) {

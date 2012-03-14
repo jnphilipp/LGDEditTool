@@ -79,7 +79,7 @@ public class RequestHandling {
 
 			database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
 
-			re = "Successful changed K-Mapping.";
+			re = "K-Mapping successfully changed.";
 		}///////////////////////////////////////////////////////////////////////////
 		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
@@ -90,7 +90,7 @@ public class RequestHandling {
 
 			database.execute("DELETE FROM lgd_map_resource_k WHERE object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND k='" + request.getParameter("k") + "'");
 
-			re = "Successful deleted K-Mapping.";
+			re = "K-Mapping successfully deleted.";
 		}///////////////////////////////////////////////////////////////////////
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Save") && request.getParameter("k") != null  && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
@@ -101,7 +101,7 @@ public class RequestHandling {
 
 			database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
 
-			re = "Successful changed KV-Mapping.";
+			re = "KV-Mapping successfully changed.";
 		}///////////////////////////////////////////////////////////////////////////
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
@@ -112,7 +112,7 @@ public class RequestHandling {
 
 			database.execute("DELETE FROM lgd_map_resource_kv WHERE object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "'");
 
-			re = "Successful deleted KV-Mapping.";
+			re = "KV-Mapping successfully deleted.";
 		}///////////////////////////////////////////////////////////////////////////
 		else if ( request.getParameter("kmappingedit") != null && request.getParameter("kmappingedit").equals("Restore") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("auser") != null && request.getParameter("comment") != null && request.getParameter("acomment") != null && request.getParameter("timestamp") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
@@ -141,7 +141,7 @@ public class RequestHandling {
 
 				database.execute("INSERT INTO lgd_map_resource_k VALUES('" + request.getParameter("k") + "', '" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', " + a[0][0] + ")");
 
-				re = "Successfully restored deleted K-Mapping.";
+				re = "Deleted K-Mapping successfully restored.";
 			}
 			else {
 				String k = a[0][0].toString();
@@ -151,7 +151,7 @@ public class RequestHandling {
 
 				database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND object='" + object + "' AND property='" + property + "'");
 
-				re = "Successfully restored edited K-Mapping";
+				re = "Edited K-Mapping successfully restored.";
 			}
 		}///////////////////////////////////////////////////////////////////////////
 		else if ( request.getParameter("kvmappingedit") != null && request.getParameter("kvmappingedit").equals("Restore") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("auser") != null && request.getParameter("comment") != null && request.getParameter("acomment") != null && request.getParameter("timestamp") != null ) {
@@ -181,7 +181,7 @@ public class RequestHandling {
 
 				database.execute("INSERT INTO lgd_map_resource_kv VALUES('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', " + a[0][0] + ")");
 
-				re = "Successfully restored deleted KV-Mapping.";
+				re = "Deleted KV-Mapping successfully restored.";
 			}
 			else {
 				String k = a[0][0].toString();
@@ -192,7 +192,7 @@ public class RequestHandling {
 
 				database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND v='" + v + "' AND object='" + object + "' AND property='" + property + "'");
 
-				re = "Successfully restored edited K-Mapping";
+				re = "Edited KV-Mapping successfully restored.";
 			}
 		}
 

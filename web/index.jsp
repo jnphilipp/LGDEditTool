@@ -182,7 +182,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
-				out.println(TemplatesUnmappedTags.unmappedTags("1", "1"));
+				out.println(TemplatesUnmappedTags.unmappedTags("1"));
 				out.println("</div>");
 			}
 			else if ( request.getParameter("tab").toString().equals("all") ) {

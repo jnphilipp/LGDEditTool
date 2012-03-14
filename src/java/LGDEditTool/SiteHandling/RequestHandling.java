@@ -120,14 +120,14 @@ public class RequestHandling {
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
 			String user_id = a[0][0].toString();
 
-			a = database.execute("SELECT id FROM lgd_map_resource_k_history WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user='" + request.getParameter("user") + "' AND comment='" + request.getParameter("comment") + "'");
+			a = database.execute("SELECT id FROM lgd_map_resource_k_history WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user_id='" + request.getParameter("auser") + "' AND comment='" + request.getParameter("acomment") + "'");
 			String hid = a[0][0].toString();
 			while ( true ) {
 				a = database.execute("SELECT k, object, property FROM lgd_map_resource_k WHERE last_history_id="+hid);
 
-				if ( a == null ) {
+				if ( a.length == 0 ) {
 					a = database.execute("SELECT id FROM lgd_map_resource_k_history WHERE history_id="+hid);
-					if ( a == null )
+					if ( a.length == 0 )
 						break;
 					else
 						hid = a[0][0].toString();
@@ -136,10 +136,10 @@ public class RequestHandling {
 					break;
 			}
 
-			if ( a == null ) {
-				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '', '', '', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id)");
+			if ( a.length == 0 ) {
+				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_k_history), '', '', '', '" + user_id + "', '" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id");
 
-				database.execute("INSERT INTO lgd_map_resource_k VALUES('" + request.getParameter("k") + "', '" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', " + a[0][0] + ")");
+				database.execute("INSERT INTO lgd_map_resource_k VALUES('" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', " + a[0][0] + ")");
 
 				re = "Deleted K-Mapping successfully restored.";
 			}
@@ -147,7 +147,7 @@ public class RequestHandling {
 				String k = a[0][0].toString();
 				String object = a[0][1].toString();
 				String property = a[0][2].toString();
-				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '" + k + "', '" + object + "', '" + property + "', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id)");
+				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_k_history), '" + k + "', '" + object + "', '" + property + "', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id");
 
 				database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND object='" + object + "' AND property='" + property + "'");
 
@@ -160,14 +160,14 @@ public class RequestHandling {
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
 			String user_id = a[0][0].toString();
 
-			a = database.execute("SELECT id FROM lgd_map_resource_kv_history WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user='" + request.getParameter("user") + "' AND comment='" + request.getParameter("comment") + "'");
+			a = database.execute("SELECT id FROM lgd_map_resource_kv_history WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user_id='" + request.getParameter("auser") + "' AND comment='" + request.getParameter("acomment") + "'");
 			String hid = a[0][0].toString();
 			while ( true ) {
 				a = database.execute("SELECT k, v, object, property FROM lgd_map_resource_kv WHERE last_history_id="+hid);
 
-				if ( a == null ) {
+				if ( a.length == 0 ) {
 					a = database.execute("SELECT id FROM lgd_map_resource_kv_history WHERE history_id="+hid);
-					if ( a == null )
+					if ( a.length == 0 )
 						break;
 					else
 						hid = a[0][0].toString();
@@ -176,10 +176,10 @@ public class RequestHandling {
 					break;
 			}
 
-			if ( a == null ) {
-				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '', '', '', '', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id)");
+			if ( a.length == 0 ) {
+				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '', '', '', '', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id");
 
-				database.execute("INSERT INTO lgd_map_resource_kv VALUES('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', " + a[0][0] + ")");
+				database.execute("INSERT INTO lgd_map_resource_kv VALUES('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', " + a[0][0] + ")");
 
 				re = "Deleted KV-Mapping successfully restored.";
 			}
@@ -188,7 +188,7 @@ public class RequestHandling {
 				String v = a[0][1].toString();
 				String object = a[0][2].toString();
 				String property = a[0][3].toString();
-				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '" + k + "', '" + v + "', '" + object + "', '" + property + "', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id)");
+				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '" + k + "', '" + v + "', '" + object + "', '" + property + "', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id");
 
 				database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND v='" + v + "' AND object='" + object + "' AND property='" + property + "'");
 

@@ -321,7 +321,7 @@ static private void addkvMapping(int id,String k, String v, String property, Str
 		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"" + (request.getParameter("kmappingedit") != null ? "kmapping" : "kvmapping") + "captcha\" value=\"Send\" /></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 
-		if ( request.getParameter("kmapping") != null ) {
+		if ( request.getParameter("kmappingedit") != null ) {
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
 			
@@ -329,19 +329,19 @@ static private void addkvMapping(int id,String k, String v, String property, Str
 			
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kmapping\" value=\"" + request.getParameter("kmapping") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kmappingedit\" value=\"" + request.getParameter("kmappingedit") + "\" />\n";
                         re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"auser\" value=\"" + request.getParameter("auser") + "\" />\n";
                         re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"acomment\" value=\"" + request.getParameter("acomment") + "\" />\n";
                         re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"timestamp\" value=\"" + request.getParameter("timestamp") + "\" />\n";
 		}
-		else if ( request.getParameter("kvmapping") != null ) {
+		else if ( request.getParameter("kvmappingedit") != null ) {
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + request.getParameter("v") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
 			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kvmapping\" value=\"" + request.getParameter("kvmapping") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kvmappingedit\" value=\"" + request.getParameter("kvmappingedit") + "\" />\n";
                         re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"auser\" value=\"" + request.getParameter("auser") + "\" />\n";
                         re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"acomment\" value=\"" + request.getParameter("acomment") + "\" />\n";
                         re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"timestamp\" value=\"" + request.getParameter("timestamp") + "\" />\n";

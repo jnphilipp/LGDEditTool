@@ -41,13 +41,15 @@ a:hover { color: blue;
 
 table.table { border-collapse: collapse;
 	width: 100%;
-	max-width: 100%;
-	table-layout: fixed;}
+	max-width: 100%;}
 
 table.table th,
 table.table td { padding: 5px;
+	width: auto;
 	border: 1px solid #000;
-	overflow: hidden;}
+	overflow: hidden;
+	white-space: pre-line;
+	word-break: break-all;}
 
 table.table td:hover { background: white;
 	color: red;

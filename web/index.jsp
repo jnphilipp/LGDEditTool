@@ -182,7 +182,12 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
-				out.println(TemplatesUnmappedTags.unmappedTags("1"));
+                                if(request.getParameter("ksite")==null || request.getParameter("kvsite")==null){
+                                    out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
+                                }else{
+                                    out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+                                }
+				
 				out.println("</div>");
 			}
 			else if ( request.getParameter("tab").toString().equals("all") ) {

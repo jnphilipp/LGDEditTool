@@ -20,8 +20,9 @@ package LGDEditTool.Templates;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
-import LGDEditTool.SiteHandling.User;
+import LGDEditTool.Functions;
 import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.SiteHandling.User;
 
 /**
  *
@@ -79,8 +80,8 @@ public class TemplatesSearch {
 		for ( int i = 0; i < a.length; i++ ) {
 			re += "\t\t\t\t\t<tr id=\"k" + i + "a\">\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][1].toString()) + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][2].toString()) + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Delete</a></td>\n";
@@ -229,8 +230,8 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t<tr id=\"kv" + i + "a\">\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][2].toString()) + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][3].toString()) + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][4] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Delete</a></td>\n";

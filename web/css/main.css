@@ -45,7 +45,7 @@ table.table { border-collapse: collapse;
 
 table.table th,
 table.table td { padding: 5px;
-	width: auto;
+	max-width: 10%;
 	border: 1px solid #000;
 	overflow: hidden;
 	white-space: pre-line;

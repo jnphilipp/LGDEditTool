@@ -17,6 +17,7 @@
 
 package LGDEditTool.Templates;
 
+import LGDEditTool.Functions;
 import java.util.ArrayList;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
@@ -183,10 +184,10 @@ public class TemplatesEditHistory {
 static private void addkMapping(int id,String k, String property, String object, String affectedEntities,String action,String user_id,String comment,String timestamp,User user,int ksite,int kvsite) {
     String s = new String();
     s += "\t\t\t\t\t<tr id=\"k" + id + "a\">\n";
-    s += "\t\t\t\t\t\t<td>" + timestamp + "</td>\n";
+    s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + property + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + object + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
@@ -196,7 +197,7 @@ static private void addkMapping(int id,String k, String property, String object,
     s += "\t\t\t\t\t<form action=\"?tab=history&ksite="+ ksite +"&kvsite=" + kvsite + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     //s += "\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site +((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-    s += "\t\t\t\t\t\t<td>" + timestamp + "</td>\n";
+    s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
@@ -259,11 +260,11 @@ static private void addkMapping(int id,String k, String property, String object,
 static private void addkvMapping(int id,String k, String v, String property, String object, String affectedEntities,String action,String user_id,String comment,String timestamp,User user,int ksite,int kvsite) {
     String s = new String();
     s += "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
-    s += "\t\t\t\t\t\t<td>" + timestamp + "</td>\n";
+    s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + property + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + object + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
@@ -274,7 +275,7 @@ static private void addkvMapping(int id,String k, String v, String property, Str
     s += "\t\t\t\t\t<form action=\"?tab=history&ksite="+ ksite +"&kvsite=" + kvsite + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     //s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-    s += "\t\t\t\t\t\t<td>" + timestamp + "</td>\n";
+    s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";

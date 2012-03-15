@@ -17,12 +17,14 @@
 
 package LGDEditTool.Templates;
 
-import LGDEditTool.db.DatabaseBremen;
 import java.util.ArrayList;
-import LGDEditTool.SiteHandling.User;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
+import LGDEditTool.Functions;
+import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.SiteHandling.User;
+
 /**
 *
 * @author Alexander Richter
@@ -152,8 +154,8 @@ static private void addkMapping(int id,String k, String property, String object,
     String s = new String();
     s += "\t\t\t\t\t<tr id=\"k" + id + "a\">\n";
     s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + property + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + object + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Edit</a></td>\n";
     s += "\t\t\t\t\t\t<td><a>Delete</a></td>\n";
@@ -217,8 +219,8 @@ static private void addkvMapping(int id,String k, String v, String property, Str
     s += "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
     s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + property + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + object + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Edit</a></td>\n";
     s += "\t\t\t\t\t\t<td><a>Delete</a></td>\n";

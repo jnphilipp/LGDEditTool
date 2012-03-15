@@ -52,13 +52,14 @@ public class TemplatesUnmappedTags {
        al.add(new String("\t\t\t\t</table>\n<br />"));
        
        //show more
+       al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));   
        if(Integer.valueOf(ksite)>1){
                     Integer prevsite=Integer.valueOf(ksite)-1;
-                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">prev</a>\n\n "));
+                    al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
                 }
                 Integer nextsite=Integer.valueOf(ksite)+1;
-                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
-            
+                al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
+        al.add(new String("\t\t\t\t</div>\n"));    
                 
        //kmapping table
         String tableHead2 = "\t\t\t\t<table class=\"table\">\n";
@@ -74,13 +75,14 @@ public class TemplatesUnmappedTags {
        al.add(new String("\t\t\t\t</table>\n<br />"));
        
        //show more
+       al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));  
        if(Integer.valueOf(kvsite)>1){
                     Integer prevsite=Integer.valueOf(kvsite)-1;
-                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">prev</a>\n\n "));
+                    al.add(new String(" \t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
                     }
                     Integer nextsite2=Integer.valueOf(kvsite)+1;
-                    al.add(new String("\n\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n"));
-            
+                    al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n"));
+        al.add(new String("\t\t\t\t</div>\n"));        
        
         
        for(int i=0;i<al.size();i++){s+=al.get(i);}

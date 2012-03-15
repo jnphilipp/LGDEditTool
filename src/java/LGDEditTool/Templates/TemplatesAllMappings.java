@@ -158,7 +158,7 @@ static private void addkMapping(int id,String k, String property, String object,
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Edit</a></td>\n";
-    s += "\t\t\t\t\t\t<td><a>Delete</a></td>\n";
+    s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + id + "')\">Delete</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
     s += "\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site +((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
@@ -201,6 +201,51 @@ static private void addkMapping(int id,String k, String property, String object,
 	s += "\t\t\t\t\t\t</tr>\n";
     } 
     s += "\t\t\t\t\t</form>\n";
+    
+    //delete
+    s += "\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t\t<tr id=\"kd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+    s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + id + "')\">Hide</a></td>\n";
+    s += "\t\t\t\t\t\t</tr>\n";
+
+
+	if ( !user.isLoggedIn() ) {
+		s += "\t\t\t\t\t\t<tr id=\"kd" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+		s += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
+		s += "\t\t\t\t\t\t\t</td>\n";
+		s += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
+		s += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+		s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+		s += "\t\t\t\t\t\t\t</td>\n";
+		s += "\t\t\t\t\t\t\t<td align=\"center\">\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
+		s += "\t\t\t\t\t\t\t</td>\n";
+		s += "\t\t\t\t\t\t</tr>\n";
+	}
+	else {
+		s += "\t\t\t\t\t\t<tr id=\"kd" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t\t<td colspan=\"5\" align=\"center\">\n";
+		s += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+		s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required >No comment.</textarea>\n";
+		s += "\t\t\t\t\t\t\t</td>\n";
+		s += "\t\t\t\t\t\t\t<td align=\"center\">\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
+		s += "\t\t\t\t\t\t\t</td>\n";
+		s += "\t\t\t\t\t\t</tr>\n";
+	}
+
+	s += "\t\t\t\t\t</form>\n";
     al.add(s);
 
 }
@@ -223,7 +268,7 @@ static private void addkvMapping(int id,String k, String v, String property, Str
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Edit</a></td>\n";
-    s += "\t\t\t\t\t\t<td><a>Delete</a></td>\n";
+    s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Delete</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
     s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
@@ -267,6 +312,53 @@ static private void addkvMapping(int id,String k, String v, String property, Str
         s += "\t\t\t\t\t\t\t</td>\n";
         s += "\t\t\t\t\t\t</tr>\n";
     }
+    s += "\t\t\t\t\t</form>\n";
+    
+    //delete
+    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+    s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Hide</a></td>\n";
+    s += "\t\t\t\t\t\t</tr>\n";
+
+
+    if ( !user.isLoggedIn() ) {
+        s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
+	s += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
+	s += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+	s += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
+	s += "\t\t\t\t\t\t\t</td>\n";
+	s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+	s += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+	s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+	s += "\t\t\t\t\t\t\t</td>\n";
+	s += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
+	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
+	s += "\t\t\t\t\t\t\t</td>\n";
+	s += "\t\t\t\t\t\t</tr>\n";
+    }
+    else {
+	s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
+	s += "\t\t\t\t\t\t\t<td colspan=\"5\" align=\"center\">\n";
+	s += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+	s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+	s += "\t\t\t\t\t\t\t</td>\n";
+	s += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
+	s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
+	s += "\t\t\t\t\t\t\t</td>\n";
+	s += "\t\t\t\t\t\t</tr>\n";
+    }
+
     s += "\t\t\t\t\t</form>\n";
 
     

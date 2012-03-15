@@ -90,23 +90,24 @@ static public String listAllMappings(String type,String site,User user) {
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
             //show more
-                
+            al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));    
             if(type.equalsIgnoreCase("k")){
                 if(Integer.valueOf(site)>1){
                     Integer prevsite=Integer.valueOf(site)-1;
-                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=all&type=k&site="+ prevsite.toString() + "\">prev</a>\n\n "));
+                    al.add(new String(" \t\t\t\t\t<a href=\"?tab=all&type=k&site="+ prevsite.toString() + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
                 }
                 Integer nextsite=Integer.valueOf(site)+1;
-                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=k&site="+ nextsite.toString() + "\">next</a>\n"));
+                al.add(new String("\t\t\t\t\t<a href=\"?tab=all&type=k&site="+ nextsite.toString() + "\">next</a>\n"));
             }
-            if(type.equalsIgnoreCase("kv")){
+            else if(type.equalsIgnoreCase("kv")){
                 if(Integer.valueOf(site)>1){
                     Integer prevsite=Integer.valueOf(site)-1;
-                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ prevsite.toString() + "\">prev</a>\n "));
+                    al.add(new String("\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ prevsite.toString() + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
                 }
                 Integer nextsite=Integer.valueOf(site)+1;
-                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">next</a>\n"));
+                al.add(new String("\t\t\t\t\t<a href=\"?tab=all&type=kv&site="+ nextsite.toString() + "\">next</a>\n"));
             }
+            al.add(new String("\t\t\t\t</div>\n"));
             
             for(int i=0;i<al.size();i++){s+=al.get(i);}
             al.clear();

@@ -17,13 +17,13 @@
 
 package LGDEditTool.Templates;
 
-import LGDEditTool.Functions;
 import java.util.ArrayList;
-import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
+import LGDEditTool.Functions;
+import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.SiteHandling.User;
 
 /**
  *
@@ -67,12 +67,15 @@ public class TemplatesEditHistory {
                 String tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);
                 
-                if(Integer.valueOf(ksite)>1){
+
+								al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));
+								if ( Integer.valueOf(ksite)>1 ) {
                     Integer prevsite=Integer.valueOf(ksite)-1;
-                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">prev</a>\n\n "));
-                }
+                    al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp;"));
+								}
                 Integer nextsite=Integer.valueOf(ksite)+1;
-                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=history&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
+                al.add(new String("<a href=\"?tab=history&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next&#62;</a>\n"));
+								al.add(new String("\t\t\t\t</div>\n"));
             
             
                 
@@ -102,13 +105,15 @@ public class TemplatesEditHistory {
                 //inser table foot
                 tableFoot = "\t\t\t\t</table>\n";
                 al.add(tableFoot);                
-                
+
+								al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));
                 if(Integer.valueOf(kvsite)>1){
                     Integer prevsite=Integer.valueOf(kvsite)-1;
-                    al.add(new String(" \n\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">prev</a>\n\n "));
+                    al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp;"));
                 }
                 Integer nextsite2=Integer.valueOf(kvsite)+1;
-                al.add(new String("\n\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n"));
+                al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next&#62;</a>\n"));
+								al.add(new String("\t\t\t\t</div>\n"));
             
                 
                 
@@ -227,7 +232,7 @@ static private void addkMapping(int id,String k, String property, String object,
 	s += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
 	s += "\t\t\t\t\t\t\t</td>\n";
 	s += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
-	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmappingedit\" value=\"Restore\" />";
+	s += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmappingedit\" value=\"Restore\" />\n";
 	s += "\t\t\t\t\t\t\t</td>\n";
 	s += "\t\t\t\t\t\t</tr>\n";
     }

@@ -40,7 +40,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<form method=\"get\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<ul>\n";
 		re += "\t\t\t\t\t\t\t<li>\n";
-		re += "\t\t\t\t\t\t\t\t<label>Suche:</label>\n";
+		re += "\t\t\t\t\t\t\t\t<label>Search:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"text\" id=\"search\" name=\"search\" required />\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"tab\" value=\"search\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" />\n";
@@ -63,6 +63,16 @@ public class TemplatesSearch {
 
 		database.connect();
 
+		re += kMapping(database, user, search);
+		re += "\n\t\t\t\t<br /><br />\n\n";
+		re += kvMapping(database, user, search);
+
+		database.disconnect();
+		return re;
+	}
+
+	private static String kMapping(DatabaseBremen database, User user, String search) throws Exception {
+		String re = "";
 		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE k='" + search + "' GROUP BY k, object, property ORDER BY k");
 
 		//K-Mappings
@@ -88,130 +98,115 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + a[i][1] + "\" style=\"width: 27em;\" required /></td>\n";
-			re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + a[i][2] + "\" style=\"width: 27em;\" required /></td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + a[i][0] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + a[i][1] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + a[i][2] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
-			re += "\t\t\t\t\t\t</tr>\n";
-
-			if ( user == null ) {
-				re += "\t\t\t\t\t\t<tr id=\"k" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else if ( !user.isLoggedIn() ) {
-				re += "\t\t\t\t\t\t<tr id=\"k" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else {
-				re += "\t\t\t\t\t\t<tr id=\"k" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"4\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-
-			re += "\t\t\t\t\t</form>\n";
-			//########################################################################
-
+			re += kMappingEdit(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString());
 			//delete
-			re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			re += "\t\t\t\t\t\t<tr id=\"kd" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + a[i][0] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + a[i][1] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + a[i][2] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Hide</a></td>\n";
-			re += "\t\t\t\t\t\t</tr>\n";
-
-
-			if ( user == null ) {
-				re += "\t\t\t\t\t\t<tr id=\"kd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else if ( !user.isLoggedIn() ) {
-				re += "\t\t\t\t\t\t<tr id=\"kd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else {
-				re += "\t\t\t\t\t\t<tr id=\"kd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"4\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required >No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-
-			re += "\t\t\t\t\t</form>\n";
+			re += kMappingDelete(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString());
 		}
 
-		re += "\t\t\t\t</table>\n\n\t\t\t\t<br /><br />\n\n";
+		re += "\t\t\t\t</table>\n";
+		return re;
+	}
 
+	private static String kMappingEdit(String search, User user, int i, String k, String property, String object, String affectedEntities) {
+		String re = "";
 
-		a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search + "' GROUP BY object, property, k, v ORDER BY k, v");
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+
+		if ( !user.isLoggedIn() ) {
+			re += "\t\t\t\t\t\t<tr id=\"k" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+		else {
+			re += "\t\t\t\t\t\t<tr id=\"k" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"4\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Save\" />\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+
+		re += "\t\t\t\t\t</form>\n";
+		return re;
+	}
+
+	private static String kMappingDelete(String search, User user, int i, String k, String property, String object, String affectedEntities) {
+		String re = "";
+
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"kd" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+
+		if ( !user.isLoggedIn() ) {
+			re += "\t\t\t\t\t\t<tr id=\"kd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+		else {
+			re += "\t\t\t\t\t\t<tr id=\"kd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"4\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required >No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kmapping\" value=\"Delete\" />\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+
+		re += "\t\t\t\t\t</form>\n";
+
+		return re;
+	}
+
+	private static String kvMapping(DatabaseBremen database, User user, String search) throws Exception {
+		String re = "";
+		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search + "' GROUP BY object, property, k, v ORDER BY k, v");
 
 		//KV-Mappings
 		re += "\t\t\t\t<h2>KV-Mappings</h2>\n";
@@ -238,132 +233,115 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			re += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + a[i][2] + "\" style=\"width: 23em;\" /></td>\n";
-			re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + a[i][3] + "\" style=\"width: 23em;\" /></td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][4] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + a[i][0] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + a[i][1] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + a[i][2] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + a[i][3] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
-			re += "\t\t\t\t\t\t</tr>\n";
-
-			if ( user == null ) {
-				re += "\t\t\t\t\t\t<tr id=\"kv" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else if ( !user.isLoggedIn() ) {
-				re += "\t\t\t\t\t\t<tr id=\"kv" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else {
-				re += "\t\t\t\t\t\t<tr id=\"kv" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"5\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-
-			re += "\t\t\t\t\t</form>\n";
-			//########################################################################
-
+			re += kvMappingEdit(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString(), a[0][4].toString());
 			//delete
-			re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>" + a[i][4] + "</td>\n";
-			re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + a[i][0] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + a[i][1] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + a[i][2] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + a[i][3] + "\" />\n";
-			re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Hide</a></td>\n";
-			re += "\t\t\t\t\t\t</tr>\n";
-
-
-			if ( user == null ) {
-				re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else if ( !user.isLoggedIn() ) {
-				re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-			else {
-				re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"5\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-				re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-				re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
-				re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
-				re += "\t\t\t\t\t\t\t</td>\n";
-				re += "\t\t\t\t\t\t</tr>\n";
-			}
-
-			re += "\t\t\t\t\t</form>\n";
+			re += kvMappingDelete(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString(), a[0][4].toString());
 		}
 
 		re += "\t\t\t\t</table>";
+
+		return re;
+	}
+
+	private static String kvMappingEdit(String search, User user, int i, String k, String v, String property, String object, String affectedEntities) {
+		String re = "";
+
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+
+		if ( !user.isLoggedIn() ) {
+			re += "\t\t\t\t\t\t<tr id=\"kv" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+		else {
+			re += "\t\t\t\t\t\t<tr id=\"kv" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"5\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Save\" />\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+
+		re += "\t\t\t\t\t</form>\n";
+
+		return re;
+	}
+
+	private static String kvMappingDelete(String search, User user, int i, String k, String v, String property, String object, String affectedEntities) {
+		String re = "";
+
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+
+		if ( !user.isLoggedIn() ) {
+			re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"3\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + user.getUsername() + "\" required />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+		else {
+			re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "u\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"5\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"kvmapping\" value=\"Delete\" />";
+			re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + user.getUsername() + "\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+
+		re += "\t\t\t\t\t</form>\n";
+
 		return re;
 	}
 

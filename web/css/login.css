@@ -65,8 +65,7 @@ div.login fieldset label { font-family: monospace;
 	color: black;}
 
 div.login fieldset input[type=password],
-div.login fieldset input[type=text] { 
-	border: 1px solid rgba(106, 105, 106, 0.6);
+div.login fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
 	font-family: monospace;
 	width: 15em;}
 

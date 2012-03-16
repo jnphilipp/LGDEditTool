@@ -47,7 +47,14 @@ try {
 	}*/
 
 	//Object[][] a = database.execute("SELECT k, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_k WHERE k=(lgd_map_resource_kv.k)) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('%" + query.toUpperCase() + "%') OR UPPER(v) LIKE UPPER('%" + query.toUpperCase() + "%') GROUP BY k, v  ORDER BY k, v");
-	Object[][] a = database.execute("SELECT k,v,COUNT(k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('" +query.toUpperCase() +"%') OR UPPER(v) LIKE UPPER('" + query.toUpperCase() + "%') GROUP BY k,v UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_resource_k WHERE UPPER(k) LIKE UPPER('" + query.toUpperCase() + "%') GROUP BY k ORDER BY k, v");
+
+	if ( query.contains("*") )
+		query = query.replaceAll("\\*", "%");
+
+	if ( !query.endsWith("%") )
+		query += "%";
+
+	Object[][] a = database.execute("SELECT k,v,COUNT(k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('" +query.toUpperCase() +"') OR UPPER(v) LIKE UPPER('" + query.toUpperCase() + "') GROUP BY k,v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE UPPER(k) LIKE UPPER('" + query.toUpperCase() + "')) FROM lgd_map_resource_k WHERE UPPER(k) LIKE UPPER('" + query.toUpperCase() + "') GROUP BY k ORDER BY k, v");
 
 	for ( int i = 0; i < a.length; i++ ) {
 		out.println(a[i][0].toString() + " (" + (a[i][1].toString().equals("") ? "" : (a[i][1].toString() + ", ")) + a[i][2].toString() + ")");

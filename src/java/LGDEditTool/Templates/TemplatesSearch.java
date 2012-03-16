@@ -63,7 +63,7 @@ public class TemplatesSearch {
 
 		database.connect();
 
-		re += kMapping(database, user, search);
+		re += kMapping(database, user, (search.contains("-") ? search.split("-")[0] : search ));
 		re += "\n\t\t\t\t<br /><br />\n\n";
 		re += kvMapping(database, user, search);
 
@@ -206,7 +206,11 @@ public class TemplatesSearch {
 
 	private static String kvMapping(DatabaseBremen database, User user, String search) throws Exception {
 		String re = "";
-		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search + "' GROUP BY object, property, k, v ORDER BY k, v");
+		Object[][] a;
+		if ( search.contains("-") )
+			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' GROUP BY object, property, k, v ORDER BY k, v");
+		else
+			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search + "' GROUP BY object, property, k, v ORDER BY k, v");
 
 		//KV-Mappings
 		re += "\t\t\t\t<h2>KV-Mappings</h2>\n";

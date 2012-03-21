@@ -61,14 +61,14 @@ public class TemplatesUnmappedTags {
                 al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
         al.add(new String("\t\t\t\t</div>\n"));    
                 
-       //kmapping table
+       //kvmapping table
         String tableHead2 = "\t\t\t\t<table class=\"table\">\n";
 		tableHead2 += "\t\t\t\t\t<tr class=mapping>\n";
 		tableHead2 += "\t\t\t\t\t\t<th>k</th>\n";
 		tableHead2 += "\t\t\t\t\t\t<th>v</th>\n";
 		tableHead2 += "\t\t\t\t\t\t<th>dusage_count</th>\n";		
 		tableHead2 += "\t\t\t\t\t</tr>\n";
-		al.add(tableHead);
+		al.add(tableHead2);
        try{
            listAllkv(Integer.valueOf(kvsite));
        }catch(Exception e){}

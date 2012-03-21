@@ -26,35 +26,50 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import LGDEditTool.Functions;
+import LGDEditTool.SiteHandling.User;
+import LGDEditTool.db.DatabaseBremen;
 /**
  *
  * @author Alexander Richter
  */
 public class TemplatesOntology {
     
-    static public String ontologie(String tag){
+    static public String ontologie(User user,String tag){
         String s=new String("");
-        
-        s +="<br>"+tag;
-        s +="<br>drüber:\n";
+        String label=new String("");
+        String local=new String("");
         try{
-        DatabaseBremen database = new DatabaseBremen();
-	database.connect();
-	Object[][] a = database.execute("SELECT k FROM lgd_map_resource_kv WHERE v='"+tag+"'");
-        for(int i=0;i<a.length;i++){s+=""+a[i][0].toString()+"\n";}
+            DatabaseBremen database = new DatabaseBremen();
+		database.connect();
+        Object[][] a = database.execute("SELECT k,v, language, label FROM lgd_map_label Where k=\""+tag+"\"");
+        //lgd_map_label: k,v,language,lable
+        label=a[0][3].toString();
+        local=a[0][2].toString();
+        database.disconnect();
         }catch(Exception e){}
         
-        s +="<br>drunter:\n";
-        try{
-        DatabaseBremen database = new DatabaseBremen();
-	database.connect();
-	Object[][] a = database.execute("SELECT v FROM lgd_map_resource_kv WHERE k='"+tag+"'");
-        for(int i=0;i<a.length;i++){s+=""+a[i][0].toString()+"\n";}
-        }catch(Exception e){}
-      
-        s+= "<canvas id=\"canvas\" width='100' height='100'>";
-        s+= "<%var canvas=document.getElementById(\"canvas\");if(!canvas.getContext){return;}var ctx=canvas.getContext(\"2d\");ctx.fillStyle=\"rgb(200,0,0)\";ctx.fillRect(10,10,55,50);ctx.fillStyle=\"rgba(0,0,200,0.5)\";ctx.fillRect(30,30,55,50);%>";
-        
+        s +="\t\t\t\t\t<form action=\"?tab=ontologie"+ ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+        s +="\t\t\t\t\t<fieldset>\n";
+        s +="\t\t\t\t\t<table>\n";
+        s +="\t\t\t\t\t\t<tr class=mapping>\n";
+        s +="\t\t\t\t\t\t\t<td>label:</td>\n";
+        s +="\t\t\t\t\t\t\t<td><input name=\"label\" value=\""+tag+"\"></td>\n";
+        s +="\t\t\t\t\t\t</tr>\n";
+        s +="\t\t\t\t\t\t<tr class=mapping>\n";
+        s +="\t\t\t\t\t\t\t<td>localization:</td>\n";
+        s +="\t\t\t\t\t\t\t<td><input name=\"localization\" value=\""+local+"\"></td>\n";
+        s +="\t\t\t\t\t\t</tr>\n";
+        s +="\t\t\t\t\t\t<tr class=mapping>\n";
+        s +="\t\t\t\t\t\t\t<td>superclass:</td>\n";
+        s +="\t\t\t\t\t\t\t<td><input name=\"superclass\" value=\""+tag+"\"></td>\n";
+        s +="\t\t\t\t\t\t</tr>\n";
+        s +="\t\t\t\t\t\t<tr class=mapping>\n";
+        s +="\t\t\t\t\t\t\t<td><input type=\"button\" name=\"save\" value=\"Save\" /> <input type=\"button\" name=\"clear\" value=\"Clear\" /> <input type=\"button\" name=\"delete\" value=\"Delete\" /> </td>\n";   
+        s +="\t\t\t\t\t\t</tr>\n";
+        s +="\t\t\t\t\t</table>\n";
+        s +="\t\t\t\t\t</fieldset>\n";
+        s +="</form>\n";
         return s;
     }
     

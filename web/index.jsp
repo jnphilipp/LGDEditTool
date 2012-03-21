@@ -100,7 +100,7 @@
 				}
 			}
 
-			 var RecaptchaOptions = {theme : 'white'};
+			 var RecaptchaOptions = {theme : 'white'}; 
 		</script>
 	</head>
 	<body>
@@ -176,8 +176,8 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("ontologie") ) {
                             out.println("<div class=\"pane\">");
-                            out.println(TemplatesOntology.ontologie("natural")+"<br>");
-                            //out.println(TemplatesOntology.ontologie("ford"));
+                            out.println(TemplatesOntology.ontologie(user,"amenity")+"<br>");                            
+
                             out.println("</div>");
                             
 			}

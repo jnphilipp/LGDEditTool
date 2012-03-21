@@ -98,9 +98,9 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += kMappingEdit(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString());
+			re += kMappingEdit(search, user, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString());
 			//delete
-			re += kMappingDelete(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString());
+			re += kMappingDelete(search, user, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString());
 		}
 
 		re += "\t\t\t\t</table>\n";
@@ -237,9 +237,9 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += kvMappingEdit(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString(), a[0][4].toString());
+			re += kvMappingEdit(search, user, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString());
 			//delete
-			re += kvMappingDelete(search, user, i, a[0][0].toString(), a[0][1].toString(), a[0][2].toString(), a[0][3].toString(), a[0][4].toString());
+			re += kvMappingDelete(search, user, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString());
 		}
 
 		re += "\t\t\t\t</table>";

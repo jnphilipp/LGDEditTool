@@ -103,7 +103,14 @@
 			}
                         
                         function treeview(id){
-                            var e = document.getElementById(id);e.style.display='block';}
+                            var e = document.getElementById(id);
+                            if ( e.style.display != 'block' ){
+                                e.style.display='block';
+                            }
+                            else{
+                                e.style.display='none';
+                            }
+                        }
 
 
 			 var RecaptchaOptions = {theme : 'white'}; 

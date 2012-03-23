@@ -66,7 +66,7 @@ public class TemplatesUnmappedTags {
 		tableHead2 += "\t\t\t\t\t<tr class=mapping>\n";
 		tableHead2 += "\t\t\t\t\t\t<th>k</th>\n";
 		tableHead2 += "\t\t\t\t\t\t<th>v</th>\n";
-		tableHead2 += "\t\t\t\t\t\t<th>dusage_count</th>\n";		
+		tableHead2 += "\t\t\t\t\t\t<th>usage_count</th>\n";		
 		tableHead2 += "\t\t\t\t\t</tr>\n";
 		al.add(tableHead2);
        try{

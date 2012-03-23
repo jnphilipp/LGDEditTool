@@ -40,6 +40,6 @@ public class DatabaseBremen extends DatabasePostgreSQL {
 	* @throws SQLException
 	*/
 	public boolean connect() throws SQLException {
-		return super.connect("jnphilipp.dyndns.info:5432/bremen", "lgd", "lgd", true);
+		return super.connect("jnphilipp.dyndns.org:5432/bremen", "lgd", "lgd", true);
 	}
 }

@@ -43,7 +43,7 @@
 	boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
-		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1));
+		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1)) + (request.getParameter("search").contains(",") ? "-" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
 	User user = User.getInstance();
 	user.createUser(request);
@@ -71,7 +71,8 @@
 		<link rel="stylesheet" href="./css/login.css" />
 		<link rel="stylesheet" href="./css/captcha.css" />
 		<link rel="stylesheet" href="./css/jquery.autocomplete.css" />
-                <link rel="stylesheet" href="./css/treeview.css" />
+		<link rel="stylesheet" href="./css/treeview.css" />
+		<link rel="stylesheet" href="./css/account.css" />
 		<link rel="shortcut icon" href="http://linkedgeodata.org/files/lgdlogo.png" />
 		<title>LGDEditTool</title>
 		<script type="text/javascript" src="./js/jquery.js"></script>
@@ -136,7 +137,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		</div>
 		<% } else { %>
 		<div class="login" style="right: 20px; position: absolute;">
-			<a>Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : request.getParameter("tab"))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
+			<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : (request.getParameter("tab").equals("account") ? "search" : request.getParameter("tab")))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
@@ -150,13 +151,16 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<li><a href="?tab=history">Edit-History</a></li>
 			<% }
 				else { %>
-			<li><a <% if ( request.getParameter("tab").toString().equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a <% if ( request.getParameter("tab").toString().equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
-			<li><a <% if ( request.getParameter("tab").toString().equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
-			<li><a <% if ( request.getParameter("tab").toString().equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all">All Mappings</a></li>
-			<li><a <% if ( request.getParameter("tab").toString().equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history">Edit-History</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all">All Mappings</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history">Edit-History</a></li>
 			<% if ( user.isAdmin() ) {
-					out.println("<li><a " + (request.getParameter("tab").toString().equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
+					out.println("<li><a " + (request.getParameter("tab").equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
+				}
+				else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
+					out.println("<li><a class=\"current\" href=\"?tab=account\">Acoount Settings</a></li>");
 				}
 			} %>
 		</ul>
@@ -223,10 +227,47 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				
 				out.println("</div>");
 			}
-			else if ( request.getParameter("tab").toString().equals("settings") ) {
+			else if ( user.isAdmin() && request.getParameter("tab").toString().equals("settings") ) {
 			%>
 			<div class="pane">
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			</div>
+			<%
+			} else if ( user.isLoggedIn() && request.getParameter("tab").toString().equals("account") ) {
+			%>
+			<div class="pane">
+				<section class="account">
+					<aside>
+						<ul>
+							<li><a>Change Password</a></li>
+							<li><a>Change Email</a></li>
+						</ul>
+					</aside>
+					<article>
+						<fieldset>
+							<legend>Change Password</legend>
+							<form autocomplete="off">
+								<ul>
+									<li>
+										<label>Old password:</label>
+										<input type="password" name="opassword" required />
+									</li>
+									<li>
+										<label>New password:</label>
+										<input type="password" name="npassword" required />
+									</li>
+									<li>
+										<label>New password:</label>
+										<input type="password" name="npassword2" required />
+									</li>
+									<li>
+										<input type="submit" name="send" value="Change" />
+									</li>
+								</ul>
+							</form>
+						</fieldset>
+					</article>
+				</section>
 			</div>
 			<%
 			}

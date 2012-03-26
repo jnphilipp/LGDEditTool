@@ -18,15 +18,22 @@
 package LGDEditTool.Templates;
 
 
-import java.util.ArrayList;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.*;
+import LGDEditTool.db.DatabaseBremen;
+import java.util.ArrayList;
 /**
  *
  * @author Alexander Richter
  */
 public class TemplatesOntology {
     
+    /**
+     * Template for Ontology
+     * @param user user-session
+     * @param tag 
+     * @return
+     * @throws Exception 
+     */
     static public String ontologie(User user,String tag) throws Exception {
         String s=new String("");
         if(tag.contains("-")){
@@ -51,7 +58,14 @@ public class TemplatesOntology {
         return s;
     }
     
-   
+    /**
+     * left side content
+     * @param user user-session
+     * @param tag
+     * @param database
+     * @return
+     * @throws Exception 
+     */
     static private String leftside(User user,String tag,DatabaseBremen database) throws Exception{
         String s= new String("");
         
@@ -90,7 +104,14 @@ public class TemplatesOntology {
     }
     
     
-    
+    /**
+     * right-side content
+     * @param user
+     * @param tag
+     * @param database
+     * @return
+     * @throws Exception 
+     */
     static private String rightside(User user,String tag,DatabaseBremen database)throws Exception{
         String s=new String("");
         ArrayList<String> superclasses = new ArrayList<String>();

@@ -141,11 +141,9 @@ public class TemplatesEditHistory {
 
 		for ( int i = 0; i <  10; i++ ) {
 			String action=new String("");
-			int flag=0;
 			Object[][] b = database.execute("SELECT * FROM lgd_map_resource_k WHERE last_history_id="+(a[i][8].toString()));
 			Object[][] c = database.execute("SELECT * FROM lgd_map_resource_k_history WHERE history_id= "+(a[i][8].toString()));
 
-			//if(c!=null){flag=1;}
 			if ( b.length == 0 && c.length == 0 )
 				action="delete";
 			else
@@ -173,13 +171,10 @@ public class TemplatesEditHistory {
 
 		for ( int i = 0; i <  10; i++ ) {
 			String action=new String("");
-			int flag=0;
 			Object[][] b = database.execute("SELECT * FROM lgd_map_resource_kv WHERE last_history_id="+(a[i][9].toString()));
 			Object[][] c = database.execute("SELECT * FROM lgd_map_resource_kv_history WHERE history_id= "+(a[i][9].toString()));
 
-			if ( c!= null)
-				flag=1;
-			if ( b.length == 0 && flag == 1 || flag == 0 )
+			if ( b.length == 0 && c.length == 0 )
 				action="delete";
 			else
 				action="edit";

@@ -139,7 +139,7 @@ public class RequestHandling {
 			if ( a.length == 0 ) {
 				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_k_history), '', '', '', '" + user_id + "', '" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id");
 
-				database.execute("INSERT INTO lgd_map_resource_k VALUES('" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', " + a[0][0] + ")");
+				database.execute("INSERT INTO lgd_map_resource_k VALUES('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', " + a[0][0] + ")");
 
 				re = "Deleted K-Mapping successfully restored.";
 			}
@@ -179,7 +179,7 @@ public class RequestHandling {
 			if ( a.length == 0 ) {
 				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES((SELECT MAX(id) + 1 FROM lgd_map_resource_kv_history), '', '', '', '', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND)) + "', " + hid + ") RETURNING id");
 
-				database.execute("INSERT INTO lgd_map_resource_kv VALUES('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', " + a[0][0] + ")");
+				database.execute("INSERT INTO lgd_map_resource_kv VALUES('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', " + a[0][0] + ")");
 
 				re = "Deleted KV-Mapping successfully restored.";
 			}

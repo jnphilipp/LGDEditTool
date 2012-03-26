@@ -17,13 +17,13 @@
 
 package LGDEditTool.Templates;
 
+import LGDEditTool.Functions;
+import LGDEditTool.SiteHandling.User;
+import LGDEditTool.db.DatabaseBremen;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
-import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
-import LGDEditTool.SiteHandling.User;
 
 /**
 *
@@ -33,9 +33,14 @@ public class TemplatesAllMappings {
     
         static ArrayList<String> al = new ArrayList<String>();
         /**
-* Template for EditHistory.
-*/
-static public String listAllMappings(String type,String site,User user) {
+         * Template for EditHistory.
+         * @param type k or kv mapping
+         * @param site current displsyed site
+         * @param user user-session
+         * @return
+         * @throws Exception 
+         */
+        static public String listAllMappings(String type,String site,User user) throws Exception {
             
             String s = new String();
             s+="\t\t<a href=\"?tab=all&type=k\">K-mappings</a>";
@@ -45,7 +50,6 @@ static public String listAllMappings(String type,String site,User user) {
                 
             
             if(type.equalsIgnoreCase("k")){
-               try{
                 //insert tablehead
                 String tableHead = "\t\t\t\t<h2>List of all K-Mappings</h2>\n";
                 tableHead += "\t\t\t\t<table class=\"table\">\n";
@@ -61,11 +65,8 @@ static public String listAllMappings(String type,String site,User user) {
                 
                 //insert edithistory from db
                 listAllKMappings(Integer.parseInt(site),user);
-                        
-               }catch(Exception e){};
             }
             else if(type.equalsIgnoreCase("kv")){
-               try{
                 //insert tablehead
                 String tableHead = "\t\t\t\t<h2>List of all KV-Mappings</h2>\n";
                 tableHead += "\t\t\t\t<table class=\"table\">\n";
@@ -82,14 +83,11 @@ static public String listAllMappings(String type,String site,User user) {
                 
                 //insert edithistory from db
                 listAllKVMappings(Integer.parseInt(site),user);
-                
-                
-               }catch(Exception e){};
             }
             //insert table foot
-                String tableFoot = "\t\t\t\t</table>\n";
-                al.add(tableFoot);
-            //show more
+            String tableFoot = "\t\t\t\t</table>\n";
+            al.add(tableFoot);
+            //prev-next-site
             al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));    
             if(type.equalsIgnoreCase("k")){
                 if(Integer.valueOf(site)>1){
@@ -115,6 +113,13 @@ static public String listAllMappings(String type,String site,User user) {
            
         }
         
+
+        /**
+         * SQL query to get all k-mappings
+         * @param site current site
+         * @param user user-session
+         * @throws Exception 
+         */
 	static private void listAllKMappings(int site,User user) throws Exception {
 		String s = new String();
 		DatabaseBremen database = new DatabaseBremen();
@@ -129,6 +134,13 @@ static public String listAllMappings(String type,String site,User user) {
 		database.disconnect();
 	}
 
+
+        /**
+         * SQL query to get all k-mappings
+         * @param site current site
+         * @param user user-session
+         * @throws Exception 
+         */
 	static private void listAllKVMappings(int site,User user) throws Exception {
 		String s = new String();
 		DatabaseBremen database = new DatabaseBremen();
@@ -143,7 +155,7 @@ static public String listAllMappings(String type,String site,User user) {
 		database.disconnect();
         }
     
-     /**
+/**
 * Template for K-Mappings.
 * @param k K
 * @param property property
@@ -366,7 +378,12 @@ static private void addkvMapping(int id,String k, String v, String property, Str
     al.add(s);
     }
  
-    	public static String captcha(HttpServletRequest request,String type,String site) {
+    /**
+     * @param request
+     * @param type
+     * @para site
+     */
+    public static String captcha(HttpServletRequest request,String type,String site) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha("6LcryM4SAAAAAAxmbh2VvI-GZXGpCRqcaSO2xL1B", "6LcryM4SAAAAAKHGFwoD1t-tQsWB_QGuNInVNYbp", false);
 		String re;
 		re = "\t\t\t\t<article class=\"captcha\">\n";

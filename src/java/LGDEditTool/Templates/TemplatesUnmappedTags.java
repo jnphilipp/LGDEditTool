@@ -25,7 +25,6 @@ import java.util.ArrayList;
  */
 public class TemplatesUnmappedTags {
     
-    //k,usage_count , distinct_value_count
     static ArrayList<String> al = new ArrayList<String>();
     
     /**
@@ -34,63 +33,67 @@ public class TemplatesUnmappedTags {
      * @param kvsite site kv-mappings
      * @return sitecontent
      */
-    static public String unmappedTags(String ksite,String kvsite){
+    static public String unmappedTags(String ksite,String kvsite) throws Exception{
         String s = new String();
         
         //kmapping table
         String tableHead = "\t\t\t\t<h2>List of all Unmapped Tags</h2>\n";
-		tableHead += "\t\t\t\t<table class=\"table\">\n";
-		tableHead += "\t\t\t\t\t<tr class=mapping>\n";
-		tableHead += "\t\t\t\t\t\t<th>k</th>\n";
-		tableHead += "\t\t\t\t\t\t<th>usage_count</th>\n";
-		tableHead += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";		
-		tableHead += "\t\t\t\t\t</tr>\n";
-		al.add(tableHead);
-       try{
-           listAllk(Integer.valueOf(ksite));
-       }catch(Exception e){}
-       al.add(new String("\t\t\t\t</table>\n<br />"));
-       
-       //show more
-       al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));   
-       if(Integer.valueOf(ksite)>1){
-                    Integer prevsite=Integer.valueOf(ksite)-1;
-                    al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
-                }
-                Integer nextsite=Integer.valueOf(ksite)+1;
-                al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
+	tableHead += "\t\t\t\t<table class=\"table\">\n";
+	tableHead += "\t\t\t\t\t<tr class=mapping>\n";
+	tableHead += "\t\t\t\t\t\t<th>k</th>\n";
+	tableHead += "\t\t\t\t\t\t<th>usage_count</th>\n";
+	tableHead += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";		
+	tableHead += "\t\t\t\t\t</tr>\n";
+	al.add(tableHead);
+        
+        //fill table with k-mappings
+        listAllk(Integer.valueOf(ksite));
+        al.add(new String("\t\t\t\t</table>\n<br />"));   
+        
+        //prev-next-site
+        al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));   
+        if(Integer.valueOf(ksite)>1){
+            Integer prevsite=Integer.valueOf(ksite)-1;
+            al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
+        }
+        Integer nextsite=Integer.valueOf(ksite)+1;
+        al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n"));
         al.add(new String("\t\t\t\t</div>\n"));    
                 
-       //kvmapping table
+        //kvmapping table
         String tableHead2 = "\t\t\t\t<table class=\"table\">\n";
-		tableHead2 += "\t\t\t\t\t<tr class=mapping>\n";
-		tableHead2 += "\t\t\t\t\t\t<th>k</th>\n";
-		tableHead2 += "\t\t\t\t\t\t<th>v</th>\n";
-		tableHead2 += "\t\t\t\t\t\t<th>usage_count</th>\n";		
-		tableHead2 += "\t\t\t\t\t</tr>\n";
-		al.add(tableHead2);
-       try{
-           listAllkv(Integer.valueOf(kvsite));
-       }catch(Exception e){}
-       al.add(new String("\t\t\t\t</table>\n<br />"));
+	tableHead2 += "\t\t\t\t\t<tr class=mapping>\n";
+	tableHead2 += "\t\t\t\t\t\t<th>k</th>\n";
+	tableHead2 += "\t\t\t\t\t\t<th>v</th>\n";
+	tableHead2 += "\t\t\t\t\t\t<th>usage_count</th>\n";		
+	tableHead2 += "\t\t\t\t\t</tr>\n";
+	al.add(tableHead2);
+ 
+        //fill table with kv-mappings
+        listAllkv(Integer.valueOf(kvsite));
+        al.add(new String("\t\t\t\t</table>\n<br />"));
        
-       //show more
-       al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));  
-       if(Integer.valueOf(kvsite)>1){
-                    Integer prevsite=Integer.valueOf(kvsite)-1;
-                    al.add(new String(" \t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
-                    }
-                    Integer nextsite2=Integer.valueOf(kvsite)+1;
-                    al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n"));
+        //prev-next-site
+        al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));  
+        if(Integer.valueOf(kvsite)>1){
+            Integer prevsite=Integer.valueOf(kvsite)-1;
+            al.add(new String(" \t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; "));
+        }
+        Integer nextsite2=Integer.valueOf(kvsite)+1;
+        al.add(new String("\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n"));
         al.add(new String("\t\t\t\t</div>\n"));        
-       
+               
+        for(int i=0;i<al.size();i++){s+=al.get(i);}
+        al.clear(); 
         
-       for(int i=0;i<al.size();i++){s+=al.get(i);}
-       al.clear(); 
-        
-       return s;
+        return s;
     }
 
+        /**
+         * fills table with k-mappings
+         * @param ksite current displayed site for k-mappings
+         * @throws Exception 
+         */
 	static private void listAllk(int ksite) throws Exception {
 		String s = new String();
 		DatabaseBremen database = new DatabaseBremen();
@@ -111,6 +114,11 @@ public class TemplatesUnmappedTags {
 		database.disconnect();
 	}
 
+        /**
+         * fills table with kv-mappings
+         * @param kvsite current displayed site for kv-mappings
+         * @throws Exception 
+         */
 	static private void listAllkv(int kvsite) throws Exception {
 		String s = new String();
 		DatabaseBremen database = new DatabaseBremen();

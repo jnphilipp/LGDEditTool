@@ -17,13 +17,13 @@
 
 package LGDEditTool.Templates;
 
+import LGDEditTool.Functions;
+import LGDEditTool.SiteHandling.User;
+import LGDEditTool.db.DatabaseBremen;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
-import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
-import LGDEditTool.SiteHandling.User;
 
 /**
  *
@@ -34,11 +34,15 @@ public class TemplatesEditHistory {
     
         static ArrayList<String> al = new ArrayList<String>();
         
-        
-    	/**
-	 * Template for EditHistory.
-	 */
-	static public String editHistory(String ksite,String kvsite, User user, String sort) {
+        /**
+         * Template for EditHistory.
+         * @param ksite current site k-mappings
+         * @param kvsite current site kv-mappings
+         * @param user user-session
+         * @param sort sort object
+         * @return 
+         */
+	static public String editHistory(String ksite,String kvsite, User user, String sort) throws Exception{
 		al.clear();
 
 		//kmappings
@@ -59,10 +63,7 @@ public class TemplatesEditHistory {
 		al.add(tableHead);
 
 		//insert edithistory from db for k-mappings
-		try {
-			searchKHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user, sort);
-		}
-		catch(Exception e) {}
+		searchKHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user, sort);
 
 		//inser table foot
 		String tableFoot = "\t\t\t\t</table>\n";
@@ -74,10 +75,7 @@ public class TemplatesEditHistory {
 		}
 		Integer nextsite=Integer.valueOf(ksite)+1;
 		al.add(new String("<a href=\"?tab=history&ksite="+ nextsite.toString() + "&kvsite="+kvsite + (sort.equals("") ? "" : "&sort=" + sort) + "\">next&#62;</a>\n"));
-		al.add(new String("\t\t\t\t</div>\n"));
-            
-            
-
+		al.add(new String("\t\t\t\t</div>\n"));           
 
 		//kmappings
 		//insert tablehead
@@ -98,10 +96,7 @@ public class TemplatesEditHistory {
 		al.add(tableHead);
 		           
 		//insert edithistory from db for kv-mappings
-		try {
-			searchKVHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user, sort);
-		}
-		catch(Exception e) {}
+		searchKVHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user, sort);
 
 		//inser table foot
 		tableFoot = "\t\t\t\t</table>\n";
@@ -146,11 +141,9 @@ public class TemplatesEditHistory {
 
 		for ( int i = 0; i <  10; i++ ) {
 			String action=new String("");
-			int flag=0;
 			Object[][] b = database.execute("SELECT * FROM lgd_map_resource_k WHERE last_history_id="+(a[i][8].toString()));
 			Object[][] c = database.execute("SELECT * FROM lgd_map_resource_k_history WHERE history_id= "+(a[i][8].toString()));
 
-			//if(c!=null){flag=1;}
 			if ( b.length == 0 && c.length == 0 )
 				action="delete";
 			else
@@ -178,13 +171,10 @@ public class TemplatesEditHistory {
 
 		for ( int i = 0; i <  10; i++ ) {
 			String action=new String("");
-			int flag=0;
 			Object[][] b = database.execute("SELECT * FROM lgd_map_resource_kv WHERE last_history_id="+(a[i][9].toString()));
 			Object[][] c = database.execute("SELECT * FROM lgd_map_resource_kv_history WHERE history_id= "+(a[i][9].toString()));
 
-			if ( c!= null)
-				flag=1;
-			if ( b.length == 0 && flag == 1 || flag == 0 )
+			if ( b.length == 0 && c.length == 0 )
 				action="delete";
 			else
 				action="edit";
@@ -196,7 +186,7 @@ public class TemplatesEditHistory {
 	}
         
         
-             /**
+/**
 * Template for K-Mappings.
 * @param k K
 * @param property property
@@ -217,8 +207,7 @@ static private void addkMapping(int id,String k, String property, String object,
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history&ksite="+ ksite +"&kvsite=" + kvsite + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    //s += "\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site +((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t<form action=\"?tab=history&ksite="+ ksite +"&kvsite=" + kvsite + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
     s += "\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
@@ -236,8 +225,6 @@ static private void addkMapping(int id,String k, String property, String object,
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"auser\" value=\"" + user_id + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"acomment\" value=\"" + comment + "\" />\n";
     s += "\t\t\t\t\t\t</tr>\n";
-    
-
     
     if ( !user.isLoggedIn() ) {
         s += "\t\t\t\t\t\t<tr id=\"k" + id + "u\" class=\"mapping\" style=\"display: none;\">\n";
@@ -292,11 +279,9 @@ static private void addkvMapping(int id,String k, String v, String property, Str
     s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
-    
-        s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">restore</a></td>\n";
+    s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
     s += "\t\t\t\t\t<form action=\"?tab=history&ksite="+ ksite +"&kvsite=" + kvsite + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    //s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
@@ -345,12 +330,18 @@ static private void addkvMapping(int id,String k, String v, String property, Str
         s += "\t\t\t\t\t\t</tr>\n";
     }
     s += "\t\t\t\t\t</form>\n";
-
-    
+ 
     al.add(s);
     }
         
-	public static String captcha(HttpServletRequest request,String ksite,String kvsite) {
+    /**
+     * 
+     * @param request
+     * @param ksite
+     * @param kvsite
+     * @return 
+     */
+    public static String captcha(HttpServletRequest request,String ksite,String kvsite) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha("6LcryM4SAAAAAAxmbh2VvI-GZXGpCRqcaSO2xL1B", "6LcryM4SAAAAAKHGFwoD1t-tQsWB_QGuNInVNYbp", false);
 		String re;
 		re = "\t\t\t\t<article class=\"captcha\">\n";
@@ -389,5 +380,5 @@ static private void addkvMapping(int id,String k, String v, String property, Str
 		re += "\t\t\t\t\t</form>\n";
 		re += "\t\t\t\t</article>\n";
 		return re;
-	}
+    }
 }

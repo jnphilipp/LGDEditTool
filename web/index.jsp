@@ -192,9 +192,14 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("ontologie") ) {
                             if(search!=""){
-                                out.println("<div class=\"pane\">");
-                                out.println(TemplatesOntology.ontologie(user,search)+"<br>");                            
-                                out.println("</div>");
+                                out.println("<div class=\"pane\">\n");
+                                out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            
+                                out.println("</div>\n");
+                            }
+                            else{
+                                out.println("<div class=\"pane\">\n");
+                                out.println("<h3>you must search first</h3>\n");
+                                out.println("</div>\n");
                             }
 			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {

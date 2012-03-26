@@ -21,42 +21,40 @@ package LGDEditTool.Templates;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
 import java.util.ArrayList;
+
 /**
  *
  * @author Alexander Richter
  */
 public class TemplatesOntology {
-    
-    /**
-     * Template for Ontology
-     * @param user user-session
-     * @param tag 
-     * @return
-     * @throws Exception 
-     */
-    static public String ontologie(User user,String tag) throws Exception {
-        String s=new String("");
-        if(tag.contains("-")){
-            String[] tmp = tag.split("-");
-            tag=tmp[0];
-        }
-        s +="\t\t\t\t<table>\n";
-        s +="\t\t\t\t\t<tr>\n";
-        s +="\t\t\t\t\t<td>\n";
-        DatabaseBremen database = new DatabaseBremen();
-        database.connect();
-        s +=leftside(user,tag,database);
-        s +="\t\t\t\t\t</td>\n";
-        s +="\t\t\t\t\t<td>\n";
-        
-        s +=rightside(user,tag,database);
-        database.disconnect();
-        s +="\t\t\t\t\t</td>\n";
-        s +="\t\t\t\t\t</tr>\n";
-        s +="\t\t\t\t</table>\n";
-        
-        return s;
-    }
+
+	/**
+	 * Template for Ontology
+	 * @param user user-session
+	 * @param tag 
+	 * @return
+	 * @throws Exception 
+	 */
+	static public String ontologie(User user,String tag) throws Exception {
+		DatabaseBremen.getInstance().connect();
+		String s = "";
+
+		if ( tag.contains("-") )
+			tag = tag.split("-")[0];
+
+		s +="\t\t\t\t<table>\n";
+		s +="\t\t\t\t\t<tr>\n";
+		s +="\t\t\t\t\t<td>\n";
+		s +=leftside(user,tag);
+		s +="\t\t\t\t\t</td>\n";
+		s +="\t\t\t\t\t<td>\n";
+		s +=rightside(user,tag);
+		s +="\t\t\t\t\t</td>\n";
+		s +="\t\t\t\t\t</tr>\n";
+		s +="\t\t\t\t</table>\n";
+
+		return s;
+	}
     
     /**
      * left side content
@@ -66,7 +64,8 @@ public class TemplatesOntology {
      * @return
      * @throws Exception 
      */
-    static private String leftside(User user,String tag,DatabaseBremen database) throws Exception{
+    static private String leftside(User user, String tag) throws Exception{
+			DatabaseBremen database = DatabaseBremen.getInstance();
         String s= new String("");
         
         String label=new String("");
@@ -112,7 +111,8 @@ public class TemplatesOntology {
      * @return
      * @throws Exception 
      */
-    static private String rightside(User user,String tag,DatabaseBremen database)throws Exception{
+    static private String rightside(User user,String tag) throws Exception {
+			DatabaseBremen database = DatabaseBremen.getInstance();
         String s=new String("");
         ArrayList<String> superclasses = new ArrayList<String>();
         

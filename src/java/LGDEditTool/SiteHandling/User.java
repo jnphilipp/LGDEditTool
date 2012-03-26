@@ -71,11 +71,10 @@ public final class User {
 		}
 
 		if ( this.loggedIn ) {
-			DatabaseBremen db = new DatabaseBremen();
+			DatabaseBremen db = DatabaseBremen.getInstance();
 			db.connect();
 			Object[][] a = db.execute("SELECT admin FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");
 			this.admin = Boolean.parseBoolean(a[0][0].toString());
-			db.disconnect();
 		}
 	}
 

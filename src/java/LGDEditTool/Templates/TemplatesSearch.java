@@ -23,6 +23,7 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
 import LGDEditTool.Functions;
 import LGDEditTool.db.DatabaseBremen;
 import LGDEditTool.SiteHandling.User;
+import sun.security.jca.GetInstance;
 
 /**
  *
@@ -58,20 +59,23 @@ public class TemplatesSearch {
 	 * @throws Exception 
 	 */
 	public static String searchResult(String search, User user) throws Exception {
-		DatabaseBremen database = new DatabaseBremen();
+		//DatabaseBremen database = new DatabaseBremen();
+		DatabaseBremen database = DatabaseBremen.getInstance();
+		database.connect();
 		String re = "";
 
-		database.connect();
+		//database.connect();
 
-		re += kMapping(database, user, (search.contains("-") ? search.split("-")[0] : search ));
+		re += kMapping(/*database,*/ user, (search.contains("-") ? search.split("-")[0] : search ));
 		re += "\n\t\t\t\t<br /><br />\n\n";
-		re += kvMapping(database, user, search);
+		re += kvMapping(/*database,*/ user, search);
 
-		database.disconnect();
+		//database.disconnect();
 		return re;
 	}
 
-	private static String kMapping(DatabaseBremen database, User user, String search) throws Exception {
+	private static String kMapping(/*DatabaseBremen database,*/ User user, String search) throws Exception {
+		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE k='" + search + "' GROUP BY k, object, property ORDER BY k");
 
@@ -204,7 +208,8 @@ public class TemplatesSearch {
 		return re;
 	}
 
-	private static String kvMapping(DatabaseBremen database, User user, String search) throws Exception {
+	private static String kvMapping(/*DatabaseBremen database,*/ User user, String search) throws Exception {
+		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
 		if ( search.contains("-") )

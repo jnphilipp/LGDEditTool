@@ -30,23 +30,23 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
 * @author Alexander Richter
 */
 public class TemplatesAllMappings {
-    
-        static ArrayList<String> al = new ArrayList<String>();
-        /**
-         * Template for EditHistory.
-         * @param type k or kv mapping
-         * @param site current displsyed site
-         * @param user user-session
-         * @return
-         * @throws Exception 
-         */
-        static public String listAllMappings(String type,String site,User user) throws Exception {
-            
-            String s = new String();
-            s+="\t\t<a href=\"?tab=all&type=k\">K-mappings</a>";
-            s+="\t\t<a href=\"?tab=all&type=kv\">KV-mappings</a>";
-            
-            if(site.equals("")==false){if(Integer.valueOf(site)<1){site="1";}} //set negativ site value to 1
+	static ArrayList<String> al = new ArrayList<String>();
+
+	/**
+	 * Template for EditHistory.
+	 * @param type k or kv mapping
+	 * @param site current displsyed site
+	 * @param user user-session
+	 * @return
+	 * @throws Exception 
+	 */
+	static public String listAllMappings(String type,String site,User user) throws Exception {
+		DatabaseBremen.getInstance().connect();
+		String s = new String();
+		s+="\t\t<a href=\"?tab=all&type=k\">K-mappings</a>";
+		s+="\t\t<a href=\"?tab=all&type=kv\">KV-mappings</a>";
+
+		if(site.equals("")==false){if(Integer.valueOf(site)<1){site="1";}} //set negativ site value to 1
                 
             
             if(type.equalsIgnoreCase("k")){
@@ -114,24 +114,22 @@ public class TemplatesAllMappings {
         }
         
 
-        /**
-         * SQL query to get all k-mappings
-         * @param site current site
-         * @param user user-session
-         * @throws Exception 
-         */
+
+	/**
+	 * SQL query to get all k-mappings
+	 * @param site current site
+	 * @param user user-session
+	 * @throws Exception 
+	 */
 	static private void listAllKMappings(int site,User user) throws Exception {
 		String s = new String();
-		DatabaseBremen database = new DatabaseBremen();
-		database.connect();
+		DatabaseBremen database = DatabaseBremen.getInstance();
 
 		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k GROUP BY k,property,object ORDER BY k Limit 20 OFFSET "+((site-1)*20));
 
 		for ( int i = 0; i <  20; i++ ) {
 			addkMapping(i,a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(),user,site);
 		}
-
-		database.disconnect();
 	}
 
 
@@ -143,17 +141,14 @@ public class TemplatesAllMappings {
          */
 	static private void listAllKVMappings(int site,User user) throws Exception {
 		String s = new String();
-		DatabaseBremen database = new DatabaseBremen();
+		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		database.connect();
 		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k,v,property,object ORDER BY k,v Limit 20 OFFSET "+((site-1)*20));
 
 		for ( int i = 0; i < 20; i++ ) {
 			addkvMapping(i,a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(),user,site);
 		}
-
-		database.disconnect();
-        }
+	}
     
 /**
 * Template for K-Mappings.

@@ -15,6 +15,7 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="LGDEditTool.db.DatabaseBremen"%>
 <%@page import="LGDEditTool.Templates.TemplatesShowMessage"%>
 <%@page import="java.security.MessageDigest"%>
 <%-- 
@@ -32,7 +33,6 @@
 <%@page import="LGDEditTool.SiteHandling.User"%>
 <%@page import="LGDEditTool.SiteHandling.RequestHandling" %>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
-<%@page import="LGDEditTool.Templates.TemplatesMapping" %>
 <%@page import="LGDEditTool.Templates.TemplatesUnmappedTags" %>
 <%@page import="LGDEditTool.Templates.TemplatesAllMappings" %>
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
@@ -162,7 +162,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<li><a <% if ( request.getParameter("tab").equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all">All Mappings</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history">Edit-History</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>
 			<% if ( user.isAdmin() ) {
 					out.println("<li><a " + (request.getParameter("tab").equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
 				}
@@ -288,3 +288,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		<small style="float: right;">© swp12-10 (<% out.print((Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH) ) + "." + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "." + Calendar.getInstance().get(Calendar.YEAR)); %>)</small>
 	</body>
 </html>
+<%
+DatabaseBremen db = DatabaseBremen.getInstance();
+db.disconnect();
+%>

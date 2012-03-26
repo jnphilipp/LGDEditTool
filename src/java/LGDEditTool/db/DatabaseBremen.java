@@ -25,13 +25,21 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class DatabaseBremen extends DatabasePostgreSQL {
+	private static DatabaseBremen bremen;
 
 	/**
 	* Creates a new Database and checks the driver.
 	* @throws ClassNotFoundException
 	*/
-	public DatabaseBremen () throws ClassNotFoundException {
+	private DatabaseBremen () throws ClassNotFoundException {
 		super();
+	}
+
+	public static synchronized DatabaseBremen getInstance() throws ClassNotFoundException {
+		if ( bremen == null )
+			bremen = new DatabaseBremen();
+
+		return bremen;
 	}
 
 	/**

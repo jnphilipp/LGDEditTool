@@ -38,144 +38,162 @@ public class TemplatesEditHistory {
     	/**
 	 * Template for EditHistory.
 	 */
-	static public String editHistory(String ksite,String kvsite,User user) {
+	static public String editHistory(String ksite,String kvsite, User user, String sort) {
 		al.clear();
-                
-                //kmappings
-                //insert tablehead
+
+		//kmappings
+		//insert tablehead
 		String tableHead = "\t\t\t\t<h2>K-Mappings history</h2>\n";
-                tableHead += "\t\t\t\t<table class=\"table\">\n";
-                tableHead += "\t\t\t\t\t<tr class=mapping>\n";
-                tableHead += "\t\t\t\t\t\t<th>timestamp</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>k</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>property</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>object</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>affected Entities</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>action</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>user</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>comment</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>restore</th>\n";
-                tableHead += "\t\t\t\t\t</tr>\n";
-                al.add(tableHead);
-		           
-                //insert edithistory from db for k-mappings
-                try{
-                    searchKHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user);
-                }catch(Exception e){}
-                
-                //inser table foot
-                String tableFoot = "\t\t\t\t</table>\n";
-                al.add(tableFoot);
-                
+		tableHead += "\t\t\t\t<table class=\"table\">\n";
+		tableHead += "\t\t\t\t\t<tr class=mapping>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "\">timestamp</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=k&ksite=" + ksite + "&kvsite=" + kvsite + "\">k</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=property&ksite=" + ksite + "&kvsite=" + kvsite + "\">property</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=object&ksite=" + ksite + "&kvsite=" + kvsite + "\">object</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th>affected Entities</th>\n";
+		tableHead += "\t\t\t\t\t\t<th>action</th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=user_id&ksite=" + ksite + "&kvsite=" + kvsite + "\">user</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th>comment</th>\n";
+		tableHead += "\t\t\t\t\t\t<th>restore</th>\n";
+		tableHead += "\t\t\t\t\t</tr>\n";
+		al.add(tableHead);
 
-								al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));
-								if ( Integer.valueOf(ksite)>1 ) {
-                    Integer prevsite=Integer.valueOf(ksite)-1;
-                    al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp;"));
-								}
-                Integer nextsite=Integer.valueOf(ksite)+1;
-                al.add(new String("<a href=\"?tab=history&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next&#62;</a>\n"));
-								al.add(new String("\t\t\t\t</div>\n"));
+		//insert edithistory from db for k-mappings
+		try {
+			searchKHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user, sort);
+		}
+		catch(Exception e) {}
+
+		//inser table foot
+		String tableFoot = "\t\t\t\t</table>\n";
+		al.add(tableFoot);
+		al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));
+		if ( Integer.valueOf(ksite) > 1 ) {
+			Integer prevsite=Integer.valueOf(ksite)-1;
+			al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite.toString() + "&kvsite="+kvsite + (sort.equals("") ? "" : "&sort=" + sort) + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;"));
+		}
+		Integer nextsite=Integer.valueOf(ksite)+1;
+		al.add(new String("<a href=\"?tab=history&ksite="+ nextsite.toString() + "&kvsite="+kvsite + (sort.equals("") ? "" : "&sort=" + sort) + "\">next&#62;</a>\n"));
+		al.add(new String("\t\t\t\t</div>\n"));
             
             
-                
-                //kmappings
-                //insert tablehead
+
+
+		//kmappings
+		//insert tablehead
 		tableHead = "\t\t\t\t<h2>KV-Mappings history</h2>\n";
-                tableHead += "\t\t\t\t<table class=\"table\">\n";
-                tableHead += "\t\t\t\t\t<tr class=mapping>\n";
-                tableHead += "\t\t\t\t\t\t<th>timestamp</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>k</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>v</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>property</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>object</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>affected Entities</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>action</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>user</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>comment</th>\n";
-                tableHead += "\t\t\t\t\t\t<th>restore</th>\n";
-                tableHead += "\t\t\t\t\t</tr>\n";
-                al.add(tableHead);
+		tableHead += "\t\t\t\t<table class=\"table\">\n";
+		tableHead += "\t\t\t\t\t<tr class=mapping>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "\">timestamp</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=k&ksite=" + ksite + "&kvsite=" + kvsite + "\">k</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=v&ksite=" + ksite + "&kvsite=" + kvsite + "\">v</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=object&ksite=" + ksite + "&kvsite=" + kvsite + "\">property</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=object&ksite=" + ksite + "&kvsite=" + kvsite + "\">object</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th>affected Entities</th>\n";
+		tableHead += "\t\t\t\t\t\t<th>action</th>\n";
+		tableHead += "\t\t\t\t\t\t<th><a href=\"?tab=history&sort=user_id&ksite=" + ksite + "&kvsite=" + kvsite + "\">user</a></th>\n";
+		tableHead += "\t\t\t\t\t\t<th>comment</th>\n";
+		tableHead += "\t\t\t\t\t\t<th>restore</th>\n";
+		tableHead += "\t\t\t\t\t</tr>\n";
+		al.add(tableHead);
 		           
-                //insert edithistory from db for kv-mappings
-                try{
-                   searchKVHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user);
-                }catch(Exception e){}
-                
-                //inser table foot
-                tableFoot = "\t\t\t\t</table>\n";
-                al.add(tableFoot);                
+		//insert edithistory from db for kv-mappings
+		try {
+			searchKVHistoryDB(Integer.parseInt(ksite),Integer.parseInt(kvsite),user, sort);
+		}
+		catch(Exception e) {}
 
-								al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));
-                if(Integer.valueOf(kvsite)>1){
-                    Integer prevsite=Integer.valueOf(kvsite)-1;
-                    al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp;"));
-                }
-                Integer nextsite2=Integer.valueOf(kvsite)+1;
-                al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next&#62;</a>\n"));
-								al.add(new String("\t\t\t\t</div>\n"));
-            
-                
-                
-                //array to string for return
-                String s=new String();
-                for(int i=0;i<al.size();i++){s+=al.get(i);}  
-                al.clear();
+		//inser table foot
+		tableFoot = "\t\t\t\t</table>\n";
+		al.add(tableFoot);
+		al.add(new String("\t\t\t\t<div style=\"float: right;\">\n"));
+
+		if( Integer.valueOf(kvsite) > 1 ) {
+			Integer prevsite=Integer.valueOf(kvsite)-1;
+			al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite="+prevsite.toString() + (sort.equals("") ? "" : "&sort=" + sort) + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;"));
+		}
+
+		Integer nextsite2=Integer.valueOf(kvsite)+1;
+		al.add(new String("\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite=" + nextsite2.toString() + (sort.equals("") ? "" : "&sort=" + sort) + "\">next&#62;</a>\n"));
+		al.add(new String("\t\t\t\t</div>\n"));
+
+		//array to string for return
+		String s=new String();
+		for ( int i = 0; i < al.size(); i++ ) {
+			s += al.get(i);
+		}
+
+		al.clear();
+
 		return s;
 	}
-    
-        
-    
-        
-        /**
+
+	/**
 	 * gets edithistory from DB
+	 * @param ksite
+	 * @param kvsite
+	 * @param user
+	 * @param sort
+	 * @throws Exception 
 	 */
-        static private void searchKHistoryDB(int ksite,int kvsite,User user) throws Exception{
-                String s = new String();
+	static private void searchKHistoryDB(int ksite,int kvsite,User user, String sort) throws Exception {
+		String s = new String();
 		DatabaseBremen database = new DatabaseBremen();
 		database.connect();
-                //CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
-		Object[][] a = database.execute("SELECT k, property, object, count(k),user_id,comment,timestamp,history_id, id FROM lgd_map_resource_k_history GROUP BY k,property,object,user_id,comment,timestamp,history_id,id ORDER BY timestamp DESC Limit 10 OFFSET "+((ksite-1)*10));
-                
+
+		//CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
+		Object[][] a = database.execute("SELECT k, property, object, count(k),user_id,comment,timestamp,history_id, id FROM lgd_map_resource_k_history GROUP BY k,property,object,user_id,comment,timestamp,history_id,id ORDER BY " + (sort.equals("") || sort.equals("v") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET "+((ksite-1)*10));
+
 		for ( int i = 0; i <  10; i++ ) {
-                    String action=new String("");
-                    int flag=0;
-                    Object[][] b = database.execute("SELECT * FROM lgd_map_resource_k WHERE last_history_id="+(a[i][8].toString()));
-                    Object[][] c = database.execute("SELECT * FROM lgd_map_resource_k_history WHERE history_id= "+(a[i][8].toString()));
-                    //if(c!=null){flag=1;}
-                 
-                    if(b.length == 0 && c.length == 0){action="delete";}else{action="edit";}
+			String action=new String("");
+			int flag=0;
+			Object[][] b = database.execute("SELECT * FROM lgd_map_resource_k WHERE last_history_id="+(a[i][8].toString()));
+			Object[][] c = database.execute("SELECT * FROM lgd_map_resource_k_history WHERE history_id= "+(a[i][8].toString()));
+
+			//if(c!=null){flag=1;}
+			if ( b.length == 0 && c.length == 0 )
+				action="delete";
+			else
+				action="edit";
+
 			addkMapping(i,a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(),action,a[i][4].toString(),a[i][5].toString(),a[i][6].toString(),user,ksite,kvsite);
 		}
-                
+
 		database.disconnect();
-           
-        }
-        /**
+	}
+
+	/**
 	 * gets edithistory from DB
+	 * @param ksite
+	 * @param kvsite
+	 * @param user
+	 * @throws Exception 
 	 */
-        static private void searchKVHistoryDB(int ksite,int kvsite,User user) throws Exception{
-            
-            
-             String s = new String();
+	static private void searchKVHistoryDB(int ksite,int kvsite,User user, String sort) throws Exception {
+		String s = new String();
 		DatabaseBremen database = new DatabaseBremen();
 		database.connect();
-                //CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
-		Object[][] a = database.execute("SELECT k,v, property, object, count(k),user_id,comment,timestamp,history_id, id FROM lgd_map_resource_kv_history GROUP BY k,v,property,object,user_id,comment,timestamp,history_id, id ORDER BY timestamp DESC Limit 10 OFFSET "+((kvsite-1)*10));
+		//CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
+		Object[][] a = database.execute("SELECT k,v, property, object, count(k),user_id,comment,timestamp,history_id, id FROM lgd_map_resource_kv_history GROUP BY k,v,property,object,user_id,comment,timestamp,history_id, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET "+((kvsite-1)*10));
 
 		for ( int i = 0; i <  10; i++ ) {
-                    String action=new String("");
-                    int flag=0;
-                    Object[][] b = database.execute("SELECT * FROM lgd_map_resource_kv WHERE last_history_id="+(a[i][9].toString()));
-                    Object[][] c = database.execute("SELECT * FROM lgd_map_resource_kv_history WHERE history_id= "+(a[i][9].toString()));
-                    if(c!=null){flag=1;}
-                    if(b.length==0 && flag==1|| flag==0){action="delete";}else{action="edit";}
-                    addkvMapping(i,a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(),action,a[i][5].toString(),a[i][6].toString(),a[i][7].toString(),user,ksite,kvsite);
+			String action=new String("");
+			int flag=0;
+			Object[][] b = database.execute("SELECT * FROM lgd_map_resource_kv WHERE last_history_id="+(a[i][9].toString()));
+			Object[][] c = database.execute("SELECT * FROM lgd_map_resource_kv_history WHERE history_id= "+(a[i][9].toString()));
+
+			if ( c!= null)
+				flag=1;
+			if ( b.length == 0 && flag == 1 || flag == 0 )
+				action="delete";
+			else
+				action="edit";
+
+			addkvMapping(i,a[i][0].toString(),a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(),action,a[i][5].toString(),a[i][6].toString(),a[i][7].toString(),user,ksite,kvsite);
 		}
 
 		database.disconnect();
-           
-        }
+	}
         
         
              /**

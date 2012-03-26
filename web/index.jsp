@@ -217,14 +217,14 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("history") ) {
 				out.println("<div class=\"pane\">");
-                                if(request.getParameter("ksite")!=null && request.getParameter("kvsite")!=null){
-                                    out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString(),user));
-                                    if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-                                     out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite").toString(), request.getParameter("kvsite").toString()));		
-                                }else{
-                                    out.println(TemplatesEditHistory.editHistory("1","1",user));
-                                }
-				
+				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null ) {
+					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString(),user, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite").toString(), request.getParameter("kvsite").toString()));
+        }
+				else {
+					out.println(TemplatesEditHistory.editHistory("1","1",user, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				}
 				out.println("</div>");
 			}
 			else if ( user.isAdmin() && request.getParameter("tab").toString().equals("settings") ) {

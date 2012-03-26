@@ -1,13 +1,13 @@
 CREATE TABLE lgd_user(email text PRIMARY KEY, username text, password text, admin boolean not null);
 
-CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
+CREATE TABLE lgd_map_resource_k_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_resource_k ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_k ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_k_history(id);
 ALTER TABLE lgd_map_resource_k_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_k_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_k_history(id);
 
 
-CREATE TABLE lgd_map_resource_kv_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, v TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL);
+CREATE TABLE lgd_map_resource_kv_history(id INTEGER PRIMARY KEY, k TEXT NOT NULL, v TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_resource_kv ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_kv_history(id);
 ALTER TABLE lgd_map_resource_kv_history ADD COLUMN history_id INTEGER;

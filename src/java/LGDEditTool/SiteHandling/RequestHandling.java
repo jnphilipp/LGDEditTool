@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
+import LGDEditTool.Functions;
 import LGDEditTool.db.DatabaseBremen;
 
 /**
@@ -203,7 +204,7 @@ public class RequestHandling {
 	public static boolean checkCaptcha(HttpServletRequest request) {
 		String remoteAddr = request.getRemoteAddr();
 		ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
-		reCaptcha.setPrivateKey("6LcryM4SAAAAAKHGFwoD1t-tQsWB_QGuNInVNYbp");
+		reCaptcha.setPrivateKey(Functions.PRIVATE_reCAPTCHA_KEY);
 
 		String challenge = request.getParameter("recaptcha_challenge_field");
 		String uresponse = request.getParameter("recaptcha_response_field");

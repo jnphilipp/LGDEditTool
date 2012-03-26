@@ -24,6 +24,20 @@ package LGDEditTool;
  * @version 1.0
  */
 public class Functions {
+	/**
+	 * PRIVATE_reCAPTCHA_KEY
+	 */
+	public static final String PRIVATE_reCAPTCHA_KEY = "6Le1b88SAAAAALUjcJ26asXAk2wHDu-JwarKY8z1";
+	/**
+	 * PUBLIC_reCAPTCHA_KEY
+	 */
+	public static final String PUBLIC_reCAPTCHA_KEY = "6Le1b88SAAAAALjXm-PM6alI7EQlj-fi9eh-Wm2C ";
+
+	/**
+	 * Schorting the URL from property and object.
+	 * @param url URL
+	 * @return short URL
+	 */
 	public static String shortenURL(String url) {
 		if ( url.contains("w3.org") && url.endsWith("#type") )
 			return "w3#type";
@@ -34,6 +48,11 @@ public class Functions {
 			return url;
 	}
 
+	/**
+	 * Formating timestamp from database (format: YYYY-MM-ddTHH:mm:ss) into dd.MM.YYYY<br />HH:mm:ss
+	 * @param timestamp
+	 * @return 
+	 */
 	public static String showTimestamp(String timestamp) {
 		String re = "";
 		String[] a = timestamp.split("T")[0].split("-");

@@ -101,16 +101,16 @@
 					s.style.display = 'table-row';
 				}
 			}
-                        
-                        function treeview(id){
-                            var e = document.getElementById(id);
-                            if ( e.style.display != 'block' ){
-                                e.style.display='block';
-                            }
-                            else{
-                                e.style.display='none';
-                            }
-                        }
+
+			function treeview(id){
+				var e = document.getElementById(id);
+				if ( e.style.display != 'block' ){
+					e.style.display='block';
+				}
+				else {
+					e.style.display='none';
+				}
+			}
 
 
 			 var RecaptchaOptions = {theme : 'white'}; 
@@ -186,7 +186,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println(TemplatesSearch.captcha(request, search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
-					out.println(TemplatesSearch.searchResult(search, user));
+					out.println(TemplatesSearch.searchResult(search));
 					out.println("\t\t\t</div>");
 				}
 			}
@@ -229,13 +229,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").toString().equals("history") ) {
 				out.println("<div class=\"pane\">");
-				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null ) {
-					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString(),user, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
+					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite").toString(), request.getParameter("kvsite").toString(), request.getParameter("dsite").toString(), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
 						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite").toString(), request.getParameter("kvsite").toString()));
         }
 				else {
-					out.println(TemplatesEditHistory.editHistory("1","1",user, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 				}
 				out.println("</div>");
 			}

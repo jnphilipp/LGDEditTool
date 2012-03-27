@@ -34,7 +34,7 @@ try {
 	if ( !query.endsWith("%") )
 		query += "%";
 
-	Object[][] a = database.execute("SELECT k, v, COUNT(k) FROM lgd_map_resource_kv WHERE k LIKE '" + query + "' OR v LIKE '" + query + "' GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k LIKE '" + query + "') FROM lgd_map_resource_k WHERE k LIKE '" + query + "' GROUP BY k ORDER BY k");
+	Object[][] a = database.execute("SELECT * FROM lgd_autocomplete WHERE UPPER(k) LIKE UPPER('" + query + "') OR UPPER(v) LIKE UPPER('" + query + "') OR (k, v) IN (SELECT k, v FROM lgd_map_label WHERE UPPER(label) LIKE UPPER('" + query + "'))");
 
 	for ( int i = 0; i < a.length; i++ ) {
 		out.println(a[i][0].toString() + " (" + (a[i][1].toString().equals("") ? "" : (a[i][1].toString() + ", ")) + a[i][2].toString() + ")");

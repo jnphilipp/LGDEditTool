@@ -30,8 +30,6 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
 * @author Alexander Richter
 */
 public class TemplatesAllMappings {
-	//static ArrayList<String> al = new ArrayList<String>();
-
 	/**
 	 * Template for EditHistory.
 	 * @param type k or kv mapping

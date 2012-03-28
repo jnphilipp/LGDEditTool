@@ -36,7 +36,7 @@ public class TemplatesUnmappedTags {
 		//kmapping table
 		String s = "\t\t\t\t<h2>List of all Unmapped Tags</h2>\n";
 		s += "\t\t\t\t<table class=\"table\">\n";
-		s += "\t\t\t\t\t<tr class=mapping>\n";
+		s += "\t\t\t\t\t<tr class=\"mapping\">\n";
 		s += "\t\t\t\t\t\t<th>k</th>\n";
 		s += "\t\t\t\t\t\t<th>usage_count</th>\n";
 		s += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";		
@@ -44,7 +44,7 @@ public class TemplatesUnmappedTags {
 
 		//fill table with k-mappings
 		s += listAllk(Integer.valueOf(ksite));
-		s += "\t\t\t\t</table>\n<br />";
+		s += "\t\t\t\t</table>\n";
 
 		//prev-next-site
 		s += "\t\t\t\t<div style=\"float: right;\">\n";
@@ -53,12 +53,13 @@ public class TemplatesUnmappedTags {
 			s += "\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; ";
 		}
 		Integer nextsite=Integer.valueOf(ksite)+1;
-		s += "\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next</a>\n";
+		s += "\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next&#62;</a>\n";
 		s += "\t\t\t\t</div>\n";
+		s += "\t\t\t\t<br /><br /><br />\n";
 
 		//kvmapping table
 		s += "\t\t\t\t<table class=\"table\">\n";
-		s += "\t\t\t\t\t<tr class=mapping>\n";
+		s += "\t\t\t\t\t<tr class=\"mapping\">\n";
 		s += "\t\t\t\t\t\t<th>k</th>\n";
 		s += "\t\t\t\t\t\t<th>v</th>\n";
 		s += "\t\t\t\t\t\t<th>usage_count</th>\n";
@@ -66,7 +67,7 @@ public class TemplatesUnmappedTags {
 		//fill table with kv-mappings
 
 		s += listAllkv(Integer.valueOf(kvsite));
-		s += "\t\t\t\t</table>\n<br />";
+		s += "\t\t\t\t</table>\n";
 
 		//prev-next-site
 		s += "\t\t\t\t<div style=\"float: right;\">\n";
@@ -75,8 +76,9 @@ public class TemplatesUnmappedTags {
 			s += " \t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; ";
 		}
 		Integer nextsite2=Integer.valueOf(kvsite)+1;
-		s += "\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next</a>\n";
+		s += "\t\t\t\t\t<a href=\"?tab=unmapped&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next&#62;</a>\n";
 		s += "\t\t\t\t</div>\n";
+		s += "\t\t\t\t<br />\n";
 
 		return s;
 	}

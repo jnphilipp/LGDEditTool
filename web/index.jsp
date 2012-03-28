@@ -154,14 +154,14 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<li><a class="current" href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
 			<li><a href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>" >Ontologie</a></li>
 			<li><a href="?tab=unmapped">Unmapped Tags</a></li>
-			<li><a href="?tab=all">All Mappings</a></li>
+			<li><a href="?tab=all&type=k">All Mappings</a></li>
 			<li><a href="?tab=history">Edit-History</a></li>
 			<% }
 				else { %>
 			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all">All Mappings</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>
 			<% if ( user.isAdmin() ) {
 					out.println("<li><a " + (request.getParameter("tab").equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
@@ -190,62 +190,80 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println("\t\t\t</div>");
 				}
 			}
-			else if ( request.getParameter("tab").toString().equals("ontologie") ) {
-                            if(search!=""){
-                                out.println("<div class=\"pane\">\n");
-                                out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            
-                                out.println("</div>\n");
-                            }
-                            else{
-                                out.println("<div class=\"pane\">\n");
-                                out.println("<h3>you must search first</h3>\n");
-                                out.println("</div>\n");
-                            }
+			else if ( request.getParameter("tab").equals("ontologie") ) {
+				if ( !search.equals("") ) {
+					out.println("<div class=\"pane\">\n");
+					out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            
+					out.println("</div>\n");
+				}
+				else {
+					out.println("<div class=\"pane\">\n");
+					out.println("<h3>you must search first</h3>\n");
+					out.println("</div>\n");
+				}
 			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
-                                if(request.getParameter("ksite")==null || request.getParameter("kvsite")==null){
-                                    out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
-                                }else{
-                                    out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
-                                }
-				
-				out.println("</div>");
-			}
-			else if ( request.getParameter("tab").toString().equals("all") ) {
-				out.println("<div class=\"pane\">");
-				if(request.getParameter("type")==null){
-					out.println(TemplatesAllMappings.listAllMappings("", "",user));
-				}
-				else if(request.getParameter("site")==null){
-					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), "1",user));
+				if ( request.getParameter("ksite") == null || request.getParameter("kvsite") == null ) {
+					out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
 				}
 				else {
-					out.println(TemplatesAllMappings.listAllMappings(request.getParameter("type").toString(), request.getParameter("site").toString(),user));
-                                        if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-						out.println(TemplatesAllMappings.captcha(request, request.getParameter("type").toString(), request.getParameter("site").toString()));
+					out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
 				}
 				out.println("</div>");
 			}
-			else if ( request.getParameter("tab").toString().equals("history") ) {
+			else if ( request.getParameter("tab").equals("all") ) {
+				out.println("<div class=\"pane\">");
+				out.println("\t\t\t\t<ul id=\"tabs\">");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t</ul>");
+				out.println("\t\t\t\t<div class=\"pane\">");
+
+				/*if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+					out.println(TemplatesSearch.captcha(request, search));
+					out.println(TemplatesSearch.search());
+					out.println("\t\t\t\t<br /><br />");
+					out.println(TemplatesSearch.searchResult(search));
+					out.println("\t\t\t</div>");
+				}*/
+
+				if ( request.getParameter("site") == null ) {
+					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));
+				}
+				else {
+					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
+						out.print(TemplatesAllMappings.captcha(request, request.getParameter("type"), request.getParameter("site")));
+						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
+					}
+					else {
+						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
+					}
+				}
+
+				out.println("\t\t\t\t</div>");
+				out.print("\t\t\t</div>");
+			}
+			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
 				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
-					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite").toString(), request.getParameter("kvsite").toString(), request.getParameter("dsite").toString(), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite").toString(), request.getParameter("kvsite").toString(), request.getParameter("dsite").toString()));
+						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite")));
         }
 				else {
 					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 				}
 				out.println("</div>");
 			}
-			else if ( user.isAdmin() && request.getParameter("tab").toString().equals("settings") ) {
+			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {
 			%>
 			<div class="pane">
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 			</div>
 			<%
-			} else if ( user.isLoggedIn() && request.getParameter("tab").toString().equals("account") ) {
+			} else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
 			%>
 			<div class="pane">
 				<section class="account">

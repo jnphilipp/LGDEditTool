@@ -376,7 +376,7 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * 
+	 * reCatpcha
 	 * @param request
 	 * @param ksite
 	 * @param kvsite
@@ -390,7 +390,7 @@ public class TemplatesEditHistory {
 		re += "\t\t\t\t\t<form action=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
 		re += "\t\t\t\t\t\t<ul>\n";
 		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
-		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"captcha\" value=\"Send\" /></li>\n";
+		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 
 		if ( request.getParameter("kmappingedit") != null ) {

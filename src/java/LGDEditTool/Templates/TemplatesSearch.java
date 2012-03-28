@@ -466,7 +466,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
 		re += "\t\t\t\t\t\t<ul>\n";
 		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
-		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"captcha\" value=\"Send\" /></li>\n";
+		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 
 		if ( request.getParameter("kmapping") != null ) {

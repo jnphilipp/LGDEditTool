@@ -184,7 +184,7 @@ public class TemplatesEditHistory {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, history_id, id FROM lgd_map_datatype_history GROUP BY k, datatype, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
+		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, history_id, id FROM lgd_map_datatype_history GROUP BY k, datatype, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.equals("") || sort.equals("v") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][6].toString(), a[i][3].toString(), a[i][4].toString(), a[i][5].toString(), ksite, kvsite, dsite, search, sort);

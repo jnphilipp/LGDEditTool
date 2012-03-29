@@ -17,6 +17,7 @@
 
 package LGDEditTool.Templates;
 
+import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
 
 /**
@@ -39,11 +40,13 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t<tr class=\"mapping\">\n";
 		s += "\t\t\t\t\t\t<th>k</th>\n";
 		s += "\t\t\t\t\t\t<th>usage_count</th>\n";
-		s += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";		
+		s += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";
+                s += "\t\t\t\t\t\t<th>create mapping</th>\n";
+                s += "\t\t\t\t\t\t<th>create datatype</th>\n";
 		s += "\t\t\t\t\t</tr>\n";
 
 		//fill table with k-mappings
-		s += listAllk(Integer.valueOf(ksite));
+		s += listAllk(Integer.valueOf(ksite),Integer.valueOf(kvsite));
 		s += "\t\t\t\t</table>\n";
 
 		//prev-next-site
@@ -63,10 +66,11 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t\t<th>k</th>\n";
 		s += "\t\t\t\t\t\t<th>v</th>\n";
 		s += "\t\t\t\t\t\t<th>usage_count</th>\n";
+                s += "\t\t\t\t\t\t<th>create</th>\n";
 		s += "\t\t\t\t\t</tr>\n";
 		//fill table with kv-mappings
 
-		s += listAllkv(Integer.valueOf(kvsite));
+		s += listAllkv(Integer.valueOf(ksite),Integer.valueOf(kvsite));
 		s += "\t\t\t\t</table>\n";
 
 		//prev-next-site
@@ -88,7 +92,7 @@ public class TemplatesUnmappedTags {
 	 * @param ksite current displayed site for k-mappings
 	 * @throws Exception 
 	 */
-	static private String listAllk(int ksite) throws Exception {
+	static private String listAllk(int ksite,int kvsite) throws Exception {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
@@ -96,11 +100,26 @@ public class TemplatesUnmappedTags {
 
 		int count=0;
 		for (int i=0;i<a.length;i++) {
-			s += "\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t<tr id=\"k"+i+"a\">\n";
 			s += "\t\t\t\t\t<td>"+a[i][0]+"</td>\n";
 			s += "\t\t\t\t\t<td>"+a[i][1]+"</td>\n";
 			s += "\t\t\t\t\t<td>"+a[i][2]+"</td>\n";
-			s += "\t\t\t\t\t</tr>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">mapping</a></td>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">datatype</a></td>\n";
+                        s += "\t\t\t\t\t</tr>\n";
+                        
+                        //create mapping
+                        s += "\t\t\t\t\t\t<form action=\"?tab=unmapped&ksite="+ksite+"&kvsite=" + kvsite + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+                        s += "\t\t\t\t\t\t\t<tr id=\"k" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+                        s += "\t\t\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
+                        s += "\t\t\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
+                        s += "\t\t\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
+                        s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + a[i][0] + "\" />\n";
+                        s += "\t\t\t\t\t\t\t</tr>\n";
+                        s += getUserField("k" + i + "u", "dmapping", "create", "k",a[i][0].toString(),"");
+                        s += "\t\t\t\t\t\t</form>\n";
+                        
+                        
 		}
 
 		return s;
@@ -111,7 +130,7 @@ public class TemplatesUnmappedTags {
 	 * @param kvsite current displayed site for kv-mappings
 	 * @throws Exception 
 	 */
-	static private String listAllkv(int kvsite) throws Exception {
+	static private String listAllkv(int ksite,int kvsite) throws Exception {
 		String s = new String();
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
@@ -119,13 +138,92 @@ public class TemplatesUnmappedTags {
 
 		int count=0;
 		for (int i=0;i<a.length;i++) {
-			s += "\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t<tr id=\"kv"+i+"a\">\n";
 			s += "\t\t\t\t\t<td>"+a[i][0]+"</td>\n";
 			s += "\t\t\t\t\t<td>"+a[i][1]+"</td>\n";
-			s += "\t\t\t\t\t<td>"+a[i][2]+"</td>\n";                   
+			s += "\t\t\t\t\t<td>"+a[i][2]+"</td>\n";   
+                        s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">create</a></td>\n";
 			s += "\t\t\t\t\t</tr>\n";
+                        
+                        //create
+                        s += "\t\t\t\t\t\t<form action=\"?tab=unmapped&ksite="+ksite+"&kvsite=" + kvsite + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+                        s += "\t\t\t\t\t\t\t<tr id=\"kv" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+                        s += "\t\t\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
+                        s += "\t\t\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
+                        s += "\t\t\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
+                        s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + a[i][0] + "\" />\n";
+                        s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + a[i][1] + "\" />\n";
+                        s += "\t\t\t\t\t\t\t</tr>\n";
+                        s += getUserField("kv" + i + "u", "cmapping", "create", "kv",a[i][0].toString(),a[i][1].toString());
+                        s += "\t\t\t\t\t\t</form>\n";
 		}
 
 		return s;
 	}
+        
+        /**
+	 * Template for user fields.
+	 * @param id id for toggle visiblity
+	 * @param submitName submit name
+	 * @param submitValue submit value
+	 * @param columns column count
+	 * @return String
+	 */
+	private static String getUserField(String id, String submitName, String submitValue, String type,String k,String v) {
+		String re = "";
+
+		if ( !User.getInstance().isLoggedIn() ) {
+			re += "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t\t<td colspan=\"1\">\n";
+			re += "\t\t\t\t\t\t\t\t\t<label>k: "+k+"</label>\n";
+                        if(type.equalsIgnoreCase("kv")){re += "\t\t\t\t\t\t\t\t\t<label>v: "+v+"</label>\n";}
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+                        re += "\t\t\t\t\t\t\t\t<td colspan=\"1\" align=\"center\">\n";
+                        re += "\t\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
+			re += "\t\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + User.getInstance().getUsername() + "\" required />\n";	
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t\t<td colspan=\"1\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t\t<label>Property:</label>\n";
+			re += "\t\t\t\t\t\t\t\t\t<input type\"text\" name=\"property\" placeholder=\"property\" required>\n";
+                        re += "\t\t\t\t\t\t\t\t\t<label>Object:</label>\n";
+			re += "\t\t\t\t\t\t\t\t\t<input type=\"text\" name=\"object\" placeholder=\"object\" required>\n";
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t\t<td colspan=\"1\">\n";
+			re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
+                        if(type.contentEquals("k")){
+                            re += "\t\t\t\t\t\t\t\t</td>\n";
+                            re += "\t\t\t\t\t\t\t\t<td colspan=\"1\">\n";
+                        }
+                        re += "\t\t\t\t\t\t\t\t\t<a onclick=\"toggle_visibility('" + id.substring(0, id.length() - 1) + "')\">Hide</a>\n";
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t</tr>\n";
+		}
+		else {
+			re += "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t\t<td colspan=\"1\">\n";
+			re += "\t\t\t\t\t\t\t\t\t<label>k: "+k+"</label>\n";
+                        if(type.equalsIgnoreCase("kv")){re += "\t\t\t\t\t\t\t\t\t<label>v: "+v+"</label>\n";}
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+                        re += "\t\t\t\t\t\t\t\t<td colspan=\"1\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t\t<label>Property:</label>\n";
+                        re += "\t\t\t\t\t\t\t\t\t<input type\"text\" name=\"property\" placeholder=\"property\" required>\n";
+                        re += "\t\t\t\t\t\t\t\t</td>\n";
+                        re += "\t\t\t\t\t\t\t\t<td colspan=\"1\" align=\"center\">\n";
+                        re += "\t\t\t\t\t\t\t\t\t<label>Object:</label>\n";
+			re += "\t\t\t\t\t\t\t\t\t<input type=\"text\" name=\"object\" placeholder=\"object\" required>\n";
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t\t<td colspan=\"1\" align=\"center\">\n";
+                        re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
+                        if(type.contentEquals(k)){
+                            re += "\t\t\t\t\t\t\t\t</td>\n";
+                            re += "\t\t\t\t\t\t\t\t<td colspan=\"1\">\n";
+                        }
+                        re += "\t\t\t\t\t\t\t\t\t<a onclick=\"toggle_visibility('" + id.substring(0, id.length() - 1) + "')\">Hide</a>\n";
+			re += "\t\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t</tr>\n";
+		}
+
+		return re;
+	}
+        
  }

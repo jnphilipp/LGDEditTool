@@ -20,7 +20,6 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
-import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
@@ -76,7 +75,6 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
-			//al.add(tableHead);
 
 			//insert edithistory from db
 			s += listAllKVMappings(Integer.parseInt(site));
@@ -202,21 +200,21 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
 		s += "\t\t\t\t\t\t\t</tr>\n";
 		s += getUserField("k" + id + "u", "kmapping", "Save", 6);
-    s += "\t\t\t\t\t\t</form>\n";
+                s += "\t\t\t\t\t\t</form>\n";
     
-    //delete
-    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    s += "\t\t\t\t\t\t\t<tr id=\"kd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
-    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
-    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
-    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
-    s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + id + "')\">Hide</a></td>\n";
-    s += "\t\t\t\t\t\t\t</tr>\n";
+                //delete
+                s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+                s += "\t\t\t\t\t\t\t<tr id=\"kd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+                s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+                s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+                s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+                s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + id + "')\">Hide</a></td>\n";
+                s += "\t\t\t\t\t\t\t</tr>\n";
 		s += getUserField("kd" + id + "u", "kmapping", "Delete", 6);
 		s += "\t\t\t\t\t\t</form>\n";
 
@@ -236,33 +234,33 @@ public class TemplatesAllMappings {
 	 */
 	static private String addKVMapping(int id, String k, String v, String property, String object, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
-    s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Edit</a></td>\n";
-    s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Delete</a></td>\n";
-    s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-    s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
-    s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Hide</a></td>\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
-    s += "\t\t\t\t\t\t\t<td>Delete</td>\n";
-    s += "\t\t\t\t\t\t</tr>\n";
+                s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+                s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Edit</a></td>\n";
+                s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Delete</a></td>\n";
+                s += "\t\t\t\t\t</tr>\n";
+                s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+                s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+                s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
+                s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
+                s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Hide</a></td>\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+                s += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+                s += "\t\t\t\t\t\t</tr>\n";
 		s += getUserField("kv" + id + "u", "kvmapping", "Save", 7);
 		s += "\t\t\t\t\t</form>\n";
 
 		//delete
-    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+                s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -271,11 +269,11 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
-    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Hide</a></td>\n";
-    s += "\t\t\t\t\t\t</tr>\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+                s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Hide</a></td>\n";
+                s += "\t\t\t\t\t\t</tr>\n";
 		s += getUserField("kvd" + id + "u", "kvmapping", "Delete", 7);
 		s += "\t\t\t\t\t</form>\n";
 
@@ -310,19 +308,19 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
 		s += "\t\t\t\t\t\t\t</tr>\n";
 		s += getUserField("tk" + id + "u", "dmapping", "Save", 5);
-    s += "\t\t\t\t\t\t</form>\n";
+                s += "\t\t\t\t\t\t</form>\n";
     
-    //delete
-    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    s += "\t\t\t\t\t\t\t<tr id=\"tkd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
-    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
-    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + datatype + "\" />\n";
-    s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + id + "')\">Hide</a></td>\n";
-    s += "\t\t\t\t\t\t\t</tr>\n";
+                //delete
+                s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+                s += "\t\t\t\t\t\t\t<tr id=\"tkd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+                s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+                s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+                s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + datatype + "\" />\n";
+                s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + id + "')\">Hide</a></td>\n";
+                s += "\t\t\t\t\t\t\t</tr>\n";
 		s += getUserField("tkd" + id + "u", "dmapping", "Delete", 5);
 		s += "\t\t\t\t\t\t</form>\n";
 
@@ -348,7 +346,7 @@ public class TemplatesAllMappings {
 			re += "\t\t\t\t\t\t\t\t</td>\n";
 			re += "\t\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
 			re += "\t\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-			re += "\t\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t\t\t<textarea name=\"comment\" placeholder=\"No comment.\" style=\"width: 30em; height: 5em;\" required></textarea>\n";
 			re += "\t\t\t\t\t\t\t\t</td>\n";
 			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\">\n";
 			re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
@@ -359,7 +357,7 @@ public class TemplatesAllMappings {
 			re += "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "5" : "4") + "\" align=\"center\">\n";
 			re += "\t\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-			re += "\t\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
+			re += "\t\t\t\t\t\t\t\t\t<textarea name=\"comment\" placeholder=\"No comment.\" style=\"width: 30em; height: 5em;\" required></textarea>\n";
 			re += "\t\t\t\t\t\t\t\t</td>\n";
 			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\" align=\"center\">\n";
 			re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";

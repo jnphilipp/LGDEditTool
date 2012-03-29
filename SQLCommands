@@ -1,4 +1,5 @@
 CREATE TABLE lgd_user(email text PRIMARY KEY, username text, password text, admin boolean not null);
+ALTER TABLE lgd_user ADD CONSTRAINT username UNIQUE(username);
 
 CREATE TABLE lgd_map_resource_k_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_resource_k ADD COLUMN last_history_id INTEGER;
@@ -12,8 +13,6 @@ ALTER TABLE lgd_map_resource_kv ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_kv_history(id);
 ALTER TABLE lgd_map_resource_kv_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_kv_history(id);
-
-ALTER TABLE lgd_user ADD CONSTRAINT username UNIQUE(username);
 
 CREATE VIEW lgd_autocomplete AS SELECT k,v,COUNT(k) FROM lgd_map_resource_kv GROUP BY k,v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k=lgd_map_resource_k.k) + (SELECT COUNT(k) FROM lgd_map_datatype WHERE k=lgd_map_resource_k.k) FROM lgd_map_resource_k GROUP BY k UNION ALL SELECT k, datatype::TEXT AS v, COUNT(k) FROM lgd_map_datatype GROUP BY k, datatype ORDER BY k, v;
 

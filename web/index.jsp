@@ -150,7 +150,11 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		<h1>LGDEditTool</h1>
 
 		<ul id="tabs">
-			<% if ( request.getParameter("tab") == null ) { %>
+			<% if ( !user.isLoggedIn() ) {
+				out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
+			}
+			else {
+				if ( request.getParameter("tab") == null ) { %>
 			<li><a class="current" href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
 			<li><a href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>" >Ontologie</a></li>
 			<li><a href="?tab=unmapped">Unmapped Tags</a></li>
@@ -169,11 +173,32 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
 					out.println("<li><a class=\"current\" href=\"?tab=account\">Acoount Settings</a></li>");
 				}
-			} %>
+			}
+		} %>
 		</ul>
 
 		<div id="panes">
-			<%
+			<% if ( !user.isLoggedIn() ) { %>
+			<div class="pane">
+				<div class="tlogin">
+					<article>
+						<fieldset>
+							<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
+							<form action="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>" method="post" accept-charset="UTF-8">
+								<table>
+									<tr><th>Login or Email</th></tr>
+									<tr><td><input type="text" name="user" required /></td></tr>
+									<tr><th>Password (<a style="font-size: 9pt;">forgot password</a>)</th></tr>
+									<tr><td><input type="password" name="password" required /></td></tr>
+									<tr><td><input type="submit" name="login" value="Log in" /></td></tr>
+								</table>
+							</form>
+						</fieldset>
+					</article>
+				</div>
+			</div>
+			<% } %>
+			<%--<%
 			if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
@@ -301,7 +326,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			</div>
 			<%
 			}
-			%>
+			%>--%>
 		</div>
 		<small style="float: right;">© swp12-10 (<% out.print((Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH) ) + "." + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "." + Calendar.getInstance().get(Calendar.YEAR)); %>)</small>
 	</body>

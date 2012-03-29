@@ -59,23 +59,56 @@ div.login fieldset legend { margin-left: 1em;
 	font-size: 11pt;
 	color: black;}
 
-div.login fieldset ul { list-style: none;}
+div.login fieldset ul { list-style: none;
+	padding-left: 0;}
 div.login fieldset li { margin-top: 0.5em;}
 div.login fieldset label { font-family: monospace;
 	color: black;}
 
-div.login fieldset input[type=password],
-div.login fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
-	font-family: monospace;
-	width: 15em;}
+div.tlogin table { border-collapse: collapse;
+	width: 100%;
+	max-width: 100%;}
 
-div.login fieldset input[type=submit] { font-family: monospace;
+div.tlogin article { display: block;
+	position: relative;
+	width: 30em;
+	margin-top: 3em;
+	margin-left: -15em;
+	margin-bottom: 5em;
+	left: 50%;
+	-o-border-radius: 8px;
+	-icab-border-radius: 8px;
+	-khtml-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;}
+
+div.tlogin fieldset legend { margin-left: 1em;
+	font-family: monospace;
+	font-size: 11pt;
+	color: black;}
+
+div.tlogin fieldset ul { list-style: none;}
+div.tlogin fieldset li { margin-top: 0.5em;}
+div.tlogin fieldset label { font-family: monospace;
+	color: black;}
+
+div.login fieldset input[type=password],
+div.login fieldset input[type=text],
+div.tlogin fieldset input[type=password],
+div.tlogin fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;
+	width: 100%;}
+
+div.login fieldset input[type=submit],
+div.tlogin fieldset input[type=submit] { font-family: monospace;
 	font-size: 11pt;
 	text-align: center;
 	border: 1px solid #666;
 	background: #efefef;
 	color: #777;}
 
-div.login fieldset input[type=submit]:hover { background: #F7F7F7;
+div.login fieldset input[type=submit]:hover,
+div.tlogin fieldset input[type=submit]:hover { background: #F7F7F7;
 	color: #333;
 	font-weight: bold;}

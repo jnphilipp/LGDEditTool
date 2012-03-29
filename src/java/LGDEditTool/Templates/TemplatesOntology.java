@@ -65,17 +65,12 @@ public class TemplatesOntology {
      * @throws Exception 
      */
     static private String leftside(User user, String tag) throws Exception{
-			DatabaseBremen database = DatabaseBremen.getInstance();
-        String s= new String("");
-        
-        String label=new String("");
-        String local=new String("");     
-        
-        
+	DatabaseBremen database = DatabaseBremen.getInstance();
+        String s= "";        
         
         Object[][] a = database.execute("SELECT k,v, language, label FROM lgd_map_label Where k='"+tag+"'");
-        label=tag;//a[0][3].toString();
-        local="";//a[0][2].toString();
+        String label=tag;//a[0][3].toString();
+        String local="";//a[0][2].toString();
         
         s +="\t\t\t\t\t<form action=\"?tab=ontologie"+ ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
         s +="\t\t\t\t\t<fieldset>\n";
@@ -113,10 +108,9 @@ public class TemplatesOntology {
      */
     static private String rightside(User user,String tag) throws Exception {
 			DatabaseBremen database = DatabaseBremen.getInstance();
-        String s=new String("");
+        String s="";
         ArrayList<String> superclasses = new ArrayList<String>();
-        
-        
+                
         s +="\t\t\t\t\t<fieldset>\n";
         
         //get superclasses

@@ -17,7 +17,6 @@
 
 package LGDEditTool.SiteHandling;
 
-import java.util.Calendar;
 import java.security.MessageDigest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -177,7 +177,7 @@ public class TemplatesUnmappedTags {
 	 * @param submitValue submit value
 	 * @param columns column count
 	 * @return String
-	 */ //float boolean int
+	 */
 	private static String getUserField(String id, String submitName, String submitValue, String type,String k,String v) {
 		String re = "";
                 //create datatype

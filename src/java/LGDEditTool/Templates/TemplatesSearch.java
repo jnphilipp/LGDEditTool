@@ -17,12 +17,12 @@
 
 package LGDEditTool.Templates;
 
+import LGDEditTool.Functions;
+import LGDEditTool.SiteHandling.User;
+import LGDEditTool.db.DatabaseBremen;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
-import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
-import LGDEditTool.SiteHandling.User;
 
 /**
  *

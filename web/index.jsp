@@ -227,14 +227,6 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
 
-				/*if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.println(TemplatesSearch.captcha(request, search));
-					out.println(TemplatesSearch.search());
-					out.println("\t\t\t\t<br /><br />");
-					out.println(TemplatesSearch.searchResult(search));
-					out.println("\t\t\t</div>");
-				}*/
-
 				if ( request.getParameter("site") == null ) {
 					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));
 				}

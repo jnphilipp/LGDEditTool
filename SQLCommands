@@ -1,23 +1,55 @@
 CREATE TABLE lgd_user(email text PRIMARY KEY, username text, password text, admin boolean not null);
-ALTER TABLE lgd_user ADD CONSTRAINT username UNIQUE(username);
+INSERT INTO lgd_user VALUES ('main', '', '', FALSE);
+
+
+
 
 CREATE TABLE lgd_map_resource_k_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+ALTER TABLE lgd_map_resource_k ADD COLUMN user_id TEXT;
+ALTER TABLE lgd_map_resource_k ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+UPDATE lgd_map_resource_k SET user_id ='main';
 ALTER TABLE lgd_map_resource_k ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_k ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_k_history(id);
 ALTER TABLE lgd_map_resource_k_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_k_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_k_history(id);
 
 
+
 CREATE TABLE lgd_map_resource_kv_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, v TEXT NOT NULL, object TEXT NOT NULL, property TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+ALTER TABLE lgd_map_resource_kv ADD COLUMN user_id TEXT;
+ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+UPDATE lgd_map_resource_kv SET user_id ='main';
 ALTER TABLE lgd_map_resource_kv ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_kv_history(id);
 ALTER TABLE lgd_map_resource_kv_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_kv_history(id);
 
+ALTER TABLE lgd_user ADD CONSTRAINT username UNIQUE(username);
+
 CREATE VIEW lgd_autocomplete AS SELECT k,v,COUNT(k) FROM lgd_map_resource_kv GROUP BY k,v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k=lgd_map_resource_k.k) + (SELECT COUNT(k) FROM lgd_map_datatype WHERE k=lgd_map_resource_k.k) FROM lgd_map_resource_k GROUP BY k UNION ALL SELECT k, datatype::TEXT AS v, COUNT(k) FROM lgd_map_datatype GROUP BY k, datatype ORDER BY k, v;
 
+
+
+ALTER TYPE lgd_datatype ADD VALUE 'deleted';
+ALTER TABLE lgd_map_datatype DROP CONSTRAINT lgd_map_datatype_pkey;
 CREATE TABLE lgd_map_datatype_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, datatype lgd_datatype NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+ALTER TABLE lgd_map_datatype ADD COLUMN user_id TEXT;
+ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+UPDATE lgd_map_datatype SET user_id ='main';
 ALTER TABLE lgd_map_datatype ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_datatype_history(id);
 ALTER TABLE lgd_map_datatype_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_datatype_history(id);
+
+
+
+
+
+
+CREATE VIEW lgd_user_main AS SELECT k,v,COUNT(k) FROM lgd_map_resource_kv WHERE user_id = 'main' AND property != '' AND object != '' GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k=lgd_map_resource_k.k AND (user_id = 'main' AND property != '' AND object != '')) + (SELECT COUNT(k) FROM lgd_map_datatype WHERE k=lgd_map_resource_k.k AND (user_id = 'main' AND datatype != 'deleted')) FROM lgd_map_resource_k WHERE user_id='main' AND property != '' AND object != '' GROUP BY k UNION ALL SELECT k, datatype::TEXT AS v, COUNT(k) FROM lgd_map_datatype WHERE user_id = 'main' AND datatype != 'deleted' GROUP BY k, datatype ORDER BY k, v;
+
+
+
+
+
+CREATE VIEW lgd_user_user AS SELECT k,v,COUNT(k) FROM lgd_map_resource_kv WHERE (user_id = 'user@info.org' AND property != '' AND object != '') OR (user_id = 'main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id = 'user@info.org')) GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k=lgd_map_resource_k.k AND ((user_id = 'user@info.org' AND property != '' AND object != '') OR (user_id = 'main' AND (k, v) NOT IN (SELECT k, v FROM  lgd_map_resource_kv WHERE user_id = 'user@info.org')))) + (SELECT COUNT(k) FROM lgd_map_datatype WHERE k=lgd_map_resource_k.k AND ((user_id = 'user@info.org' AND datatype != 'deleted') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = 'user@info.org')))) FROM lgd_map_resource_k WHERE (user_id='user@info.org' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = 'user@info.org')) GROUP BY k UNION ALL SELECT k, datatype::TEXT AS v, COUNT(k) FROM lgd_map_datatype WHERE (user_id = 'user@info.org' AND datatype != 'deleted') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = 'user@info.org')) GROUP BY k, datatype ORDER BY k, v;

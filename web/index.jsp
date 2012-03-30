@@ -208,7 +208,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
 				}
 				else {
-					out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+                                    if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
+						out.print(TemplatesUnmappedTags.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite")));
+						out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+					}
+                                        else{
+                                                out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+                                        }
 				}
 				out.println("</div>");
 			}

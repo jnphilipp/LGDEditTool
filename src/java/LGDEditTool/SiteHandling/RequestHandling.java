@@ -212,7 +212,7 @@ public class RequestHandling {
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
 
-			database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'delete', (SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "')) RETURNING id");
+			a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'delete', (SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "')) RETURNING id");
 
 			database.execute("DELETE FROM lgd_map_datatype WHERE datatype='" + request.getParameter("datatype") + "' AND k='" + request.getParameter("k") + "'");
 
@@ -241,7 +241,7 @@ public class RequestHandling {
 			}
 
 			if ( a.length == 0 ) {
-				a = database.execute("INSERT INTO lgd_map_datatype_history VALUES(DEFAULT, (SELECT k FROM lgd_map_datatype_history WHERE id=" + hid + "), '', '" + user_id + "', '" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
+				a = database.execute("INSERT INTO lgd_map_datatype_history VALUES(DEFAULT, (SELECT k FROM lgd_map_datatype_history WHERE id=" + hid + "), 'deleted', '" + user_id + "', '" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
 
 				database.execute("INSERT INTO lgd_map_datatype VALUES('" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', " + a[0][0] + ")");
 
@@ -256,6 +256,39 @@ public class RequestHandling {
 
 				re = "Edited Datatype-Mapping successfully restored.";
 			}
+		}//#########################################################################
+                else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
+			if (a.length == 0 )
+				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
+
+			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '', '', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create') RETURNING id");
+
+			database.execute("INSERT INTO lgd_map_resource_k VALUES ('"+ request.getParameter("k")+"','" + request.getParameter("property")+"','"+request.getParameter("object")+"'," + a[0][0] + ")");
+
+			re = "K-Mapping successfully created.";
+		}//#########################################################################
+                else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
+			if (a.length == 0 )
+				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
+
+			a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") +"','" +request.getParameter("v") + "', '', '', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create') RETURNING id");
+
+			database.execute("INSERT INTO lgd_map_resource_kv VALUES ('"+ request.getParameter("k")+"','" + request.getParameter("v")+"','" + request.getParameter("property")+"','"+request.getParameter("object")+"'," + a[0][0] + ")");
+
+			re = "KV-Mapping successfully created.";
+		}//#########################################################################
+                else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
+			if (a.length == 0 )
+				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
+
+			a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', 'deleted', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create') RETURNING id");
+
+			database.execute("INSERT INTO lgd_map_datatype Values ('" + request.getParameter("k")+"','" + request.getParameter("datatype") + "'," + a[0][0] + ")");
+
+			re = "Datatype-Mapping successfully created.";
 		}//#########################################################################
 
 		return re;

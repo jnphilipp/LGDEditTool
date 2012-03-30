@@ -17,12 +17,12 @@
 
 package LGDEditTool.Templates;
 
+import LGDEditTool.Functions;
+import LGDEditTool.SiteHandling.User;
+import LGDEditTool.db.DatabaseBremen;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
-import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
-import LGDEditTool.SiteHandling.User;
 
 /**
  *
@@ -60,18 +60,28 @@ public class TemplatesSearch {
 	public static String searchResult(String search) throws Exception {
 		DatabaseBremen.getInstance().connect();
 		String re = "", tmp = "";
+                boolean result = false;
 
 		tmp = kMapping((search.contains("-") ? search.split("-")[0] : search ));
-		if ( !tmp.equals("") )
+		if ( !tmp.equals("") ) {
 			re += tmp;
+                        result = true;
+                }
 
 		tmp = "\n\t\t\t\t<br /><br />\n\n" + kvMapping(search);
-		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
+		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") ) {
 			re += tmp;
+                        result = true;
+                }
 
 		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((tmp.equals("\n\t\t\t\t<br /><br />\n\n") ? search : (search.contains("-") ? search.split("-")[0] : search )));
-		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
+		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") ) {
 			re += tmp;
+                        result = true;
+                }
+
+                if ( !result )
+                    re += "\t\t\t\t<p>Your search returned no results.</p>";
 
 		return re;
 	}
@@ -316,7 +326,7 @@ public class TemplatesSearch {
 		Object[][] a;
 
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' GROUP BY k, datatype ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' " + (search.split("-")[1].equals("int") || search.split("-")[1].equals("float") || search.split("-")[1].equals("boolean") ? "AND datatype='" + search.split("-")[1] + "'" : "" ) + " GROUP BY k, datatype ORDER BY k, datatype");
 		else
 			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search + "' GROUP BY k, datatype ORDER BY k, datatype");
 

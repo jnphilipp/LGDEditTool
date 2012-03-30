@@ -208,7 +208,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
 				}
 				else {
-					out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+                                    if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
+						out.print(TemplatesUnmappedTags.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite")));
+						out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+					}
+                                        else{
+                                                out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
+                                        }
 				}
 				out.println("</div>");
 			}
@@ -220,14 +226,6 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
-
-				/*if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.println(TemplatesSearch.captcha(request, search));
-					out.println(TemplatesSearch.search());
-					out.println("\t\t\t\t<br /><br />");
-					out.println(TemplatesSearch.searchResult(search));
-					out.println("\t\t\t</div>");
-				}*/
 
 				if ( request.getParameter("site") == null ) {
 					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));

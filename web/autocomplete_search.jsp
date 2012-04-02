@@ -27,6 +27,7 @@
 try {
 	DatabaseBremen database = DatabaseBremen.getInstance();
 	database.connect();
+	User.getInstance().createUser(request);
 	String query = request.getParameter("q");
 
 	if ( query.contains("*") )

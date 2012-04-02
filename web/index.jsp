@@ -88,6 +88,8 @@
 
 				if ( id.indexOf("d") != -1 )
 					id = id.replace("d", "");
+				else if ( id.indexOf("c") != -1 )
+					id = id.replace("c", "");
 				var s = document.getElementById(id + 'a');
 
 				if ( e.style.display == 'none' ) {

@@ -85,7 +85,7 @@ public class TemplatesSearch {
 	private static String kMapping(String search) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "' ") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object ORDER BY k");
+		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "' ") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object, user_id ORDER BY k");
 
 		if ( a.length == 0 )
 			return "";
@@ -100,6 +100,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
+		re += "\t\t\t\t\t\t<th>Commit</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
 		for ( int i = 0; i < a.length; i++ ) {
@@ -107,15 +108,19 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][1].toString()) + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][2].toString()) + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + a[i][4] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Delete</a></td>\n";
+			re += "\t\t\t\t\t\t<td>" + (a[i][3].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += kMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString());
+			re += kMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 			//delete
-			re += kMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString());
+			re += kMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+			//commit
+			if ( !a[i][3].equals("main") )
+				re += kMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 		}
 
 		re += "\t\t\t\t</table>\n";
@@ -141,13 +146,14 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("k" + i + "u", "kmapping", "Save", 6);
+		re += getUserField("k" + i + "u", "kmapping", "Save", 7);
 		re += "\t\t\t\t\t</form>\n";
 		return re;
 	}
@@ -171,15 +177,47 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kd" + i + "u", "kmapping", "Delete", 6);
+		re += getUserField("kd" + i + "u", "kmapping", "Delete", 7);
 		re += "\t\t\t\t\t</form>\n";
 
+		return re;
+	}
+
+	/**
+	 * Template for K-Mapping edit fields.
+	 * @param search search query
+	 * @param i counter
+	 * @param k k
+	 * @param property property
+	 * @param object object
+	 * @param affectedEntities affected entities
+	 * @return String
+	 */
+	private static String kMappingCommit(String search, int i, String k, String property, String object, String affectedEntities) {
+		String re = "";
+
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"kc" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kc" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+		re += getUserField("kc" + i + "u", "kmapping", "Save", 7);
+		re += "\t\t\t\t\t</form>\n";
 		return re;
 	}
 
@@ -194,9 +232,9 @@ public class TemplatesSearch {
 		String re = "";
 		Object[][] a;
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
 		else
-			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
 
 		if ( a.length == 0 )
 			return "";
@@ -212,6 +250,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
+		re += "\t\t\t\t\t\t<th>Commit</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
 		for ( int i = 0; i < a.length; i++ ) {
@@ -220,15 +259,19 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][2].toString()) + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + Functions.shortenURL(a[i][3].toString()) + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][4] + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + a[i][5] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Delete</a></td>\n";
+			re += "\t\t\t\t\t\t<td>" + (a[i][4].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += kvMappingEdit(search,i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString());
+			re += kvMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 			//delete
-			re += kvMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString());
+			re += kvMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
+			//commit
+			if ( !a[i][4].equals("main") )
+				re += kvMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 		}
 
 		re += "\t\t\t\t</table>";
@@ -257,14 +300,15 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kv" + i + "u", "kvmapping", "Save", 7);
+		re += getUserField("kv" + i + "u", "kvmapping", "Save", 8);
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -281,7 +325,7 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kvMappingDelete(String search,int i, String k, String v, String property, String object, String affectedEntities) {
+	private static String kvMappingDelete(String search, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
@@ -291,14 +335,50 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kvd" + i +"u", "kvmapping", "Delete", 7);
+		re += getUserField("kvd" + i +"u", "kvmapping", "Delete", 8);
+		re += "\t\t\t\t\t</form>\n";
+
+		return re;
+	}
+
+	/**
+	 * Template for KV-Mapping commit fields.
+	 * @param search search query
+	 * @param i counter
+	 * @param k k
+	 * @param v v
+	 * @param property property
+	 * @param object object
+	 * @param affectedEntities affected entities
+	 * @return String
+	 */
+	private static String kvMappingCommit(String search, int i, String k, String v, String property, String object, String affectedEntities) {
+		String re = "";
+
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"kvc" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvc" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+		re += getUserField("kvc" + i +"u", "kvmapping", "Delete", 8);
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -315,9 +395,9 @@ public class TemplatesSearch {
 		String re = "";
 		Object[][] a;
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
 		else
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
 
 		if ( a.length == 0 )
 			return "";
@@ -331,21 +411,26 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
+		re += "\t\t\t\t\t\t<th>Commit</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 		
 		for ( int i = 0; i < a.length; i++ ) {
 			re += "\t\t\t\t\t<tr id=\"tk" + i + "a\">\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][0] + "</td>\n";
 			re += "\t\t\t\t\t\t<td>" + a[i][1] + "</td>\n";
-			re += "\t\t\t\t\t\t<td>" + a[i][2] + "</td>\n";
+			re += "\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + i + "')\">Delete</a></td>\n";
+			re += "\t\t\t\t\t\t<td>" + (a[i][2].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += datatypeMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString());
+			re += datatypeMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 			//delete
-			re += datatypeMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString());
+			re += datatypeMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
+			//commit
+			if ( !a[i][2].equals("main") )
+				re += datatypeMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 		}
 
 		re += "\t\t\t\t</table>";
@@ -368,14 +453,15 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tk" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"datatype\" value=\"" + datatype + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"datatype\" value=\"" + datatype + "\" style=\"width: 10em;\" /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + datatype + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("tk" + i + "u", "dmapping", "Save", 5);
+		re += getUserField("tk" + i + "u", "dmapping", "Save", 6);
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -398,12 +484,42 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + datatype + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("tkd" + i + "u", "dmapping", "Delete", 5);
+		re += getUserField("tkd" + i + "u", "dmapping", "Delete", 6);
+		re += "\t\t\t\t\t</form>\n";
+
+		return re;
+	}
+
+	/**
+	 * Template for Datatype-Mapping delete fields.
+	 * @param search search query
+	 * @param i counter
+	 * @param k k
+	 * @param datatype datatype
+	 * @param affectedEntities affected entities
+	 * @return String
+	 */
+	private static String datatypeMappingCommit(String search, int i, String k, String datatype, String affectedEntities) {
+		String re = "";
+
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<tr id=\"tkc" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
+		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + datatype + "\" />\n";
+		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
+		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkc" + i + "')\">Hide</a></td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
+		re += getUserField("tkc" + i + "u", "dmapping", "Commit", 6);
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -418,99 +534,16 @@ public class TemplatesSearch {
 	 * @return String
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
-		String re = "";
-
-		/*if ( !User.getInstance().isLoggedIn() ) {
-			re += "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "3" : "2") + "\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-			re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + User.getInstance().getUsername() + "\" required />\n";
-			re += "\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-			re += "\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\">\n";
-			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
-			re += "\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t</tr>\n";
-		}
-		else {*/
-			re += "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "5" : "4") + "\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-			re += "\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
-			//re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" />\n";
-			re += "\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t</tr>\n";
-		//}
+		String re = "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 6 ? 3 : 4) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
+		re += "\t\t\t\t\t\t\t</td>\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 8 ? 4 : 3) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
+		re += "\t\t\t\t\t\t\t</td>\n";
+		re += "\t\t\t\t\t\t</tr>\n";
 
 		return re;
 	}
-
-	/**
-	 * reCaptcha form.
-	 * @param request request
-	 * @param search search query
-	 * @return String
-	 *
-	public static String captcha(HttpServletRequest request, String search) {
-		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
-
-		String re;
-		re = "\t\t\t\t<article class=\"captcha\">\n";
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
-		re += "\t\t\t\t\t\t<ul>\n";
-		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
-		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";
-		re += "\t\t\t\t\t\t</ul>\n";
-
-		if ( request.getParameter("kmapping") != null ) {
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
-
-			if ( !request.getParameter("kmapping").equals("Delete") ) {
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
-			}
-
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kmapping\" value=\"" + request.getParameter("kmapping") + "\" />\n";
-		}
-		else if ( request.getParameter("kvmapping") != null ) {
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + request.getParameter("v") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
-
-			if ( !request.getParameter("kvmapping").equals("Delete") ) {
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
-			}
-
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kvmapping\" value=\"" + request.getParameter("kvmapping") + "\" />\n";
-		}
-		else if ( request.getParameter("dmapping") != null ) {
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"datatypr\" value=\"" + request.getParameter("datatype") + "\" />\n";
-
-			if ( !request.getParameter("dmapping").equals("Delete") )
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + request.getParameter("adatatype") + "\" />\n";
-
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"dmapping\" value=\"" + request.getParameter("dmapping") + "\" />\n";
-		}
-
-		re += "\t\t\t\t\t</form>\n";
-		re += "\t\t\t\t</article>\n";
-		return re;
-	}*/
 }

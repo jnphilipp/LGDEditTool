@@ -99,16 +99,3 @@ div.tlogin fieldset input[type=password],
 div.tlogin fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
 	font-family: monospace;
 	width: 100%;}
-
-div.login fieldset input[type=submit],
-div.tlogin fieldset input[type=submit] { font-family: monospace;
-	font-size: 11pt;
-	text-align: center;
-	border: 1px solid #666;
-	background: #efefef;
-	color: #777;}
-
-div.login fieldset input[type=submit]:hover,
-div.tlogin fieldset input[type=submit]:hover { background: #F7F7F7;
-	color: #333;
-	font-weight: bold;}

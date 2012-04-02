@@ -31,8 +31,8 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
  */
 public class TemplatesSearch {
 	/**
-	 * Template for Searchfield.
-	 * @return String
+	 * Template for Searchfield. This Template is used by the 'search'-tab.
+	 * @return Returns a String with HTML-code.
 	 */
 	public static String search() {
 		String re = "\t\t\t\t<fieldset class=\"search\">\n";
@@ -52,9 +52,9 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for search results.
-	 * @param search search query
-	 * @return String
+	 * Template for search results. Builds String with HTML-Code that represent the search Result.
+	 * @param search Search-string, which the user typed in.
+	 * @return String with HTML-Code
 	 * @throws Exception 
 	 */
 	public static String searchResult(String search) throws Exception {
@@ -87,15 +87,15 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for K-Mapping results.
-	 * @param search search query
-	 * @return String
+	 * Template for K-Mapping results. SQL-Query for K-Mappings and fills K-Mapping table.
+	 * @param search Search-string, which the user typed in.
+	 * @return String with HTML-Code
 	 * @throws Exception 
 	 */
 	private static String kMapping(String search) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE k='" + search + "' GROUP BY k, property, object ORDER BY k");
+		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " GROUP BY k, property, object ORDER BY k");
 
 		if ( a.length == 0 )
 			return "";
@@ -133,14 +133,14 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for K-Mapping edit fields.
-	 * @param search search query
-	 * @param i counter
-	 * @param k k
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected entities
-	 * @return String
+	 * Template for K-Mapping edit fields. Elements for editing K-Mappings.
+	 * @param search Search-string, which the user typed in.
+	 * @param i table-column id
+	 * @param k K-Mapping key
+	 * @param property K-Mapping property
+	 * @param object K-Mapping object
+	 * @param affectedEntities K-Mapping affected entities
+	 * @return String with HTML-Code
 	 */
 	private static String kMappingEdit(String search, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
@@ -163,14 +163,14 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for K-Mapping delete fields.
-	 * @param search search query
-	 * @param i counter
-	 * @param k k
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected entities
-	 * @return String
+	 * Template for K-Mapping delete fields. Elements for deleting K-Mappings
+	 * @param search Search-string, which the user typed in.
+	 * @param i table-column id
+	 * @param k K-Mapping key
+	 * @param property K-Mapping property
+	 * @param object K-Mapping object
+	 * @param affectedEntities K-Mapping affected entities
+	 * @return String with HTML-Code
 	 */
 	private static String kMappingDelete(String search, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
@@ -194,9 +194,9 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for KV-Mapping results.
-	 * @param search search query
-	 * @return String
+	 * Template for KV-Mapping results. SQL-Query for KV-Mappings and fills KV-Mapping table.
+	 * @param search Search-string, which the user typed in.
+	 * @return String with HTML-Code
 	 * @throws Exception 
 	 */
 	private static String kvMapping(String search) throws Exception {
@@ -206,7 +206,7 @@ public class TemplatesSearch {
 		if ( search.contains("-") )
 			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' GROUP BY k, v, property, object ORDER BY k, v");
 		else
-			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search + "' GROUP BY k, v, property, object ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + " GROUP BY k, v, property, object ORDER BY k, v");
 
 		if ( a.length == 0 )
 			return "";
@@ -247,15 +247,15 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for KV-Mapping edit fields.
-	 * @param search search query
-	 * @param i counter
-	 * @param k k
-	 * @param v v
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected entities
-	 * @return String
+	 * Template for KV-Mapping edit fields. Elements for editing KV-Mappings.
+	 * @param search Search-string, which the user typed in.
+	 * @param i table-column id
+	 * @param k KV-Mapping key
+	 * @param v KV-Mapping value
+	 * @param property KV-Mapping property
+	 * @param object KV-Mapping object
+	 * @param affectedEntities KV-Mapping affected entities
+	 * @return String with HTML-Code
 	 */
 	private static String kvMappingEdit(String search, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
@@ -281,15 +281,15 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for KV-Mapping delete fields.
-	 * @param search search query
-	 * @param i counter
-	 * @param k k
-	 * @param v v
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected entities
-	 * @return String
+	 * Template for KV-Mapping delete fields. Elements for deleting KV-Mappings
+	 * @param search Search-string, which the user typed in.
+	 * @param i table-column id
+	 * @param k KV-Mapping key
+	 * @param v KV-Mapping value
+	 * @param property KV-Mapping property
+	 * @param object KV-Mapping object
+	 * @param affectedEntities KV-Mapping affected entities
+	 * @return String with HTML-Code
 	 */
 	private static String kvMappingDelete(String search,int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
@@ -315,9 +315,9 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for Datatype-Mapping results.
-	 * @param search search query
-	 * @return String
+	 * Template for Datatype-Mapping results. SQL-Query for Datatype-Mappings and fills Datatype-Mapping table.
+	 * @param search Search-string, which the user typed in.
+	 * @return String with HTML-Code
 	 * @throws Exception 
 	 */
 	private static String datatypeMapping(String search) throws Exception {
@@ -328,7 +328,7 @@ public class TemplatesSearch {
 		if ( search.contains("-") )
 			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' " + (search.split("-")[1].equals("int") || search.split("-")[1].equals("float") || search.split("-")[1].equals("boolean") ? "AND datatype='" + search.split("-")[1] + "'" : "" ) + " GROUP BY k, datatype ORDER BY k, datatype");
 		else
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search + "' GROUP BY k, datatype ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " GROUP BY k, datatype ORDER BY k, datatype");
 
 		if ( a.length == 0 )
 			return "";
@@ -365,13 +365,13 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for Datatype-Mapping edit fields.
-	 * @param search search query
-	 * @param i counter
-	 * @param k k
-	 * @param datatype datatype
-	 * @param affectedEntities affected entities
-	 * @return String
+	 * Template for Datatype-Mapping edit fields. Elements for editing Datatype-Mappings.
+	 * @param search Search-string, which the user typed in.
+	 * @param i table-column id
+	 * @param k Datatype-Mapping key
+	 * @param datatype Datatype-Mapping datatype
+	 * @param affectedEntities Datatype-Mapping affected entities
+	 * @return String with HTML-Code
 	 */
 	private static String datatypeMappingEdit(String search, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
@@ -393,13 +393,13 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for Datatype-Mapping delete fields.
-	 * @param search search query
-	 * @param i counter
-	 * @param k k
-	 * @param datatype datatype
-	 * @param affectedEntities affected entities
-	 * @return String
+	 * Template for Datatype-Mapping delete fields.  Elements for deleting Datatype-Mappings
+	 * @param search Search-string, which the user typed in.
+	 * @param i table-column id
+	 * @param k Datatype-Mapping key
+	 * @param datatype Datatype-Mapping datatype
+	 * @param affectedEntities Datatype-Mapping affected entities
+	 * @return String with HTML-Code
 	 */
 	private static String datatypeMappingDelete(String search, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
@@ -421,12 +421,12 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * Template for user fields.
+	 * Template for user fields. Contains User and Comment input-box for Editing and Deleting.
 	 * @param id id for toggle visiblity
 	 * @param submitName submit name
 	 * @param submitValue submit value
 	 * @param columns column count
-	 * @return String
+	 * @return String with HTML-Code
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "";
@@ -463,10 +463,10 @@ public class TemplatesSearch {
 	}
 
 	/**
-	 * reCaptcha form.
+	 * reCaptcha form. Request ReCaptcha from a user who is not logged in.
 	 * @param request request
-	 * @param search search query
-	 * @return String
+	 * @param search Search-string, which the user typed in.
+	 * @return String with HTML-Code
 	 */
 	public static String captcha(HttpServletRequest request, String search) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);

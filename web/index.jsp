@@ -190,7 +190,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println("\t\t\t</div>");
 				}
 			}
-			else if ( request.getParameter("tab").equals("ontologie") ) {
+			else if ( request.getParameter("tab").equals("ontology") ) {
 				if ( !search.equals("") ) {
 					out.println("<div class=\"pane\">\n");
 					out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            

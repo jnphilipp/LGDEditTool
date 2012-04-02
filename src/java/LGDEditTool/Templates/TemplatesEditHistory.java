@@ -29,15 +29,14 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
  * @author Alexander Richter
  */
 public class TemplatesEditHistory {
-	//static ArrayList<String> al = new ArrayList<String>();
 
 	/**
-	 * Template for EditHistory.
-	 * @param ksite current site k-mappings
-	 * @param kvsite current site kv-mappings
+	 * Template for EditHistory. This Template is used by the 'EditHistory'-tab.
+	 * @param ksite current K-mappings Site
+	 * @param kvsite current KV-mappings site
 	 * @param user user-session
-	 * @param sort sort object
-	 * @return 
+	 * @param sort sort object (K,KV, etc.)
+	 * @return Returns a String with HTML-code.
 	 */
 	static public String editHistory(String ksite, String kvsite, String dsite, String search, String sort) throws Exception {
 		DatabaseBremen.getInstance().connect();
@@ -89,10 +88,10 @@ public class TemplatesEditHistory {
 		re += "\t\t\t\t\t\t<th>restore</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
-		//insert edithistory from db for kv-mappings
+		//edithistory from db for kv-mappings
 		re += searchKVHistoryDB(Integer.parseInt(ksite), Integer.parseInt(kvsite), Integer.parseInt(dsite), search, sort);
 
-		//inser table foot
+		//table foot
 		re += "\t\t\t\t</table>\n";
 		re += "\t\t\t\t<div style=\"float: right;\">\n";
 
@@ -106,7 +105,7 @@ public class TemplatesEditHistory {
 		re += "\t\t\t\t</div>\n";
 
 		//datatype mappings
-		//insert tablehead
+		//tablehead
 		re += "\t\t\t\t<h2>Datatype-Mapping-History</h2>\n";
 		re += "\t\t\t\t<table class=\"table\">\n";
 		re += "\t\t\t\t\t<tr class=mapping>\n";
@@ -120,10 +119,10 @@ public class TemplatesEditHistory {
 		re += "\t\t\t\t\t\t<th>restore</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
-		//insert edithistory from db for kv-mappings
+		//edithistory from db for kv-mappings
 		re += searchDatatypeHistoryDB(Integer.parseInt(ksite), Integer.parseInt(kvsite), Integer.parseInt(dsite), search, sort);
 
-		//inser table foot
+		//table foot
 		re += "\t\t\t\t</table>\n";
 		re += "\t\t\t\t<div style=\"float: right;\">\n";
 
@@ -141,11 +140,12 @@ public class TemplatesEditHistory {
 
 	/**
 	 * gets edithistory from DB
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
+	 * @param ksite current K-mappings Site
+	 * @param kvsite current KV-mappings Site
+	 * @param search Search-string, which the user typed in.
+	 * @param sort sort object (K,KV, etc.)
 	 * @throws Exception 
+         * @return Returns a String with HTML-code.
 	 */
 	static private String searchKHistoryDB(int ksite, int kvsite, int dsite, String search, String sort) throws Exception {
 		String re = "";
@@ -162,11 +162,12 @@ public class TemplatesEditHistory {
 
 	/**
 	 * gets edithistory from DB
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
+	 * @param ksite current K-mappings Site
+	 * @param kvsite current KV-mappings Site
+	 * @param search Search-string, which the user typed in.
+	 * @param sort sort object (K,KV, etc.)
 	 * @throws Exception 
+         * @return Returns a String with HTML-code.
 	 */
 	static private String searchKVHistoryDB(int ksite, int kvsite, int dsite, String search, String sort) throws Exception {
 		String s = "";
@@ -193,74 +194,76 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * Template for K-Mappings.
-	 * @param id
-	 * @param k k
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected entities
+	 * Template for K-Mappings. Fill Datatype-Mapping columns.
+	 * @param id table-column id
+	 * @param k K-Mapping key
+	 * @param property K-Mapping property
+	 * @param object K-Mapping object
+	 * @param affectedEntities K-Mapping affected entities
 	 * @param action action
-	 * @param user_id user
-	 * @param comment comment
-	 * @param timestamp timestamp
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
-	 * @return 
+	 * @param user_id user-session
+	 * @param comment edit/del-comment
+	 * @param timestamp when change on K-Mappings happened
+	 * @param ksite current K-mappings Site
+	 * @param kvsite current KV-mappings Site
+         * @param dsite current Datatype-mappings Site
+	 * @param search Search-string, which the user typed in.
+	 * @param sort sort object (K,KV, etc.)
+	 * @return Returns a String with HTML-code.
 	 */
 	static private String addkMapping(int id, String k, String property, String object, String affectedEntities,String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, String search, String sort) {
 		String s = "\t\t\t\t\t<tr id=\"k" + id + "a\">\n";
-    s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
-    s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">restore</a></td>\n";
-    s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
-    s += "\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-    s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Hide</a></td>\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"timestamp\" value=\"" + timestamp + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"auser\" value=\"" + user_id + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"acomment\" value=\"" + comment + "\" />\n";
-    s += "\t\t\t\t\t\t</tr>\n";
+                s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
+                s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">restore</a></td>\n";
+                s += "\t\t\t\t\t</tr>\n";
+                s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
+                s += "\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+                s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + user_id + "</td>\n";
+                s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
+                s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Hide</a></td>\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"timestamp\" value=\"" + timestamp + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"auser\" value=\"" + user_id + "\" />\n";
+                s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"acomment\" value=\"" + comment + "\" />\n";
+                s += "\t\t\t\t\t\t</tr>\n";
 		s += getUserField("k" + id + "u", "kmappingedit", "Restore", 9);
 		s += "\t\t\t\t\t</form>\n";
-    return s;
+                return s;
 	}
 
 	/**
-	 * Template for KV-Mappings.
-	 * @param id
-	 * @param k k
-	 * @param v v
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected entities
+	 * Template for KV-Mappings. Fill Datatype-Mapping columns.
+	 * @param id table-column id
+	 * @param k KV-Mapping key
+	 * @param v KV-Mapping value
+	 * @param property KV-Mapping property
+	 * @param object KV-Mapping object
+	 * @param affectedEntities KV-Mapping affected entities
 	 * @param action action
-	 * @param user_id user
-	 * @param comment comment
-	 * @param timestamp timestamp
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
-	 * @return 
+	 * @param user_id user-session
+	 * @param comment edit/del-comment
+	 * @param timestamp when change on K-Mappings happened
+	 * @param ksite current K-mappings Site
+	 * @param kvsite current KV-mappings Site
+         * @param dsite current Datatype-mappings Site
+	 * @param search Search-string, which the user typed in.
+	 * @param sort sort object (K,KV, etc.)
+	 * @return Returns a String with HTML-code.
 	 */
 	static private String addkvMapping(int id, String k, String v, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, String search, String sort) {
                 String s = "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
@@ -300,6 +303,23 @@ public class TemplatesEditHistory {
 		return s;
 	}
 
+        /**
+         * Template for Datatype-Mappings. Fill Datatype-Mapping columns.
+         * @param id table-column id
+         * @param k Datatype-Mapping key
+         * @param datatype Datatype-Mapping datatype
+         * @param affectedEntities Datatype-Mapping affectedEntities
+         * @param action action
+         * @param user_id user-session
+         * @param comment edit/del-comment
+         * @param timestamp when change on K-Mappings happened
+         * @param ksite current K-mappings Site
+         * @param kvsite current KV-mappings Site
+         * @param dsite current Datatype-mappings Site
+         * @param search Search-string, which the user typed in.
+         * @param sort sort object (K,KV, etc.)
+         * @return Returns a String with HTML-code.
+         */
 	static private String addDatatypeMapping(int id, String k, String datatype, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, String search, String sort) {
                 String s = "\t\t\t\t\t<tr id=\"tk" + id + "a\">\n";
                 s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
@@ -334,11 +354,11 @@ public class TemplatesEditHistory {
 
 	/**
 	 * Template for user fields.
-	 * @param id id for toggle visiblity
+	 * @param id table-column id
 	 * @param submitName submit name
 	 * @param submitValue submit value
 	 * @param columns column count
-	 * @return String
+	 * @return Returns a String with HTML-code.
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "";
@@ -376,10 +396,10 @@ public class TemplatesEditHistory {
 
 	/**
 	 * reCatpcha
-	 * @param request
-	 * @param ksite
-	 * @param kvsite
-	 * @return 
+	 * @param request request
+	 * @param ksite current K-mappings Site
+	 * @param kvsite current KV-mappings Site
+	 * @return Returns a String with HTML-code.
 	 */
 	public static String captcha(HttpServletRequest request, String ksite, String kvsite, String dsite) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);

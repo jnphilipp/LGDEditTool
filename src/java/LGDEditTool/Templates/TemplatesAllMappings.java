@@ -30,10 +30,10 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
 */
 public class TemplatesAllMappings {
 	/**
-	 * Template for EditHistory.
-	 * @param type k or kv mapping
-	 * @param site current displsyed site
-	 * @return
+	 * Template for EditHistory. This Template is used by the 'AllMappings'-tab.
+	 * @param type mapping type, K or KV-Mapping
+	 * @param site current displayed site
+	 * @return Returns a String with HTML-code.
 	 * @throws Exception 
 	 */
 	static public String listAllMappings(String type, String site) throws Exception {
@@ -114,9 +114,9 @@ public class TemplatesAllMappings {
 
 
 	/**
-	 * SQL query to get all k-mappings
+	 * Template for All K-Mappings. SQL query to get all K-mappings.
 	 * @param site current site
-	 * @return String
+	 * @return Returns a String with HTML-code.
 	 * @throws Exception 
 	 */
 	static private String listAllKMappings(int site) throws Exception {
@@ -133,9 +133,10 @@ public class TemplatesAllMappings {
 	}
 
 	/**
-	 * SQL query to get all K-Mappings.
+	 * Template for All KV-Mappings. SQL-Query for KV-Mappings and fills KV-Mapping table.
 	 * @param site current site
 	 * @throws Exception 
+         * @return Returns a String with HTML-code.
 	 */
 	static private String listAllKVMappings(int site) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
@@ -151,9 +152,10 @@ public class TemplatesAllMappings {
 	}
 
 	/**
-	 * SQL query to get all Datatype-Mappings.
+	 * Template for All Datatype-Mappings. SQL-Query for Datatype-Mappings.Fills Datatype-Mapping table.
 	 * @param site current site
 	 * @throws Exception 
+         * @return Returns a String with HTML-code.
 	 */
 	static private String listAllDatatypeMappings(int site) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
@@ -169,14 +171,14 @@ public class TemplatesAllMappings {
 	}
     
 	/**
-	 * Template for K-Mappings.
-	 * @param id id
-	 * @param k k
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * Template for K-Mappings. Fill K-Mapping columns.
+	 * @param id table-column id
+	 * @param k K-Mapping key
+	 * @param property K-Mapping property
+	 * @param object K-Mapping object
+	 * @param affectedEntities K-Mapping affected Entities
+	 * @param site current K-Mapping site
+	 * @return Returns a String with HTML-code.
 	 */
 	static private String addKMapping(int id, String k, String property, String object, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"k" + id + "a\">\n";
@@ -222,15 +224,15 @@ public class TemplatesAllMappings {
 	}
 
 	/**
-	 * Template for KV-Mappings.
-	 * @param id id
-	 * @param k k
-	 * @param v v
-	 * @param property property
-	 * @param object object
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * Template for KV-Mappings. Fill KV-Mapping columns.
+	 * @param id table-column id
+	 * @param k KV-Mappings key
+	 * @param v KV-Mappings value
+	 * @param property KV-Mappings property
+	 * @param object KV-Mappings object
+	 * @param affectedEntities KV-Mappings affected Entities
+	 * @param site current KV-Mapping site
+	 * @return Returns a String with HTML-code.
 	 */
 	static private String addKVMapping(int id, String k, String v, String property, String object, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
@@ -281,13 +283,13 @@ public class TemplatesAllMappings {
 	}
 
 	/**
-	 * Template for Datatype-Mappings.
-	 * @param id id
-	 * @param k k
-	 * @param datatype datatype
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * Template for Datatype-Mappings. Fill Datatype-Mapping columns.
+	 * @param id table-column id
+	 * @param k Datatype-Mappings key
+	 * @param datatype Datatype-Mappings datatype
+	 * @param affectedEntities Datatype-Mappings affected Entities
+	 * @param site current Datatype-Mappings site
+	 * @return Returns a String with HTML-code.
 	 */
 	static private String addDatatypeMapping(int id, String k, String datatype, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"tk" + id + "a\">\n";
@@ -328,12 +330,12 @@ public class TemplatesAllMappings {
 	}
 
 	/**
-	 * Template for user fields.
+	 * Template for user fields. Contains User and Comment input-box for Editing and Deleting.
 	 * @param id id for toggle visiblity
 	 * @param submitName submit name
 	 * @param submitValue submit value
 	 * @param columns column count
-	 * @return String
+	 * @return Returns a String with HTML-code.
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "";
@@ -370,10 +372,11 @@ public class TemplatesAllMappings {
 	}
 
 	/**
-	 * reCatpcha form
-	 * @param request
-	 * @param type
-	 * @para site
+	 * reCatpcha form. Request ReCaptcha from a user who is not logged in.
+	 * @param request request
+	 * @param type mapping type, K or KV-Mapping
+	 * @param site current site
+         * @return Returns a String with HTML-code.
 	 */
 	public static String captcha(HttpServletRequest request,String type,String site) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);

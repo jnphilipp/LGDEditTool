@@ -36,9 +36,9 @@ tr.mapping input[type=submit] { font-family: monospace;
 	text-align: center;
 	border: 1px solid #666;
 	background: #efefef;
-	color: #777;
+	color: black;
 	width: 5em;}
 
 tr.mapping input[type=submit]:hover { background: #F7F7F7;
-	color: #333;
+	color: blue;
 	font-weight: bold;}

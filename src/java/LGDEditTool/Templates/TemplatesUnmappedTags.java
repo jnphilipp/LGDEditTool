@@ -30,10 +30,10 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
  */
 public class TemplatesUnmappedTags {
 	/**
-	 * template Unmapped Tags
-	 * @param ksite site k-mappings
-	 * @param kvsite site kv-mappings
-	 * @return sitecontent
+	 * Template Unmapped Tags. This Template is used by the 'UnmappedTags'-tab.
+	 * @param ksite current K-Mapping site
+	 * @param kvsite current KV-Mapping site
+	 * @return Returns a String with HTML-code.
 	 */
 	static public String unmappedTags(String ksite,String kvsite) throws Exception{
 		DatabaseBremen.getInstance().connect();
@@ -72,8 +72,8 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t\t<th>usage_count</th>\n";
                 s += "\t\t\t\t\t\t<th>create</th>\n";
 		s += "\t\t\t\t\t</tr>\n";
+                
 		//fill table with kv-mappings
-
 		s += listAllkv(Integer.valueOf(ksite),Integer.valueOf(kvsite));
 		s += "\t\t\t\t</table>\n";
 
@@ -92,9 +92,11 @@ public class TemplatesUnmappedTags {
 	}
 
 	/**
-	 * fills table with k-mappings
-	 * @param ksite current displayed site for k-mappings
+	 * Template for K-Mappings. Fills table with K-mappings
+	 * @param ksite current K-Mapping site
+         * @param kvsite current KV-Mapping site
 	 * @throws Exception 
+         * @return Returns a String with HTML-code.
 	 */
 	static private String listAllk(int ksite,int kvsite) throws Exception {
 		String s = "";
@@ -137,9 +139,11 @@ public class TemplatesUnmappedTags {
 	}
 
 	/**
-	 * fills table with kv-mappings
-	 * @param kvsite current displayed site for kv-mappings
+	 * Template for KV-Mappings. Fills table with KV-mappings
+         * @param ksite current K-Mapping site
+	 * @param kvsite current KV-Mapping site
 	 * @throws Exception 
+         * @return Returns a String with HTML-code.
 	 */
 	static private String listAllkv(int ksite,int kvsite) throws Exception {
 		String s = new String();
@@ -171,13 +175,15 @@ public class TemplatesUnmappedTags {
 	}
         
         /**
-	 * Template for user fields.
-	 * @param id id for toggle visiblity
-	 * @param submitName submit name
-	 * @param submitValue submit value
-	 * @param columns column count
-	 * @return String
-	 */
+         * Template for user fields.
+         * @param id id for toggle visiblity
+         * @param submitName submit name
+         * @param submitValue submit value
+         * @param type Mapping-Type (K,KV,Datatype)
+         * @param k Mapping Key
+         * @param v Mapping Value
+         * @return Returns a String with HTML-code.
+         */
 	private static String getUserField(String id, String submitName, String submitValue, String type,String k,String v) {
 		String re = "";
                 //create datatype
@@ -298,11 +304,12 @@ public class TemplatesUnmappedTags {
         
         
         /**
-	 * reCatpcha form
-	 * @param request
-	 * @param type
-	 * @para site
-	 */
+         * reCatpcha form. Request ReCaptcha from a user who is not logged in.
+         * @param request request
+         * @param ksite current K-Mapping site
+         * @param kvsite current KV-Mapping site
+         * @return Returns a String with HTML-code.
+         */
 	public static String captcha(HttpServletRequest request,String ksite,String kvsite) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
 

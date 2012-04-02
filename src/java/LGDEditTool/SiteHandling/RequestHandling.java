@@ -17,13 +17,13 @@
 
 package LGDEditTool.SiteHandling;
 
+import LGDEditTool.Functions;
+import LGDEditTool.db.DatabaseBremen;
 import java.security.MessageDigest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
-import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
 
 /**
  * Timestap: YYYY-MM-ddThh:mm:ss (2011-05-31T23:51:36)

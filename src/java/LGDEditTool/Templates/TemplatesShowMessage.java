@@ -24,6 +24,12 @@ package LGDEditTool.Templates;
  * @version 1.0
  */
 public class TemplatesShowMessage {
+    
+        /**
+         * Template for Message-Output.
+         * @param message Message for the User
+         * @return Returns a String with HTML-code.
+         */
 	public static String showMessage(String message) {
 		String re = "\t\t\t\t<article class=\"message\">\n";
 		re += "\t\t\t\t\t<p>" + message + "</p>\n";

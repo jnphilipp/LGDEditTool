@@ -36,9 +36,11 @@ public class Functions {
 	public static final String PUBLIC_reCAPTCHA_KEY = "6Le1b88SAAAAALjXm-PM6alI7EQlj-fi9eh-Wm2C ";
 
 	/**
-	 * Schorting the URL from property and object.
-	 * @param url URL
-	 * @return short URL
+	 * Shorting the URL from property and object.
+         * for ex.: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' to 'w3#type'
+         * or: 'http://linkedgeodata.org/ontology/Craft' to 'LGD:Craft'
+	 * @param url URI to be shortened
+	 * @return short version of the input URI
 	 */
 	public static String shortenURL(String url) {
 		if ( url.contains("w3.org") && url.endsWith("#type") )

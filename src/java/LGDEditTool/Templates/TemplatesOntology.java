@@ -29,10 +29,10 @@ import java.util.ArrayList;
 public class TemplatesOntology {
 
 	/**
-	 * Template for Ontology
+	 * Template for Ontology. This Template is used by the 'Ontology'-tab.
 	 * @param user user-session
-	 * @param tag 
-	 * @return
+	 * @param tag Label
+	 * @return Returns a String with HTML-code.
 	 * @throws Exception 
 	 */
 	static public String ontologie(User user,String tag) throws Exception {
@@ -57,11 +57,10 @@ public class TemplatesOntology {
 	}
     
     /**
-     * left side content
+     * left side content of Ontology-Tab.
      * @param user user-session
-     * @param tag
-     * @param database
-     * @return
+     * @param tag Label
+     * @return Returns a String with HTML-code.
      * @throws Exception 
      */
     static private String leftside(User user, String tag) throws Exception{
@@ -99,15 +98,14 @@ public class TemplatesOntology {
     
     
     /**
-     * right-side content
-     * @param user
-     * @param tag
-     * @param database
-     * @return
+     * right-side content of Ontology-Tab.
+     * @param user user-session
+     * @param tag Label
+     * @return Returns a String with HTML-code.
      * @throws Exception 
      */
     static private String rightside(User user,String tag) throws Exception {
-			DatabaseBremen database = DatabaseBremen.getInstance();
+	DatabaseBremen database = DatabaseBremen.getInstance();
         String s="";
         ArrayList<String> superclasses = new ArrayList<String>();
                 
@@ -129,7 +127,7 @@ public class TemplatesOntology {
             
                 s+= "\t\t\t\t\t\t<div class=\"hidden\" id=\""+i+"\">\n";
                 s+="\t\t\t\t\t\t<a href=\"javascript:treeview('00"+i+"')\">\\+</a>"+tag+"\n";
-                s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,"00"+i,database);
+                s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,"00"+i);
                 s+="\t\t\t\t\t\t</div>\n";
             
                 s+="\t\t\t\t\t\t</div>\n";
@@ -138,7 +136,7 @@ public class TemplatesOntology {
         else{int i=0;
             s+= "\t\t\t\t\t\t<div>\n";
                 s+="\t\t\t\t\t\t<a href=\"javascript:treeview('"+i+"')\">\\+</a>"+tag+"\n";
-                s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,Integer.toString(i),database)+"\n";
+                s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,Integer.toString(i))+"\n";
                 s+="\t\t\t\t\t\t</div>\n";
         }
         
@@ -147,10 +145,18 @@ public class TemplatesOntology {
     }
     
     
-    
-    static private String addSubClasses(User user,String tag,String id,DatabaseBremen database)throws Exception
+    /**
+     * Get Subclasses for Label.
+     * @param user user-session
+     * @param tag Label
+     * @param id div-element ID
+     * @return Returns a String with HTML-code.
+     * @throws Exception 
+     */
+    static private String addSubClasses(User user,String tag,String id)throws Exception
     {
         String s= "";
+        DatabaseBremen database = DatabaseBremen.getInstance();
         ArrayList<String> subclasses = new ArrayList<String>();
            
         Object[][] a = database.execute("SELECT v FROM lgd_map_resource_kv Where k='"+tag+"'");
@@ -164,7 +170,7 @@ public class TemplatesOntology {
         {
             
             s+="\t\t\t\t\t\t<a href=\"javascript:treeview('"+id+i+"')\">\\+</a>"+subclasses.get(i)+"<br />\n";
-            s+="\t\t\t\t\t\t\t"+addSubClasses(user,subclasses.get(i),""+id+i,database)+"\n";
+            s+="\t\t\t\t\t\t\t"+addSubClasses(user,subclasses.get(i),""+id+i)+"\n";
             
         }
         s+="\t\t\t\t\t\t</div>\n";

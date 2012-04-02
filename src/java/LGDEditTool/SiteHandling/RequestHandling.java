@@ -38,7 +38,7 @@ public class RequestHandling {
 	 * @return message
 	 * @throws Exception 
 	 */
-	public static String doRequestHandling(HttpServletRequest request, HttpServletResponse response, User user) throws Exception {
+	public static String doRequestHandling(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		database.connect();
 		String re = "";
@@ -57,32 +57,46 @@ public class RequestHandling {
 			Object[][] a = database.execute("SELECT email, admin FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND password='" + sb + "'");
 
 			if ( a.length == 0 ) {
-				user.createUser("", false, false);
+				User.getInstance().createUser("", false, false);
 				re = "Login or password incorrect.";
 			}
 			else {
-				user.createUser(a[0][0].toString(), true, Boolean.parseBoolean(a[0][1].toString()));
-				user.createCookie(response);
+				User.getInstance().createUser(a[0][0].toString(), true, Boolean.parseBoolean(a[0][1].toString()));
+				User.getInstance().createCookie(response);
 				re = "Login successful.";
 			}
 		}//#########################################################################
 		else if ( request.getParameter("logout") != null ) {
-			user.logout();
-			user.createCookie(response);
+			User.getInstance().logout();
+			User.getInstance().createCookie(response);
 			re = "Logout successful.";
 		}//#########################################################################
-		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
+		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null /*&& request.getParameter("user") != null*/ && request.getParameter("comment") != null ) {
+			//Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
+			//if (a.length == 0 )
+			//	a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
+			Object[][] a;
 
-			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', (SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id");
+			if ( User.getInstance().getView().equals("lgd_user_main") ) {
+			}
+			else {
+				a = database.execute("SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND property='" + request.getParameter("property") + "' AND object='" + request.getParameter("object") + "' and user_id='" + User.getInstance().getUsername() + "'");
+				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0].toString()));
+				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit'" + (hid == -1 ? "" : "," + hid) + ") RETURNING id");
 
-			database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
+				if ( hid == -1 )
+					database.execute("INSERT INTO lgd_map_resource_k VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+				else
+					database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+			}
+			
+			//a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', (SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id");
+
+			//database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
 
 			re = "K-Mapping successfully changed.";
 		}//#########################################################################
-		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
+		/*else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
@@ -257,11 +271,11 @@ public class RequestHandling {
 				re = "Edited Datatype-Mapping successfully restored.";
 			}
 		}//#########################################################################
-
+*/
 		return re;
 	}
 
-	public static boolean checkCaptcha(HttpServletRequest request) {
+	/*public static boolean checkCaptcha(HttpServletRequest request) {
 		String remoteAddr = request.getRemoteAddr();
 		ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
 		reCaptcha.setPrivateKey(Functions.PRIVATE_reCAPTCHA_KEY);
@@ -276,5 +290,5 @@ public class RequestHandling {
 		else {
 			return false;
 		}
-	}
+	}*/
 }

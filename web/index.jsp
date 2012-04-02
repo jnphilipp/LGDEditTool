@@ -40,7 +40,7 @@
 <% request.setCharacterEncoding("UTF-8");
 	String search = "";
 	String message = "";
-	boolean captcha = true;
+	//boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
 		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1)) + (request.getParameter("search").contains(",") ? "-" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
@@ -48,12 +48,12 @@
 	User user = User.getInstance();
 	user.createUser(request);
 
-	if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null ) {
-		captcha = RequestHandling.checkCaptcha(request);
-	}
+	//if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null ) {
+	//	captcha = RequestHandling.checkCaptcha(request);
+	//}
 
-	if ( request.getParameter("captcha") == null && captcha )
-		message = RequestHandling.doRequestHandling(request, response, user);
+	//if ( request.getParameter("captcha") == null && captcha )
+		message = RequestHandling.doRequestHandling(request, response);
 
 /*	if ( message.equals("Login successful.") ) {
 		out.println(user.isLoggedIn());
@@ -126,7 +126,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<article>
 				<fieldset>
 					<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
-					<form action="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>" method="post" accept-charset="UTF-8">
+					<form action="?tab=search" method="post" accept-charset="UTF-8">
 						<ul>
 							<li>
 								<label>Login or Email</label>
@@ -144,7 +144,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		</div>
 		<% } else { %>
 		<div class="login" style="right: 20px; position: absolute;">
-			<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : (request.getParameter("tab").equals("account") ? "search" : request.getParameter("tab")))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
+			<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=login&logout=yes">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
@@ -184,7 +184,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					<article>
 						<fieldset>
 							<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
-							<form action="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>" method="post" accept-charset="UTF-8">
+							<form action="?tab=search" method="post" accept-charset="UTF-8">
 								<table>
 									<tr><th>Login or Email</th></tr>
 									<tr><td><input type="text" name="user" required /></td></tr>
@@ -197,25 +197,25 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					</article>
 				</div>
 			</div>
-			<% } %>
-			<%--<%
-			if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
+			<% }
+			else if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
+					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals("lgd_user_main") ? " the main branch." : "your user branch.") + " (<a>Change</a>)</p>");
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t</div>");
 				}
 				else {
 					out.println("<div class=\"pane\">");
-					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.println(TemplatesSearch.captcha(request, search));
+					//if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+					//	out.println(TemplatesSearch.captcha(request, search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
 					out.println(TemplatesSearch.searchResult(search));
 					out.println("\t\t\t</div>");
 				}
 			}
-			else if ( request.getParameter("tab").equals("ontologie") ) {
+		/*	else if ( request.getParameter("tab").equals("ontologie") ) {
 				if ( !search.equals("") ) {
 					out.println("<div class=\"pane\">\n");
 					out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            
@@ -246,14 +246,6 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
 
-				/*if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.println(TemplatesSearch.captcha(request, search));
-					out.println(TemplatesSearch.search());
-					out.println("\t\t\t\t<br /><br />");
-					out.println(TemplatesSearch.searchResult(search));
-					out.println("\t\t\t</div>");
-				}*/
-
 				if ( request.getParameter("site") == null ) {
 					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));
 				}
@@ -269,13 +261,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 
 				out.println("\t\t\t\t</div>");
 				out.print("\t\t\t</div>");
-			}
+			}*/
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
 				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
 					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
-					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite")));
+					//if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+					//	out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite")));
         }
 				else {
 					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
@@ -326,7 +318,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			</div>
 			<%
 			}
-			%>--%>
+			%>
 		</div>
 		<small style="float: right;">© swp12-10 (<% out.print((Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH) ) + "." + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "." + Calendar.getInstance().get(Calendar.YEAR)); %>)</small>
 	</body>

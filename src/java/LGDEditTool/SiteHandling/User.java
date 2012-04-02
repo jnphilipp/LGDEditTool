@@ -34,6 +34,7 @@ public final class User {
 	private String username = "";
 	private boolean loggedIn = false;
 	private boolean admin = false;
+	private String view = "";
 
 	private User() {}
 
@@ -73,8 +74,9 @@ public final class User {
 		if ( this.loggedIn ) {
 			DatabaseBremen db = DatabaseBremen.getInstance();
 			db.connect();
-			Object[][] a = db.execute("SELECT admin FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");
+			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");
 			this.admin = Boolean.parseBoolean(a[0][0].toString());
+			this.view = a[0][1].toString();
 		}
 	}
 
@@ -90,6 +92,10 @@ public final class User {
 
 	public String getUsername() {
 		return this.username;
+	}
+
+	public String getView() {
+		return this.view;
 	}
 
 	public boolean isLoggedIn() {

@@ -31,7 +31,7 @@ import LGDEditTool.SiteHandling.User;
  */
 public class TemplatesSearch {
 	/**
-	 * Template for Searchfield.
+	 * Template for search field.
 	 * @return String
 	 */
 	public static String search() {
@@ -85,7 +85,7 @@ public class TemplatesSearch {
 	private static String kMapping(String search) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE k='" + search + "' GROUP BY k, property, object ORDER BY k");
+		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "' ") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object ORDER BY k");
 
 		if ( a.length == 0 )
 			return "";
@@ -135,7 +135,7 @@ public class TemplatesSearch {
 	private static String kMappingEdit(String search, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
@@ -194,9 +194,9 @@ public class TemplatesSearch {
 		String re = "";
 		Object[][] a;
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' GROUP BY k, v, property, object ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object ORDER BY k, v");
 		else
-			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search + "' GROUP BY k, v, property, object ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object ORDER BY k, v");
 
 		if ( a.length == 0 )
 			return "";
@@ -314,11 +314,10 @@ public class TemplatesSearch {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
-
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' GROUP BY k, datatype ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype ORDER BY k, datatype");
 		else
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search + "' GROUP BY k, datatype ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype ORDER BY k, datatype");
 
 		if ( a.length == 0 )
 			return "";
@@ -421,7 +420,7 @@ public class TemplatesSearch {
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "";
 
-		if ( !User.getInstance().isLoggedIn() ) {
+		/*if ( !User.getInstance().isLoggedIn() ) {
 			re += "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "3" : "2") + "\" align=\"center\">\n";
 			re += "\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
@@ -436,7 +435,7 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t\t</td>\n";
 			re += "\t\t\t\t\t\t</tr>\n";
 		}
-		else {
+		else {*/
 			re += "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "5" : "4") + "\" align=\"center\">\n";
 			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
@@ -444,10 +443,10 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t\t</td>\n";
 			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\" align=\"center\">\n";
 			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
-			re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" />\n";
+			//re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" />\n";
 			re += "\t\t\t\t\t\t\t</td>\n";
 			re += "\t\t\t\t\t\t</tr>\n";
-		}
+		//}
 
 		return re;
 	}
@@ -457,7 +456,7 @@ public class TemplatesSearch {
 	 * @param request request
 	 * @param search search query
 	 * @return String
-	 */
+	 *
 	public static String captcha(HttpServletRequest request, String search) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
 
@@ -513,5 +512,5 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t</form>\n";
 		re += "\t\t\t\t</article>\n";
 		return re;
-	}
+	}*/
 }

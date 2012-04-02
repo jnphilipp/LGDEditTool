@@ -75,7 +75,7 @@ public class TemplatesEditHistory {
 
 		//kvmappings
 		//insert tablehead
-		re += "\t\t\t\t<h2>KV-Mapping-History</h2>\n";
+		/*re += "\t\t\t\t<h2>KV-Mapping-History</h2>\n";
 		re += "\t\t\t\t<table class=\"table\">\n";
 		re += "\t\t\t\t\t<tr class=mapping>\n";
 		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "\">timestamp</a></th>\n";
@@ -135,7 +135,7 @@ public class TemplatesEditHistory {
 
 		nextsite = Integer.valueOf(dsite) + 1;
 		re += "\t\t\t\t\t<a href=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + nextsite + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "\">next&#62;</a>\n";
-		re += "\t\t\t\t</div>\n";
+		re += "\t\t\t\t</div>\n";*/
 
 		return re;
 	}
@@ -152,7 +152,7 @@ public class TemplatesEditHistory {
 		String re = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, property, object, count(k), user_id, comment, timestamp, action, history_id, id FROM lgd_map_resource_k_history GROUP BY k,property,object,user_id,comment,timestamp,history_id,id ORDER BY " + (sort.equals("") || sort.equals("v") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((ksite-1)*10));
+		Object[][] a = database.execute("SELECT k, property, object, count(k), user_id, comment, timestamp, action, history_id, id FROM lgd_map_resource_k_history WHERE user_id='" + (User.getInstance().getView().equals("lgd_user_main") ? "main" : User.getInstance().getUsername()) + "' GROUP BY k, property, object, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.equals("") || sort.equals("v") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((ksite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			re += addkMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), ksite, kvsite, dsite, search, sort);

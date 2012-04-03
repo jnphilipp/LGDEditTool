@@ -68,8 +68,7 @@ public class TemplatesOntology {
         String s= "";        
         
         Object[][] a = database.execute("SELECT k,v, language, label FROM lgd_map_label Where k='"+tag+"'");
-        String label=tag;//a[0][3].toString();
-        String local="";//a[0][2].toString();
+        String local="";
         
         s +="\t\t\t\t\t<form action=\"?tab=ontologie"+ ((user == null || !user.isLoggedIn()) ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
         s +="\t\t\t\t\t<fieldset>\n";
@@ -126,18 +125,26 @@ public class TemplatesOntology {
                 s+="\t\t\t\t\t\t<div><a href=\"javascript:treeview('"+i+"')\">+</a>"+superclasses.get(i)+"\n";
             
                 s+= "\t\t\t\t\t\t<div class=\"hidden\" id=\""+i+"\">\n";
-                s+="\t\t\t\t\t\t<a href=\"javascript:treeview('00"+i+"')\">\\+</a>"+tag+"\n";
+                s+="\t\t\t\t\t\t<a href=\"javascript:treeview('00"+i+"')\">\\<b id=\""+i+"p\" style=\"display:inline;\" >+</b><b id=\""+i+"m\" style=\"display:none\">-</b></a>"+tag+"\n";
                 s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,"00"+i);
                 s+="\t\t\t\t\t\t</div>\n";
             
-                s+="\t\t\t\t\t\t</div>\n";
+
             }
         }
         else{int i=0;
-            s+= "\t\t\t\t\t\t<div>\n";
-                s+="\t\t\t\t\t\t<a href=\"javascript:treeview('"+i+"')\">\\+</a>"+tag+"\n";
-                s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,Integer.toString(i))+"\n";
+            String sub=addSubClasses(user,tag,Integer.toString(i));
+            if(sub.equalsIgnoreCase("")){
+                s+= "\t\t\t\t\t\t<div>\n";
+                s+="\t\t\t\t\t\t\\-"+tag+"\n";
                 s+="\t\t\t\t\t\t</div>\n";
+            }
+            else{
+                s+= "\t\t\t\t\t\t<div>\n";
+                s+="\t\t\t\t\t\t<a href=\"javascript:treeview('00"+i+"')\">\\<b id=\""+i+"p\" style=\"display:inline\" >+</b><b id=\""+i+"m\" style=\"display:none\">-</b></a>"+tag+"\n";
+                s+="\t\t\t\t\t\t\t"+addSubClasses(user,tag,"00"+Integer.toString(i))+"\n";
+                s+="\t\t\t\t\t\t</div>\n";
+            }
         }
         
         s +="\t\t\t\t\t</fieldset>\n";
@@ -168,13 +175,20 @@ public class TemplatesOntology {
         s+= "\t\t\t\t\t\t<div class=\"hidden\" id=\""+id+"\">\n";
         for(int i=0;i<subclasses.size();i++)
         {
+            String sub=addSubClasses(user,subclasses.get(i),""+id+i);
+            if(sub.equalsIgnoreCase("")){
+                s+="\t\t\t\t\t\t\\-"+subclasses.get(i)+"<br />\n";
+            }
+            else
+            {
+               s+="\t\t\t\t\t\t<a href=\"javascript:treeview('"+id+i+"')\">\\<b id=\""+i+"p\" style=\"display:inline\" >+</b><b id=\""+i+"m\" style=\"display:none\">-</b></a>"+subclasses.get(i)+"<br />\n";
+               s+="\t\t\t\t\t\t\t"+sub+"\n"; 
+            }
             
-            s+="\t\t\t\t\t\t<a href=\"javascript:treeview('"+id+i+"')\">\\+</a>"+subclasses.get(i)+"<br />\n";
-            s+="\t\t\t\t\t\t\t"+addSubClasses(user,subclasses.get(i),""+id+i)+"\n";
             
         }
         s+="\t\t\t\t\t\t</div>\n";
-      
+        if(subclasses.size()==0){s="";}
         return s;
     }
 }

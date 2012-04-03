@@ -110,6 +110,20 @@
 				else {
 					e.style.display='none';
 				}
+                                var p= document.getElementById(id+"p");
+                                if ( p.style.display != 'inline' ){
+					e.style.display='inline';
+				}
+				else {
+					e.style.display='none';
+				}
+                                var m= document.getElementById(id+"m");
+                                if ( p.style.display != 'inline' ){
+					e.style.display='inline';
+				}
+				else {
+					e.style.display='none';
+				}
 			}
 
 
@@ -159,7 +173,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<% }
 				else { %>
 			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("ontology") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontology" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>

@@ -85,7 +85,7 @@ public class TemplatesSearch {
 	private static String kMapping(String search) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "' ") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object, user_id ORDER BY k");
+		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "' ") + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object, user_id ORDER BY k");
 
 		if ( a.length == 0 )
 			return "";
@@ -100,7 +100,8 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
-		re += "\t\t\t\t\t\t<th>Commit</th>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t<th>Commit</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
 		for ( int i = 0; i < a.length; i++ ) {
@@ -111,7 +112,9 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td>" + a[i][4] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Delete</a></td>\n";
-			re += "\t\t\t\t\t\t<td>" + (a[i][3].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
+
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				re += "\t\t\t\t\t\t<td>" + (a[i][3].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
@@ -119,7 +122,7 @@ public class TemplatesSearch {
 			//delete
 			re += kMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 			//commit
-			if ( !a[i][3].equals("main") )
+			if ( !a[i][3].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
 				re += kMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 		}
 
@@ -151,9 +154,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
-		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("k" + i + "u", "kmapping", "Save", 7);
+		re += getUserField("k" + i + "u", "kmapping", "Save", (!User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 7 : 6));
 		re += "\t\t\t\t\t</form>\n";
 		return re;
 	}
@@ -182,9 +187,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
 		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Hide</a></td>\n";
-		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kd" + i + "u", "kmapping", "Delete", 7);
+		re += getUserField("kd" + i + "u", "kmapping", "Delete", (!User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 7 : 6));
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -232,9 +239,9 @@ public class TemplatesSearch {
 		String re = "";
 		Object[][] a;
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
 		else
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : " AND ((user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '') OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
 
 		if ( a.length == 0 )
 			return "";
@@ -250,7 +257,9 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
-		re += "\t\t\t\t\t\t<th>Commit</th>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t<th>Commit</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 
 		for ( int i = 0; i < a.length; i++ ) {
@@ -262,7 +271,9 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td>" + a[i][5] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Delete</a></td>\n";
-			re += "\t\t\t\t\t\t<td>" + (a[i][4].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
+
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				re += "\t\t\t\t\t\t<td>" + (a[i][4].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
@@ -270,7 +281,7 @@ public class TemplatesSearch {
 			//delete
 			re += kvMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 			//commit
-			if ( !a[i][4].equals("main") )
+			if ( !a[i][4].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
 				re += kvMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 		}
 
@@ -306,9 +317,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
-		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kv" + i + "u", "kvmapping", "Save", 8);
+		re += getUserField("kv" + i + "u", "kvmapping", "Save", (!User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 8 : 7));
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -341,9 +354,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
 		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Hide</a></td>\n";
-		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kvd" + i +"u", "kvmapping", "Delete", 8);
+		re += getUserField("kvd" + i +"u", "kvmapping", "Delete", (!User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 8 : 7));
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -395,9 +410,9 @@ public class TemplatesSearch {
 		String re = "";
 		Object[][] a;
 		if ( search.contains("-") )
-			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
 		else
-			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals("lgd_user_main") ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
+			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
 
 		if ( a.length == 0 )
 			return "";
@@ -411,7 +426,9 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
-		re += "\t\t\t\t\t\t<th>Commit</th>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t<th>Commit</th>\n";
 		re += "\t\t\t\t\t</tr>\n";
 		
 		for ( int i = 0; i < a.length; i++ ) {
@@ -421,7 +438,9 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td>" + a[i][3] + "</td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">Edit</a></td>\n";
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + i + "')\">Delete</a></td>\n";
-			re += "\t\t\t\t\t\t<td>" + (a[i][2].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
+
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				re += "\t\t\t\t\t\t<td>" + (a[i][2].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
@@ -429,7 +448,7 @@ public class TemplatesSearch {
 			//delete
 			re += datatypeMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 			//commit
-			if ( !a[i][2].equals("main") )
+			if ( !a[i][2].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
 				re += datatypeMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 		}
 
@@ -459,9 +478,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + datatype + "\" />\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
-		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("tk" + i + "u", "dmapping", "Save", 6);
+		re += getUserField("tk" + i + "u", "dmapping", "Save", (!User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 6 : 5));
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -488,9 +509,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + datatype + "\" />\n";
 		re += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + i + "')\">Hide</a></td>\n";
-		re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
+
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			re += "\t\t\t\t\t\t\t<td>Commit</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("tkd" + i + "u", "dmapping", "Delete", 6);
+		re += getUserField("tkd" + i + "u", "dmapping", "Delete", (!User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 6 : 5));
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;
@@ -535,11 +558,11 @@ public class TemplatesSearch {
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 6 ? 3 : 4) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 6 || columns == 5 ? 3 : 4) + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 8 ? 4 : 3) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 8 ? 4 : (columns == 5 ? 2 : 3)) + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";

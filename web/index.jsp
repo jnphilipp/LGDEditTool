@@ -29,6 +29,7 @@
 <%@page import="java.sql.DriverManager" %>
 <%@page import="java.sql.SQLException" %>
 <%@page import="java.util.Calendar"%>
+<%@page import="LGDEditTool.Functions"%>
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
 <%@page import="LGDEditTool.SiteHandling.User"%>
 <%@page import="LGDEditTool.SiteHandling.RequestHandling" %>
@@ -203,7 +204,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
-					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals("lgd_user_main") ? " the main branch." : "your user branch.") + " (<a>Change</a>)</p>");
+					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a>Change</a>)</p>");
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t</div>");
 				}

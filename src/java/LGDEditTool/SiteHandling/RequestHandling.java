@@ -71,28 +71,14 @@ public class RequestHandling {
 			User.getInstance().createCookie(response);
 			re = "Logout successful.";
 		}//#########################################################################
-		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null /*&& request.getParameter("user") != null*/ && request.getParameter("comment") != null ) {
-			//Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			//if (a.length == 0 )
-			//	a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-			Object[][] a;
-
-			if ( User.getInstance().getView().equals("lgd_user_main") ) {
-			}
-			else {
-				a = database.execute("SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND property='" + request.getParameter("property") + "' AND object='" + request.getParameter("object") + "' and user_id='" + User.getInstance().getUsername() + "'");
-				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0].toString()));
-				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit'" + (hid == -1 ? "" : "," + hid) + ") RETURNING id");
-
-				if ( hid == -1 )
-					database.execute("INSERT INTO lgd_map_resource_k VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
-				else
-					database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "' AND user_id='" + User.getInstance().getUsername() + "'");
-			}
-			
-			//a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', (SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id");
-
-			//database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
+		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND property='" + request.getParameter("aproperty") + "' AND object='" + request.getParameter("aobject") + "' and user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
+			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+			if ( hid == -1 )
+				database.execute("INSERT INTO lgd_map_resource_k VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			else
+				database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
 
 			re = "K-Mapping successfully changed.";
 		}//#########################################################################
@@ -106,19 +92,42 @@ public class RequestHandling {
 			database.execute("DELETE FROM lgd_map_resource_k WHERE object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND k='" + request.getParameter("k") + "'");
 
 			re = "K-Mapping successfully deleted.";
-		}//#########################################################################
-		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Save") && request.getParameter("k") != null  && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-
-			a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', (SELECT last_history_id FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id");
-
-			database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");
+		}//#########################################################################*/
+		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Save") && request.getParameter("k") != null  && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT last_history_id FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND property='" + request.getParameter("aproperty") + "' AND object='" + request.getParameter("aobject") + "' and user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
+			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+			a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+			if ( hid == -1 )
+				database.execute("INSERT INTO lgd_map_resource_kv VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			else
+				database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
 
 			re = "KV-Mapping successfully changed.";
+
+
+			/*Object[][] a;
+
+			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
+				//###################################################################
+			}
+			else {
+				a = database.execute("SELECT last_history_id FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND property='" + request.getParameter("property") + "' AND object='" + request.getParameter("object") + "' and user_id='" + User.getInstance().getUsername() + "'");
+				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0].toString()));
+				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', '" + User.getInstance().getUsername() + "'" + (hid == -1 ? "" : "," + hid) + ") RETURNING id");
+
+				if ( hid == -1 )
+					database.execute("INSERT INTO lgd_map_resource_kv VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+				else
+					database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+			}
+
+			/*a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("aobject") + "', '" + request.getParameter("aproperty") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', (SELECT last_history_id FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "')) RETURNING id");
+
+			database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("aobject") + "' AND property='" + request.getParameter("aproperty") + "'");*
+
+			re = "KV-Mapping successfully changed.";*/
 		}///////////////////////////////////////////////////////////////////////////
-		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
+		/*else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
@@ -128,89 +137,58 @@ public class RequestHandling {
 			database.execute("DELETE FROM lgd_map_resource_kv WHERE object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "'");
 
 			re = "KV-Mapping successfully deleted.";
-		}//#########################################################################
-		else if ( request.getParameter("kmappingedit") != null && request.getParameter("kmappingedit").equals("Restore") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("auser") != null && request.getParameter("comment") != null && request.getParameter("acomment") != null && request.getParameter("timestamp") != null ) {
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-			String user_id = a[0][0].toString();
+		}//#########################################################################*/
+		else if ( request.getParameter("kmappingedit") != null && request.getParameter("kmappingedit").equals("Restore") && request.getParameter("id") != null && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
+			Object[][] a;
 
-			a = database.execute("SELECT id FROM lgd_map_resource_k_history WHERE k='" + request.getParameter("k") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user_id='" + request.getParameter("auser") + "' AND comment='" + request.getParameter("acomment") + "'");
-			String hid = a[0][0].toString();
+			String hid = request.getParameter("id");
 			while ( true ) {
 				a = database.execute("SELECT k, object, property FROM lgd_map_resource_k WHERE last_history_id="+hid);
 
-				if ( a.length == 0 ) {
-					a = database.execute("SELECT id FROM lgd_map_resource_k_history WHERE history_id="+hid);
-					if ( a.length == 0 )
-						break;
-					else
-						hid = a[0][0].toString();
-				}
+				if ( a.length == 0 )
+					hid = database.execute("SELECT id FROM lgd_map_resource_k_history WHERE history_id="+hid)[0][0].toString();
 				else
 					break;
 			}
 
-			if ( a.length == 0 ) {
-				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES(DEFAULT, (SELECT k FROM lgd_map_resource_k_history WHERE id=" + hid + "), '', '', '" + user_id + "', '" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
+			String k = a[0][0].toString();
+			String object = a[0][1].toString();
+			String property = a[0][2].toString();
+			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES(DEFAULT, '" + k + "', '" + object + "', '" + property + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + hid + ") RETURNING id");
 
-				database.execute("INSERT INTO lgd_map_resource_k VALUES('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', " + a[0][0] + ")");
+			database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND object='" + object + "' AND property='" + property + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
 
+			if ( object.equals("") && property.equals("") )
 				re = "Deleted K-Mapping successfully restored.";
-			}
-			else {
-				String k = a[0][0].toString();
-				String object = a[0][1].toString();
-				String property = a[0][2].toString();
-				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES(DEFAULT, '" + k + "', '" + object + "', '" + property + "', '" + user_id + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
-
-				database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND object='" + object + "' AND property='" + property + "'");
-
+			else
 				re = "Edited K-Mapping successfully restored.";
-			}
 		}//#########################################################################
-		else if ( request.getParameter("kvmappingedit") != null && request.getParameter("kvmappingedit").equals("Restore") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("user") != null && request.getParameter("auser") != null && request.getParameter("comment") != null && request.getParameter("acomment") != null && request.getParameter("timestamp") != null ) {
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-			String user_id = a[0][0].toString();
-
-			a = database.execute("SELECT id FROM lgd_map_resource_kv_history WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user_id='" + request.getParameter("auser") + "' AND comment='" + request.getParameter("acomment") + "'");
-			String hid = a[0][0].toString();
+		else if ( request.getParameter("kvmappingedit") != null && request.getParameter("kvmappingedit").equals("Restore") && request.getParameter("id") != null && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
+			Object[][] a;
+			String hid = request.getParameter("id");
 			while ( true ) {
 				a = database.execute("SELECT k, v, object, property FROM lgd_map_resource_kv WHERE last_history_id="+hid);
 
-				if ( a.length == 0 ) {
-					a = database.execute("SELECT id FROM lgd_map_resource_kv_history WHERE history_id="+hid);
-					if ( a.length == 0 )
-						break;
-					else
-						hid = a[0][0].toString();
-				}
+				if ( a.length == 0 )
+					hid = database.execute("SELECT id FROM lgd_map_resource_kv_history WHERE history_id="+hid)[0][0].toString();
 				else
 					break;
 			}
 
-			if ( a.length == 0 ) {
-				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES(DEFAULT, (SELECT k FROM lgd_map_resource_kv_history WHERE id=" + hid + "), (SELECT v FROM lgd_map_resource_kv_history WHERE id=" + hid + "), '', '', '" + user_id + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
+			String k = a[0][0].toString();
+			String v = a[0][1].toString();
+			String object = a[0][2].toString();
+			String property = a[0][3].toString();
+			a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES(DEFAULT, '" + k + "', '" + v + "', '" + object + "', '" + property + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + hid + ") RETURNING id");
 
-				database.execute("INSERT INTO lgd_map_resource_kv VALUES('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', " + a[0][0] + ")");
+			database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND v='" + v + "' AND object='" + object + "' AND property='" + property + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
 
+			if ( object.equals("") && property.equals("") )
 				re = "Deleted KV-Mapping successfully restored.";
-			}
-			else {
-				String k = a[0][0].toString();
-				String v = a[0][1].toString();
-				String object = a[0][2].toString();
-				String property = a[0][3].toString();
-				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES(DEFAULT, '" + k + "', '" + v + "', '" + object + "', '" + property + "', '" + user_id + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
-
-				database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND v='" + v + "' AND object='" + object + "' AND property='" + property + "'");
-
+			else
 				re = "Edited KV-Mapping successfully restored.";
-			}
 		}//#########################################################################
-		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("adatatype") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
+		/*else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("adatatype") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");

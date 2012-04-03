@@ -34,6 +34,10 @@ public class Functions {
 	 * PUBLIC_reCAPTCHA_KEY
 	 */
 	public static final String PUBLIC_reCAPTCHA_KEY = "6Le1b88SAAAAALjXm-PM6alI7EQlj-fi9eh-Wm2C ";
+	/**
+	 * main branch
+	 */
+	public static final String MAIN_BRANCH = "lgd_user_main";
 
 	/**
 	 * Schorting the URL from property and object.

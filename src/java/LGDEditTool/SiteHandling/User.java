@@ -17,6 +17,7 @@
 
 package LGDEditTool.SiteHandling;
 
+import LGDEditTool.Functions;
 import java.security.MessageDigest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +75,7 @@ public final class User {
 		if ( this.loggedIn ) {
 			DatabaseBremen db = DatabaseBremen.getInstance();
 			db.connect();
-			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");
+			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE email='" + this.username + "'");
 			this.admin = Boolean.parseBoolean(a[0][0].toString());
 			this.view = a[0][1].toString();
 		}
@@ -130,5 +131,11 @@ public final class User {
 
 		response.addCookie(u);
 		response.addCookie(l);
+	}
+
+	public void updateView(String newView) throws Exception {
+		DatabaseBremen db = DatabaseBremen.getInstance();
+		db.connect();
+		this.view = db.execute("UPDATE lgd_user set view='" + (newView.equals("main") ? Functions.MAIN_BRANCH : "lgd_user_" + db.execute("SELECT username FROM lgd_user WHERE email='" + this.username + "'")[0][0]) + "' WHERE email='" + this.username + "' RETURNING view")[0][0].toString();
 	}
 }

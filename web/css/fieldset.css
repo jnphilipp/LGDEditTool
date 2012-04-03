@@ -40,3 +40,19 @@ fieldset.search ul { list-style: none;}
 fieldset.search input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
 	font-family: monospace;
 	width: 40em;}
+
+div.select select {
+   background: transparent;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   border: 1px solid rgba(106, 105, 106, 0.6);
+   height: 34px;
+}
+
+div.select {
+   width: 240px;
+   height: 34px;
+   overflow: hidden;
+   background: url(../images/down_arrow_select.jpg) no-repeat right #ddd;
+}

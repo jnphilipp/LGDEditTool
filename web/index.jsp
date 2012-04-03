@@ -15,6 +15,7 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="LGDEditTool.Templates.TemplatesAccountSettings"%>
 <%@page import="LGDEditTool.db.DatabaseBremen"%>
 <%@page import="LGDEditTool.Templates.TemplatesShowMessage"%>
 <%@page import="java.security.MessageDigest"%>
@@ -284,42 +285,9 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			</div>
 			<%
 			} else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
-			%>
-			<div class="pane">
-				<section class="account">
-					<aside>
-						<ul>
-							<li><a>Change Password</a></li>
-							<li><a>Change Email</a></li>
-						</ul>
-					</aside>
-					<article>
-						<fieldset>
-							<legend>Change Password</legend>
-							<form autocomplete="off">
-								<ul>
-									<li>
-										<label>Old password:</label>
-										<input type="password" name="opassword" required />
-									</li>
-									<li>
-										<label>New password:</label>
-										<input type="password" name="npassword" required />
-									</li>
-									<li>
-										<label>New password:</label>
-										<input type="password" name="npassword2" required />
-									</li>
-									<li>
-										<input type="submit" name="send" value="Change" />
-									</li>
-								</ul>
-							</form>
-						</fieldset>
-					</article>
-				</section>
-			</div>
-			<%
+				out.println("<div class=\"pane\">");
+				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting"))));
+				out.println("\t\t\t</div>");
 			}
 			%>
 		</div>

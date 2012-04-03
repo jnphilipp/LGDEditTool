@@ -248,8 +248,11 @@ public class RequestHandling {
 
 				re = "Edited Datatype-Mapping successfully restored.";
 			}
-		}//#########################################################################
-*/
+		}//#########################################################################*/
+		else if ( request.getParameter("userspace") != null && request.getParameter("userspace").equals("Save") && request.getParameter("branch") != null ) {
+			User.getInstance().updateView(request.getParameter("branch"));
+		}
+
 		return re;
 	}
 

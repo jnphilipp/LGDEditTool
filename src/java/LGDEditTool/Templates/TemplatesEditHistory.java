@@ -30,14 +30,16 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
  */
 public class TemplatesEditHistory {
 
-	/**
-	 * Template for EditHistory. This Template is used by the 'EditHistory'-tab.
-	 * @param ksite current K-mappings Site
-	 * @param kvsite current KV-mappings site
-	 * @param user user-session
-	 * @param sort sort object (K,KV, etc.)
-	 * @return Returns a String with HTML-code.
-	 */
+         /**
+          * Template for EditHistory. This Template is used by the 'EditHistory'-tab.
+          * @param ksite current K-mappings Site
+          * @param kvsite current KV-mappings site
+          * @param dsite current Datatype-mappings site
+          * @param search Search-string, which the user typed in.
+          * @param sort ort object (K,KV, etc.)
+          * @return Returns a String with HTML-code.
+          * @throws Exception 
+          */
 	static public String editHistory(String ksite, String kvsite, String dsite, String search, String sort) throws Exception {
 		DatabaseBremen.getInstance().connect();
 
@@ -138,15 +140,16 @@ public class TemplatesEditHistory {
 		return re;
 	}
 
-	/**
-	 * gets edithistory from DB
-	 * @param ksite current K-mappings Site
-	 * @param kvsite current KV-mappings Site
-	 * @param search Search-string, which the user typed in.
-	 * @param sort sort object (K,KV, etc.)
-	 * @throws Exception 
+        /**
+         * Template for K-Mappings Edit-History. Gets Edit-History from DB.
+         * @param ksite Current K-mappings Site.
+         * @param kvsite Current KV-mappings Site
+         * @param dsite Current Datatype-mappings Site
+         * @param search Search-string, which the user typed in.
+         * @param sort sort object (K,KV, etc.)
          * @return Returns a String with HTML-code.
-	 */
+         * @throws Exception 
+         */
 	static private String searchKHistoryDB(int ksite, int kvsite, int dsite, String search, String sort) throws Exception {
 		String re = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
@@ -169,6 +172,16 @@ public class TemplatesEditHistory {
 	 * @throws Exception 
          * @return Returns a String with HTML-code.
 	 */
+        /**
+         * Template for KV-Mappings Edit-History. Gets Edit-History from DB.
+         * @param ksite Current K-mappings Site
+         * @param kvsite Current KV-mappings Site
+         * @param dsite Current Datatype-mappings Site
+         * @param search Search-string, which the user typed in.
+         * @param sort sort object (K,KV, etc.)
+         * @return Returns a String with HTML-code.
+         * @throws Exception 
+         */
 	static private String searchKVHistoryDB(int ksite, int kvsite, int dsite, String search, String sort) throws Exception {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();

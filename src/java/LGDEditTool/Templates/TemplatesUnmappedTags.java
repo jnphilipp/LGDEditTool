@@ -33,6 +33,7 @@ public class TemplatesUnmappedTags {
 	 * Template Unmapped Tags. This Template is used by the 'UnmappedTags'-tab.
 	 * @param ksite current K-Mapping site
 	 * @param kvsite current KV-Mapping site
+         * @throws Exception
 	 * @return Returns a String with HTML-code.
 	 */
 	static public String unmappedTags(String ksite,String kvsite) throws Exception{

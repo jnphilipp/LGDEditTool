@@ -25,7 +25,7 @@ import LGDEditTool.SiteHandling.User;
  * @version 1.0
  */
 public class TemplatesAccountSettings {
-	public static String accountSettings(String setting) {
+	public static String accountSettings(String setting, String search) {
 		String re = "";
 
 		re += "\t\t\t\t<section class=\"account\">\n";
@@ -46,7 +46,7 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t<article>\n";
 			re += "\t\t\t\t\t\t<fieldset style=\"width: 25em;\">\n";
 			re += "\t\t\t\t\t\t\t<legend>Switch Working Branch</legend>\n";
-			re += "\t\t\t\t\t\t\t<form action=\"?tab=account&setting=branch\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			re += "\t\t\t\t\t\t\t<form action=\"?tab=account&setting=branch" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 			re += "\t\t\t\t\t\t\t\t<ul>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><label>Branches:</label></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li>\n";

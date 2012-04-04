@@ -205,13 +205,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
-					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch\">Change</a>)</p>");
+					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t</div>");
 				}
 				else {
 					out.println("<div class=\"pane\">");
-					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch\">Change</a>)</p>");
+					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
 					out.println(TemplatesSearch.searchResult(search));
@@ -267,7 +267,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}*/
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
-				out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch\">Change</a>)</p>");
+				out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
 				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
 					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 					//if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
@@ -286,7 +286,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<%
 			} else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
 				out.println("<div class=\"pane\">");
-				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting"))));
+				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : "")));
 				out.println("\t\t\t</div>");
 			}
 			%>

@@ -223,7 +223,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kc" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kc" + i + "u", "kmapping", "Save", 7);
+		re += getUserField("kc" + i + "u", "kmapping", "Commit", 7);
 		re += "\t\t\t\t\t</form>\n";
 		return re;
 	}
@@ -273,7 +273,7 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + i + "')\">Delete</a></td>\n";
 
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				re += "\t\t\t\t\t\t<td>" + (a[i][4].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
+				re += "\t\t\t\t\t\t<td>" + (a[i][4].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kvc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
@@ -393,7 +393,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t\t<td>Delete</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvc" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";
-		re += getUserField("kvc" + i +"u", "kvmapping", "Delete", 8);
+		re += getUserField("kvc" + i +"u", "kvmapping", "Commit", 8);
 		re += "\t\t\t\t\t</form>\n";
 
 		return re;

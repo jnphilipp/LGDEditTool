@@ -216,7 +216,7 @@ public class TemplatesEditHistory {
 	static private String addkMapping(int i, String id, String k, String property, String object, String affectedEntities,String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, String search, String sort) {
 		String s = "\t\t\t\t\t<tr id=\"k" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
+    s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -230,7 +230,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
     s += "\t\t\t\t\t\t<tr id=\"k" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
     s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -271,8 +271,8 @@ public class TemplatesEditHistory {
 	static private String addkvMapping(int i, String id, String k, String v, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, String search, String sort) {
     String s = "\t\t\t\t\t<tr id=\"kv" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
+    s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
+    s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "-" + v + "\">" + v + "</a></td>\n";
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -286,8 +286,8 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
+    s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "-" + v + "\">" + v + "</a></td>\n";
     s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";

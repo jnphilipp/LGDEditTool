@@ -127,7 +127,7 @@ public final class User {
 		}
 
 		Cookie l = new Cookie("lgd_loggedIn", sb.toString());
-		l.setMaxAge(60 *60);
+		l.setMaxAge(60 * 60);
 
 		response.addCookie(u);
 		response.addCookie(l);

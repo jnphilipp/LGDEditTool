@@ -558,11 +558,11 @@ public class TemplatesSearch {
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 6 || columns == 5 ? 3 : 4) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 8 ? 4 : (columns == 5 ? 2 : 3)) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + 3 + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";

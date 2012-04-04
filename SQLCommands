@@ -51,6 +51,8 @@ ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email)
 UPDATE lgd_map_datatype SET user_id ='main';
 ALTER TABLE lgd_map_datatype ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_datatype_history(id);
+ALTER TABLE lgd_map_datatype_history ADD COLUMN userspace TEXT;
+ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email);
 ALTER TABLE lgd_map_datatype_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_datatype_history(id);
 

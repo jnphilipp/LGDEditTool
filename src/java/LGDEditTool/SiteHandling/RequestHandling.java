@@ -193,29 +193,50 @@ public class RequestHandling {
 				database.execute("INSERT INTO lgd_map_datatype VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
 			else
 				database.execute("UPDATE lgd_map_datatype set datatype='" + request.getParameter("datatype") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("adatatype") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
-			/*Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-
-			a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("adatatype") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'edit', (SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("adatatype") + "')) RETURNING id");
-
-			database.execute("UPDATE lgd_map_datatype set datatype='" + request.getParameter("datatype") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("adatatype") + "'");*/
 
 			re = "Datatype-Mapping successfully changed.";
 		}//#########################################################################
-		/*else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("user") != null && request.getParameter("comment") != null ) {
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
+		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
+			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+			a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'deleted', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+			if ( hid == -1 )
+				database.execute("INSERT INTO lgd_map_datatype VALUES ('" + request.getParameter("k") + "', 'deleted', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			else
+				database.execute("UPDATE lgd_map_datatype set datatype='deleted', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
+			/*Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
 
 			database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'delete', (SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "')) RETURNING id");
 
-			database.execute("DELETE FROM lgd_map_datatype WHERE datatype='" + request.getParameter("datatype") + "' AND k='" + request.getParameter("k") + "'");
+			database.execute("DELETE FROM lgd_map_datatype WHERE datatype='" + request.getParameter("datatype") + "' AND k='" + request.getParameter("k") + "'");*/
 
 			re = "Datatype-Mapping successfully deleted.";
-		}//#########################################################################
-		else if ( request.getParameter("dmappingedit") != null && request.getParameter("dmappingedit").equals("Restore") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("user") != null && request.getParameter("auser") != null && request.getParameter("comment") != null && request.getParameter("acomment") != null && request.getParameter("timestamp") != null ) {
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
+		}//#########################################################################*/
+		else if ( request.getParameter("dmappingedit") != null && request.getParameter("dmappingedit").equals("Restore") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
+			Object[][] a;
+			String hid = request.getParameter("id");
+			while ( true ) {
+				a = database.execute("SELECT k, datatype FROM lgd_map_datatype WHERE last_history_id="+hid);
+
+				if ( a.length == 0 )
+					hid = database.execute("SELECT id FROM lgd_map_datatype_history WHERE history_id="+hid)[0][0].toString();
+				else
+					break;
+			}
+
+			String k = a[0][0].toString();
+			String datatype = a[0][1].toString();
+			a = database.execute("INSERT INTO lgd_map_datatype_history VALUES(DEFAULT, '" + k + "', '" + datatype + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + hid + ") RETURNING id");
+
+			database.execute("UPDATE lgd_map_datatype set datatype='" + request.getParameter("datatype") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND datatype='" + datatype + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
+
+			if ( datatype.equals("deleted") )
+				re = "Deleted Datatype-Mapping successfully restored.";
+			else
+				re = "Edited Datatype-Mapping successfully restored.";
+			/*Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
 			String user_id = a[0][0].toString();
@@ -251,8 +272,8 @@ public class RequestHandling {
 				database.execute("UPDATE lgd_map_datatype set datatype='" + request.getParameter("datatype") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND datatype='" + datatype + "'");
 
 				re = "Edited Datatype-Mapping successfully restored.";
-			}
-		}//#########################################################################*/
+			}*/
+		}//#########################################################################
 		else if ( request.getParameter("userspace") != null && request.getParameter("userspace").equals("Save") && request.getParameter("branch") != null ) {
 			User.getInstance().updateView(request.getParameter("branch"));
 

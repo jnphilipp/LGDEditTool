@@ -69,7 +69,7 @@ public class TemplatesSearch {
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((tmp.equals("\n\t\t\t\t<br /><br />\n\n") ? search : (search.contains("-") ? search.split("-")[0] : search )));
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.contains("-") ? search.split("-")[0] : search ));
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
@@ -411,11 +411,7 @@ public class TemplatesSearch {
 	private static String datatypeMapping(String search) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a;
-		if ( search.contains("-") )
-			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' AND datatype='" + search.split("-")[1] + "' " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
-		else
-			a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
+		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "AND user_id='main'" : "AND ((user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted') OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k, datatype");
 
 		if ( a.length == 0 )
 			return "";
@@ -443,7 +439,7 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + i + "')\">Delete</a></td>\n";
 
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				re += "\t\t\t\t\t\t<td>" + (a[i][2].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('kc" + i + "')\">Commit</a>") + "</td>\n";
+				re += "\t\t\t\t\t\t<td>" + (a[i][2].equals("main") ? "Commit" : "<a onclick=\"toggle_visibility('tkc" + i + "')\">Commit</a>") + "</td>\n";
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit

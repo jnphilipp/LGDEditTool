@@ -314,7 +314,7 @@ public class TemplatesEditHistory {
     String s = "\t\t\t\t\t<tr id=\"tk" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
-    s += "\t\t\t\t\t\t<td>" + datatype + "</td>\n";
+    s += "\t\t\t\t\t\t<td>" + (datatype.equals("deleted") ? "" : datatype) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
 
@@ -327,7 +327,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<tr id=\"tk" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
+    s += "\t\t\t\t\t\t\t<td>" + (datatype.equals("deleted") ? "" : datatype) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + action + "</td>\n";
 
@@ -338,9 +338,6 @@ public class TemplatesEditHistory {
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"id\" value=\"" + id + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + datatype + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"timestamp\" value=\"" + timestamp + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"auser\" value=\"" + user_id + "\" />\n";
-    s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"acomment\" value=\"" + comment + "\" />\n";
     s += "\t\t\t\t\t\t</tr>\n";
 		s += getUserField("tk" + i + "u", "dmappingedit", "Restore", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 8 : 7));
 		s += "\t\t\t\t\t</form>\n";

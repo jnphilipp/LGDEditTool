@@ -20,10 +20,6 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
-import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
-import net.tanesha.recaptcha.ReCaptcha;
-import net.tanesha.recaptcha.ReCaptchaFactory;
 
 /**
 *
@@ -58,6 +54,8 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th>affected Entities</th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t<th>commit</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert edithistory from db
@@ -75,6 +73,8 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th>affected Entities</th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t<th>commit</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
 			//al.add(tableHead);
 
@@ -91,6 +91,8 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th>affected Entities</th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t<th>commit</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert edithistory from db
@@ -125,10 +127,10 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, property, object, count(k) FROM lgd_map_resource_k GROUP BY k,property, object ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, property, object, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addKMapping(i,a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), site);
+			s += addKMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site);
 		}
 
 		return s;
@@ -143,10 +145,10 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv GROUP BY k, v, property, object ORDER BY k,v Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), site);
+			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString(), a[i][4].toString(), site);
 		}
 
 		return s;
@@ -161,10 +163,10 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype GROUP BY k, datatype ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND datatype!='deleted'" : "(user_id='main' AND (k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, datatype, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), site);
+			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString(), a[i][2].toString(), site);
 		}
 
 		return s;
@@ -180,7 +182,7 @@ public class TemplatesAllMappings {
 	 * @param site current site
 	 * @return String
 	 */
-	static private String addKMapping(int id, String k, String property, String object, String affectedEntities, int site) {
+	static private String addKMapping(int id, String k, String property, String object, String affectedEntities, String user, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"k" + id + "a\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
@@ -188,37 +190,64 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Edit</a></td>\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + id + "')\">Delete</a></td>\n";
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kc" + id + "')\">Commit</a></td>\n";
+		else if ( user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
 		s += "\t\t\t\t\t\t</tr>\n";
-		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site +(!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Hide</a></td>\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+		s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + id + "')\">Hide</a></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
 		s += "\t\t\t\t\t\t\t</tr>\n";
-		s += getUserField("k" + id + "u", "kmapping", "Save", 6);
+		s += getUserField("k" + id + "u", "kmapping", "Save", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 6 : 7));
     s += "\t\t\t\t\t\t</form>\n";
     
     //delete
-    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t\t<tr id=\"kd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
     s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
     s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
     s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
     s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + id + "')\">Hide</a></td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t\t\t</tr>\n";
-		s += getUserField("kd" + id + "u", "kmapping", "Delete", 6);
+		s += getUserField("kd" + id + "u", "kmapping", "Delete", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 6 : 7));
 		s += "\t\t\t\t\t\t</form>\n";
+
+		//commit
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
+			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"kc" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kc" + id + "')\">Hide</a></td>\n";
+			s += "\t\t\t\t\t\t\t</tr>\n";
+			s += getUserField("kc" + id + "u", "kmapping", "Commit", 7);
+			s += "\t\t\t\t\t\t</form>\n";
+		}
 
 		return s;
 	}
@@ -234,7 +263,7 @@ public class TemplatesAllMappings {
 	 * @param site current site
 	 * @return String
 	 */
-	static private String addKVMapping(int id, String k, String v, String property, String object, String affectedEntities, int site) {
+	static private String addKVMapping(int id, String k, String v, String property, String object, String affectedEntities, String user, int site) {
 		String s = "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
     s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -243,41 +272,70 @@ public class TemplatesAllMappings {
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Edit</a></td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Delete</a></td>\n";
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kc" + id + "')\">Commit</a></td>\n";
+		else if ( user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
     s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
     s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Hide</a></td>\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + object + "\" />\n";
+    s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Hide</a></td>\n";
     s += "\t\t\t\t\t\t\t<td>Delete</td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t\t</tr>\n";
-		s += getUserField("kv" + id + "u", "kvmapping", "Save", 7);
+		s += getUserField("kv" + id + "u", "kvmapping", "Save", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 7 : 8));
 		s += "\t\t\t\t\t</form>\n";
 
 		//delete
-    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		s += "\t\t\t\t\t\t\t<td>Edit</td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+		s += "\t\t\t\t\t\t\t<td>Edit</td>\n";
     s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Hide</a></td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t\t</tr>\n";
-		s += getUserField("kvd" + id + "u", "kvmapping", "Delete", 7);
+		s += getUserField("kvd" + id + "u", "kvmapping", "Delete", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 7 : 8));
 		s += "\t\t\t\t\t</form>\n";
+
+		//commit
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
+			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"kvc" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + v + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + object + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvc" + id + "')\">Hide</a></td>\n";
+			s += "\t\t\t\t\t\t\t</tr>\n";
+			s += getUserField("kvc" + id + "u", "kvmapping", "Commit", 8);
+			s += "\t\t\t\t\t\t</form>\n";
+		}
 
 		return s;
 	}
@@ -291,40 +349,65 @@ public class TemplatesAllMappings {
 	 * @param site current site
 	 * @return String
 	 */
-	static private String addDatatypeMapping(int id, String k, String datatype, String affectedEntities, int site) {
+	static private String addDatatypeMapping(int id, String k, String datatype, String affectedEntities, String user, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"tk" + id + "a\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + id + "')\">Edit</a></td>\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + id + "')\">Delete</a></td>\n";
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkc" + id + "')\">Commit</a></td>\n";
+		else if ( user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
 		s += "\t\t\t\t\t\t</tr>\n";
-		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site +(!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t\t<tr id=\"tk" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"datatype\" value=\"" + datatype + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + id + "')\">Hide</a></td>\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + datatype + "\" />\n";
+		s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + id + "')\">Hide</a></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
 		s += "\t\t\t\t\t\t\t</tr>\n";
-		s += getUserField("tk" + id + "u", "dmapping", "Save", 5);
+		s += getUserField("tk" + id + "u", "dmapping", "Save", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 5 : 6));
     s += "\t\t\t\t\t\t</form>\n";
     
     //delete
-    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t\t<tr id=\"tkd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
-    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
     s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
     s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + datatype + "\" />\n";
+    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
     s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkd" + id + "')\">Hide</a></td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t\t\t</tr>\n";
-		s += getUserField("tkd" + id + "u", "dmapping", "Delete", 5);
+		s += getUserField("tkd" + id + "u", "dmapping", "Delete", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 5 : 6));
 		s += "\t\t\t\t\t\t</form>\n";
+
+		//commit
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
+			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"tkc" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + datatype + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tkc" + id + "')\">Hide</a></td>\n";
+			s += "\t\t\t\t\t\t\t</tr>\n";
+			s += getUserField("tkc" + id + "u", "dmapping", "Commit", 6);
+			s += "\t\t\t\t\t\t</form>\n";
+		}
 
 		return s;
 	}
@@ -338,98 +421,16 @@ public class TemplatesAllMappings {
 	 * @return String
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
-		String re = "";
+		String re = "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
+		re += "\t\t\t\t\t\t\t\t</td>\n";
+		re += "\t\t\t\t\t\t\t\t<td colspan=\"" + 3 + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
+		re += "\t\t\t\t\t\t\t\t</td>\n";
+		re += "\t\t\t\t\t\t\t</tr>\n";
 
-		if ( !User.getInstance().isLoggedIn() ) {
-			re += "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "3" : "2") + "\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t\t<label>Login or Email:</label>\n";
-			re += "\t\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" style=\"width: 20em;\" value=\"" + User.getInstance().getUsername() + "\" required />\n";
-			re += "\t\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t\t<td colspan=\"2\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-			re += "\t\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-			re += "\t\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\">\n";
-			re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
-			re += "\t\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t</tr>\n";
-		}
-		else {
-			re += "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
-			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 7 ? "5" : "4") + "\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-			re += "\t\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" required>No comment.</textarea>\n";
-			re += "\t\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns == 5 ? "1" : "2") + "\" align=\"center\">\n";
-			re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />";
-			re += "\t\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" />\n";
-			re += "\t\t\t\t\t\t\t\t</td>\n";
-			re += "\t\t\t\t\t\t\t</tr>\n";
-		}
-
-		return re;
-	}
-
-	/**
-	 * reCatpcha form
-	 * @param request
-	 * @param type
-	 * @para site
-	 */
-	public static String captcha(HttpServletRequest request,String type,String site) {
-		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
-
-		String re = "\t\t\t\t<article class=\"captcha\">\n";
-		re += "\t\t\t\t\t<form action=\"?tab=all&type="+ type +"&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		re += "\t\t\t\t\t\t<ul>\n";
-		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
-		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";
-		re += "\t\t\t\t\t\t</ul>\n";
-
-		if ( request.getParameter("kmapping") != null ) {
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
-
-			if ( !request.getParameter("kmapping").equals("Delete") ) {
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
-			}
-
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kmapping\" value=\"" + request.getParameter("kmapping") + "\" />\n";
-		}//#########################################################################
-		else if ( request.getParameter("kvmapping") != null ) {
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + request.getParameter("v") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
-
-			if ( !request.getParameter("kvmapping").equals("Delete") ) {
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
-			}
-
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kvmapping\" value=\"" + request.getParameter("kvmapping") + "\" />\n";
-		}//#########################################################################
-		else if ( request.getParameter("dmapping") != null ) {
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + request.getParameter("datatype") + "\" />\n";
-
-			if ( !request.getParameter("dmapping").equals("Delete") )
-				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + request.getParameter("adatatype") + "\" />\n";
-
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
-			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"dmapping\" value=\"" + request.getParameter("dmapping") + "\" />\n";
-		}
-
-		re += "\t\t\t\t\t</form>\n";
-		re += "\t\t\t\t</article>\n";
 		return re;
 	}
 }

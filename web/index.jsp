@@ -239,7 +239,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
 				}
 				out.println("</div>");
-			}
+			}*/
 			else if ( request.getParameter("tab").equals("all") ) {
 				out.println("<div class=\"pane\">");
 				out.println("\t\t\t\t<ul id=\"tabs\">");
@@ -248,35 +248,16 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
-
-				if ( request.getParameter("site") == null ) {
-					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));
-				}
-				else {
-					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
-						out.print(TemplatesAllMappings.captcha(request, request.getParameter("type"), request.getParameter("site")));
-						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
-					}
-					else {
-						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
-					}
-				}
-
+				out.println("\t\t\t\t\t<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+				out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println("\t\t\t\t</div>");
-				out.print("\t\t\t</div>");
-			}*/
+				out.println("\t\t\t</div>");
+			}
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
-				out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
-				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
-					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
-					//if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					//	out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite")));
-        }
-				else {
-					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
-				}
-				out.println("</div>");
+				out.println("\t\t\t\t<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				out.println("\t\t\t</div>");
 			}
 			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {
 			%>

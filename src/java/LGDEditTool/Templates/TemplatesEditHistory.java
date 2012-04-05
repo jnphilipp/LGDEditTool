@@ -17,10 +17,6 @@
 
 package LGDEditTool.Templates;
 
-import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
-import net.tanesha.recaptcha.ReCaptcha;
-import net.tanesha.recaptcha.ReCaptchaFactory;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
@@ -188,8 +184,6 @@ public class TemplatesEditHistory {
 	static private String searchDatatypeHistoryDB(int ksite, int kvsite, int dsite, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
-
-		//Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, id FROM lgd_map_datatype_history GROUP BY k, datatype, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
 		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, id FROM lgd_map_datatype_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' GROUP BY k, datatype, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {

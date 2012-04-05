@@ -87,8 +87,11 @@ public class RequestHandling {
 			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
 			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + a[0][1] + "', '" + a[0][2] + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
 			database.execute("UPDATE lgd_map_resource_k set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND user_id='main'");
-			database.execute("DELETE FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND user_id='" + User.getInstance().getUsername() + "'");
-			database.execute("DELETE FROM lgd_map_resource_k_history WHERE k='" + request.getParameter("k") + "' AND userspace='" + User.getInstance().getUsername() + "'");
+
+
+			/*** If you want to delete everything from a userspace after a commit ***/
+			//database.execute("DELETE FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+			//database.execute("DELETE FROM lgd_map_resource_k_history WHERE k='" + request.getParameter("k") + "' AND userspace='" + User.getInstance().getUsername() + "'");
 
 			re = "K-Mapping successfully commited.";
 		}//#########################################################################
@@ -119,8 +122,11 @@ public class RequestHandling {
 			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
 			a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + a[0][1] + "', '" + a[0][2] + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
 			database.execute("UPDATE lgd_map_resource_kv set object='" + request.getParameter("object") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND user_id='main'");
-			database.execute("DELETE FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND  v='" + request.getParameter("v") + "' AND user_id='" + User.getInstance().getUsername() + "'");
-			database.execute("DELETE FROM lgd_map_resource_kv_history WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND userspace='" + User.getInstance().getUsername() + "'");
+
+
+			/*** If you want to delete everything from a userspace after a commit ***/
+			//database.execute("DELETE FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND  v='" + request.getParameter("v") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+			//database.execute("DELETE FROM lgd_map_resource_kv_history WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND userspace='" + User.getInstance().getUsername() + "'");
 
 			re = "KV-Mapping successfully commited.";
 		}//#########################################################################
@@ -196,6 +202,18 @@ public class RequestHandling {
 
 			re = "Datatype-Mapping successfully changed.";
 		}//#########################################################################
+		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Commit") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT last_history_id, datatype FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND user_id='main'");
+			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+			a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + a[0][1] + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+			database.execute("UPDATE lgd_map_datatype set datatype='" + request.getParameter("datatype") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND user_id='main'");
+
+			/*** If you want to delete everything from a userspace after a commit ***/
+			//database.execute("DELETE FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+			//database.execute("DELETE FROM lgd_map_datatype_history WHERE k='" + request.getParameter("k") + "' AND userspace='" + User.getInstance().getUsername() + "'");
+
+			re = "Datatype-Mapping successfully commited.";
+		}//#########################################################################
 		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
 			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
@@ -204,13 +222,6 @@ public class RequestHandling {
 				database.execute("INSERT INTO lgd_map_datatype VALUES ('" + request.getParameter("k") + "', 'deleted', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
 			else
 				database.execute("UPDATE lgd_map_datatype set datatype='deleted', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
-			/*Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-
-			database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("object") + "', '" + request.getParameter("property") + "', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'delete', (SELECT last_history_id FROM lgd_map_datatype WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "')) RETURNING id");
-
-			database.execute("DELETE FROM lgd_map_datatype WHERE datatype='" + request.getParameter("datatype") + "' AND k='" + request.getParameter("k") + "'");*/
 
 			re = "Datatype-Mapping successfully deleted.";
 		}//#########################################################################*/
@@ -236,43 +247,6 @@ public class RequestHandling {
 				re = "Deleted Datatype-Mapping successfully restored.";
 			else
 				re = "Edited Datatype-Mapping successfully restored.";
-			/*Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' OR username='" + request.getParameter("user") + "'");
-			if (a.length == 0 )
-				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
-			String user_id = a[0][0].toString();
-
-			a = database.execute("SELECT id FROM lgd_map_datatype_history WHERE k='" + request.getParameter("k") + "' AND datatype='" + request.getParameter("datatype") + "' AND timestamp='" + request.getParameter("timestamp") + "' AND user_id='" + request.getParameter("auser") + "' AND comment='" + request.getParameter("acomment") + "'");
-			String hid = a[0][0].toString();
-			while ( true ) {
-				a = database.execute("SELECT k, datatype FROM lgd_map_datatype WHERE last_history_id="+hid);
-
-				if ( a.length == 0 ) {
-					a = database.execute("SELECT id FROM lgd_map_datatype_history WHERE history_id="+hid);
-					if ( a.length == 0 )
-						break;
-					else
-						hid = a[0][0].toString();
-				}
-				else
-					break;
-			}
-
-			if ( a.length == 0 ) {
-				a = database.execute("INSERT INTO lgd_map_datatype_history VALUES(DEFAULT, (SELECT k FROM lgd_map_datatype_history WHERE id=" + hid + "), '', '" + user_id + "', '" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
-
-				database.execute("INSERT INTO lgd_map_datatype VALUES('" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', " + a[0][0] + ")");
-
-				re = "Deleted Datatype-Mapping successfully restored.";
-			}
-			else {
-				String k = a[0][0].toString();
-				String datatype = a[0][1].toString();
-				a = database.execute("INSERT INTO lgd_map_datatype_history VALUES(DEFAULT, '" + k + "', '" + datatype + "', '" + user_id + "','" + request.getParameter("comment") + "', '" +  Functions.getTimestamp() + "', 'restore', " + hid + ") RETURNING id");
-
-				database.execute("UPDATE lgd_map_datatype set datatype='" + request.getParameter("datatype") + "', last_history_id=" + a[0][0] + " WHERE  k='" + k + "' AND datatype='" + datatype + "'");
-
-				re = "Edited Datatype-Mapping successfully restored.";
-			}*/
 		}//#########################################################################
 		else if ( request.getParameter("userspace") != null && request.getParameter("userspace").equals("Save") && request.getParameter("branch") != null ) {
 			User.getInstance().updateView(request.getParameter("branch"));
@@ -282,21 +256,4 @@ public class RequestHandling {
 
 		return re;
 	}
-
-	/*public static boolean checkCaptcha(HttpServletRequest request) {
-		String remoteAddr = request.getRemoteAddr();
-		ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
-		reCaptcha.setPrivateKey(Functions.PRIVATE_reCAPTCHA_KEY);
-
-		String challenge = request.getParameter("recaptcha_challenge_field");
-		String uresponse = request.getParameter("recaptcha_response_field");
-		ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, uresponse);
-
-		if ( reCaptchaResponse.isValid() ) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}*/
 }

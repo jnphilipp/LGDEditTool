@@ -17,7 +17,7 @@
 
 <%@page import="LGDEditTool.Templates.TemplatesAccountSettings"%>
 <%@page import="LGDEditTool.db.DatabaseBremen"%>
-<%@page import="LGDEditTool.Templates.TemplatesShowMessage"%>
+<%@page import="LGDEditTool.Templates.Templates"%>
 <%@page import="java.security.MessageDigest"%>
 <%-- 
     Document   : index
@@ -122,7 +122,7 @@
 	</head>
 	<body>
 		<% if ( !message.equals("") ) {
-			out.println(TemplatesShowMessage.showMessage(message));
+			out.println(Templates.showMessage(message));
 		}
 if ( (user == null || !user.isLoggedIn()) ) { %>
 		<div class="login" style="right: 20px; position: absolute;">
@@ -205,13 +205,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
-					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+					out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t</div>");
 				}
 				else {
 					out.println("<div class=\"pane\">");
-					out.println("<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+					out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
 					out.println(TemplatesSearch.searchResult(search));
@@ -232,7 +232,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}*/
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
-				out.println("\t\t\t\t<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
 				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString())));
 				out.println("\t\t\t</div>");
 			}
@@ -244,14 +244,14 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
-				out.println("\t\t\t\t\t<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
 				out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
-				out.println("\t\t\t\t<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
 				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 				out.println("\t\t\t</div>");
 			}

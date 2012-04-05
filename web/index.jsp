@@ -229,17 +229,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					out.println("<h3>you must search first</h3>\n");
 					out.println("</div>\n");
 				}
-			}
+			}*/
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
-				if ( request.getParameter("ksite") == null || request.getParameter("kvsite") == null ) {
-					out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
-				}
-				else {
-					out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
-				}
-				out.println("</div>");
-			}*/
+				out.println("\t\t\t\t<p>You are cureently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (request.getParameter("search") != null ? "&search=" + request.getParameter("search") : "") + "\">Change</a>)</p>");
+				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString())));
+				out.println("\t\t\t</div>");
+			}
 			else if ( request.getParameter("tab").equals("all") ) {
 				out.println("<div class=\"pane\">");
 				out.println("\t\t\t\t<ul id=\"tabs\">");

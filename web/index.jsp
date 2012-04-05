@@ -234,17 +234,22 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			}
 			else if ( request.getParameter("tab").equals("all") ) {
 				out.println("<div class=\"pane\">");
-				out.println("\t\t\t\t<ul id=\"tabs\">");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
-				out.println("\t\t\t\t</ul>");
-				out.println("\t\t\t\t<div class=\"pane\">");
-
-				if ( request.getParameter("site") == null ) {
+                                out.println(TemplatesAllMappings.search()+"\n<br />\n");
+                                if (!search.equals("")){
+                                    out.print(TemplatesAllMappings.searchResult(search));
+                                }else
+                                {
+                                    out.println("\t\t\t\t<ul id=\"tabs\">");
+                                    out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
+                                    out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
+                                    out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
+                                    out.println("\t\t\t\t</ul>");
+                                    out.println("\t\t\t\t<div class=\"pane\">");
+                                
+                                    if ( request.getParameter("site") == null ) {
 					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));
-				}
-				else {
+                                    }
+                                    else {
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
 						out.print(TemplatesAllMappings.captcha(request, request.getParameter("type"), request.getParameter("site")));
 						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
@@ -252,21 +257,26 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 					else {
 						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
 					}
-				}
-
+                                    }
+                                }
 				out.println("\t\t\t\t</div>");
 				out.print("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
-				if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
+                                out.println(TemplatesEditHistory.search()+"\n<br />\n");
+                                if (!search.equals("")){
+                                    out.print(TemplatesEditHistory.searchResult(search));
+                                }else{
+                                    if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
 					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
 						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite")));
-        }
-				else {
+                                    }
+                                    else {
 					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
-				}
+                                    }
+                                }
 				out.println("</div>");
 			}
 			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {

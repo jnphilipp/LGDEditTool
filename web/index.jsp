@@ -80,9 +80,16 @@
 		<script type="text/javascript" src="./js/jquery.js"></script>
         <script type="text/javascript" src="./js/jquery.autocomplete.js"></script>
 		<script>
+			<% if ( request.getParameter("tab") == null || request.getParameter("tab").equals("search") ) { %>
 			$(function() {
 				$("#search").autocomplete("autocomplete_search.jsp")
 			});
+			<% }
+					else if ( request.getParameter("tab").equals("history") ) { %>
+			$(function() {
+				$("#search").autocomplete("autocomplete_history.jsp")
+			});
+			<% } %>
 
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
@@ -252,6 +259,8 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
 				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
+				out.println(TemplatesEditHistory.search());
+				out.println("\t\t\t\t<br /><br />");
 				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 				out.println("\t\t\t</div>");
 			}

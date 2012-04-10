@@ -470,7 +470,7 @@ public class TemplatesAllMappings {
 		String re = "", tmp = "";
                 boolean result = false;
 
-		tmp = kMapping((search.contains("-") ? search.split("-")[0] : search ));
+		tmp = kMapping((search.contains("#") ? search.split("#")[0] : search ));
 		if ( !tmp.equals("") ) {
 			re += tmp;
                         result = true;
@@ -482,7 +482,7 @@ public class TemplatesAllMappings {
                         result = true;
                 }
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((tmp.equals("\n\t\t\t\t<br /><br />\n\n") ? search : (search.contains("-") ? search.split("-")[0] : search )));
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((tmp.equals("\n\t\t\t\t<br /><br />\n\n") ? search : (search.contains("#") ? search.split("#")[0] : search )));
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") ) {
 			re += tmp;
                         result = true;
@@ -612,8 +612,8 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
-		if ( search.contains("-") )
-			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' GROUP BY k, v, property, object ORDER BY k, v");
+		if ( search.contains("#") )
+			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("#")[0] + "' AND v='" + search.split("#")[1] + "' GROUP BY k, v, property, object ORDER BY k, v");
 		else
 			a = database.execute("SELECT k, v, property, object, count(k) FROM lgd_map_resource_kv WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + " GROUP BY k, v, property, object ORDER BY k, v");
 
@@ -734,8 +734,8 @@ public class TemplatesAllMappings {
 		String re = "";
 		Object[][] a;
 
-		if ( search.contains("-") )
-			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("-")[0] + "' " + (search.split("-")[1].equals("int") || search.split("-")[1].equals("float") || search.split("-")[1].equals("boolean") ? "AND datatype='" + search.split("-")[1] + "'" : "" ) + " GROUP BY k, datatype ORDER BY k, datatype");
+		if ( search.contains("#") )
+			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE k='" + search.split("#")[0] + "' " + (search.split("#")[1].equals("int") || search.split("#")[1].equals("float") || search.split("#")[1].equals("boolean") ? "AND datatype='" + search.split("#")[1] + "'" : "" ) + " GROUP BY k, datatype ORDER BY k, datatype");
 		else
 			a = database.execute("SELECT k, datatype, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " GROUP BY k, datatype ORDER BY k, datatype");
 

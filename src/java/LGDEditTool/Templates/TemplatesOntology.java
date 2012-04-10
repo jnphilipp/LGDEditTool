@@ -39,8 +39,8 @@ public class TemplatesOntology {
 		DatabaseBremen.getInstance().connect();
 		String s = "";
 
-		if ( tag.contains("-") )
-			tag = tag.split("-")[0];
+		if ( tag.contains("#") )
+			tag = tag.split("#")[0];
 
 		s +="\t\t\t\t<table>\n";
 		s +="\t\t\t\t\t<tr>\n";

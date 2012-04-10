@@ -261,7 +261,7 @@ public class RequestHandling {
 			if (a.length == 0 )
 				a = database.execute("INSERT INTO lgd_user (email, admin) VALUES ('" + request.getParameter("user") + "', FALSE) RETURNING email");
 
-			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '', '', '" + a[0][0] + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create') RETURNING id");
+			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '', '', '" + a[0][0] + "', '" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create') RETURNING id");
 
 			database.execute("INSERT INTO lgd_map_resource_k VALUES ('"+ request.getParameter("k")+"','" + request.getParameter("property")+"','"+request.getParameter("object")+"'," + a[0][0] + ")");
 

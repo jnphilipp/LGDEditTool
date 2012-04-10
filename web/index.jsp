@@ -173,14 +173,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		<ul id="tabs">
 			<% if ( request.getParameter("tab") == null ) { %>
 			<li><a class="current" href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>" >Ontologie</a></li>
 			<li><a href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a href="?tab=all&type=k">All Mappings</a></li>
 			<li><a href="?tab=history">Edit-History</a></li>
 			<% }
 				else { %>
 			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("ontology") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontology" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
+			<% out.print(search.equals("") ? "" : "<li><a " + (request.getParameter("tab").equals("ontology") ? "class=\"current\"" : "") + "href=\"?tab=ontology&search=" + search + "\">Ontology</a></li>"); %>
 			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>

@@ -175,7 +175,7 @@ public class TemplatesOntology {
         s+= "\t\t\t\t\t\t<div class=\"hidden\" id=\""+id+"\">\n";
         for(int i=0;i<subclasses.size();i++)
         {
-            String sub=addSubClasses(user,subclasses.get(i),""+id+i);
+            String sub="";//addSubClasses(user,subclasses.get(i),""+id+i);
             if(sub.equalsIgnoreCase("")){
                 s+="\t\t\t\t\t\t\\-"+subclasses.get(i)+"<br />\n";
             }

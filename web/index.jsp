@@ -43,7 +43,7 @@
 	boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
-		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1)) + (request.getParameter("search").contains(",") ? "-" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
+		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1)) + (request.getParameter("search").contains(",") ? "#" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
 	User user = User.getInstance();
 	user.createUser(request);
@@ -78,9 +78,16 @@
 		<script type="text/javascript" src="./js/jquery.js"></script>
         <script type="text/javascript" src="./js/jquery.autocomplete.js"></script>
 		<script>
-			$(function() {
-				$("#search").autocomplete("autocomplete_search.jsp")
-			});
+			<% if ( request.getParameter("tab") == null || request.getParameter("tab").equals("search") ) { %>
+                            $(function() {
+                                $("#search").autocomplete("autocomplete_search.jsp")
+                            });
+                        <% }
+                        else if ( request.getParameter("tab").equals("history") ) { %>
+                            $(function() {
+                                $("#search").autocomplete("autocomplete_history.jsp")
+                            });
+                        <% } %>
 
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
@@ -265,9 +272,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
                                 out.println(TemplatesEditHistory.search()+"\n<br />\n");
-                                if (!search.equals("")){
-                                    out.print(TemplatesEditHistory.searchResult(search));
-                                }else{
+
                                     if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
 					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
@@ -276,7 +281,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
                                     else {
 					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
                                     }
-                                }
+                                
 				out.println("</div>");
 			}
 			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {

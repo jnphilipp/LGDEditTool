@@ -24,7 +24,7 @@ import LGDEditTool.db.DatabaseBremen;
 /**
  *
  * @author J. Nathanael Philipp
- * @version 1.0
+ * @version 2.0
  */
 public class TemplatesSearch {
 	/**
@@ -58,7 +58,7 @@ public class TemplatesSearch {
 		DatabaseBremen.getInstance().connect();
 		String re = "", tmp;
 
-		tmp = kMapping((search.contains("-") ? search.split("-")[0] : search ));
+		tmp = kMapping((search.contains("#") ? search.split("#")[0] : search ));
 		if ( !tmp.equals("") )
 			re += tmp;
 
@@ -66,7 +66,7 @@ public class TemplatesSearch {
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.contains("-") ? search.split("-")[0] : search ));
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.contains("#") ? search.split("#")[0] : search ));
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
@@ -238,8 +238,8 @@ public class TemplatesSearch {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
-		if ( search.contains("-") )
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("-")[0] + "' AND v='" + search.split("-")[1] + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
+		if ( search.contains("#") )
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("#")[0] + "' AND v='" + search.split("#")[1] + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
 		else
 			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v");
 

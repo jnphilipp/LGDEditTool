@@ -23,7 +23,8 @@ import LGDEditTool.db.DatabaseBremen;
 
 /**
 *
-* @author Alexander Richter
+* @author Alexander Richter, J. Nathanael Philipp
+* @version 2.0
 */
 public class TemplatesAllMappings {
 	/**

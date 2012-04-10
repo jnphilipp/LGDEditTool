@@ -45,21 +45,11 @@
 	//boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
-		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1)) + (request.getParameter("search").contains(",") ? "-" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
+		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "#" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
 	User user = User.getInstance();
 	user.createUser(request);
-
-	//if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null ) {
-	//	captcha = RequestHandling.checkCaptcha(request);
-	//}
-
-	//if ( request.getParameter("captcha") == null && captcha )
-		message = RequestHandling.doRequestHandling(request, response);
-
-/*	if ( message.equals("Login successful.") ) {
-		out.println(user.isLoggedIn());
-	}*/
+	message = RequestHandling.doRequestHandling(request, response);
 %>
 
 <!DOCTYPE HTML>
@@ -167,14 +157,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else {
 				if ( request.getParameter("tab") == null ) { %>
 			<li><a class="current" href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>" >Ontologie</a></li>
 			<li><a href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a href="?tab=all&type=k">All Mappings</a></li>
 			<li><a href="?tab=history">Edit-History</a></li>
 			<% }
-				else { %>
+			else { %>
 			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("ontologie") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=ontologie" + (search.equals("") ? "" : "&search=" + search)); %>">Ontologie</a></li>
+			<% out.println(search.equals("") ? "" : "<li><a href=\"?tab=ontology&search=" + search + "\">Ontology</a></li>"); %>
 			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>
@@ -212,34 +201,27 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
-					out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
+					out.println(Templates.branch(search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t</div>");
 				}
 				else {
 					out.println("<div class=\"pane\">");
-					out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
+					out.println(Templates.branch(search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
 					out.println(TemplatesSearch.searchResult(search));
 					out.println("\t\t\t</div>");
 				}
 			}
-		/*	else if ( request.getParameter("tab").equals("ontologie") ) {
-				if ( !search.equals("") ) {
-					out.println("<div class=\"pane\">\n");
-					out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            
-					out.println("</div>\n");
-				}
-				else {
-					out.println("<div class=\"pane\">\n");
-					out.println("<h3>you must search first</h3>\n");
-					out.println("</div>\n");
-				}
-			}*/
+			else if ( request.getParameter("tab").equals("ontology") ) {
+				out.println("<div class=\"pane\">\n");
+				out.println(TemplatesOntology.ontology(search));
+				out.println("\t\t\t</div>\n");
+			}
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
-				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
+				out.println(Templates.branch(search));
 				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString())));
 				out.println("\t\t\t</div>");
 			}
@@ -251,14 +233,14 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
-				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
+				out.println(Templates.branch(search));
 				out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
-				out.println(Templates.branch((request.getParameter("search") == null ? "" : request.getParameter("search"))));
+				out.println(Templates.branch(search));
 				out.println(TemplatesEditHistory.search());
 				out.println("\t\t\t\t<br /><br />");
 				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));

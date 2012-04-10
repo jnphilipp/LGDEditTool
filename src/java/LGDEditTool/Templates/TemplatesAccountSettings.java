@@ -22,7 +22,7 @@ import LGDEditTool.SiteHandling.User;
 /**
  *
  * @author J. Nathanael Philipp
- * @version 1.0
+ * @version 2.0
  */
 public class TemplatesAccountSettings {
 	public static String accountSettings(String setting, String search) {

@@ -89,6 +89,8 @@
 					id = id.replace("d", "");
 				else if ( id.indexOf("c") != -1 )
 					id = id.replace("c", "");
+				else if ( id.indexOf("kl") != -1 )
+					id = id.replace("kl", "k");
 				var s = document.getElementById(id + 'a');
 
 				if ( e.style.display == 'none' ) {
@@ -231,6 +233,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
 				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=all&type=literal\">Literal-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
 				out.println(Templates.branch(search));
@@ -243,7 +246,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println(Templates.branch(search));
 				out.println(TemplatesEditHistory.search());
 				out.println("\t\t\t\t<br /><br />");
-				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), (request.getParameter("lsite") != null ? request.getParameter("lsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 				out.println("\t\t\t</div>");
 			}
 			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {

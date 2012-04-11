@@ -45,6 +45,7 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t\t<th>usage_count</th>\n";
 		s += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";
 		s += "\t\t\t\t\t\t<th>create mapping</th>\n";
+		s += "\t\t\t\t\t\t<th>create literal</th>\n";
 		s += "\t\t\t\t\t\t<th>create datatype</th>\n";
 		s += "\t\t\t\t\t</tr>\n";
 
@@ -118,6 +119,7 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t\t<td>" + usage_count + "</td>\n";
 		s += "\t\t\t\t\t\t<td>" +  distinct_value_count + "</td>\n";
 		s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Mapping</a></td>\n";
+		s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kl" + i + "')\">Literal</a></td>\n";
 		s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Datatype</a></td>\n";
 		s += "\t\t\t\t\t</tr>\n";
 
@@ -129,9 +131,24 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" placeholder=\"object\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
+		s += "\t\t\t\t\t\t\t<td>Literal</td>\n";
 		s += "\t\t\t\t\t\t\t<td>Datatype</td>\n";
 		s += "\t\t\t\t\t\t</tr>\n";
-		s += getUserField("k" + i + "u", "kmapping", "Create", 5);
+		s += getUserField("k" + i + "u", "kmapping", "Create", 6);
+		s += "\t\t\t\t\t</form>\n";
+
+		//create literal
+		s += "\t\t\t\t\t<form action=\"?tab=search&search=" + k + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		s += "\t\t\t\t\t\t<tr id=\"kl" + i + "\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" placeholder=\"language\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		s += "\t\t\t\t\t\t\t<td>Mapping</td>\n";
+		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kl" + i + "')\">Hide</a></td>\n";
+		s += "\t\t\t\t\t\t\t<td>Datatype</td>\n";
+		s += "\t\t\t\t\t\t</tr>\n";
+		s += getUserField("kl" + i + "u", "lmapping", "Create", 6);
 		s += "\t\t\t\t\t</form>\n";
 
 		//create datatype
@@ -147,9 +164,10 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t\t\t</td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t<td>Mapping</td>\n";
+		s += "\t\t\t\t\t\t\t<td>Literal</td>\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kd" + i + "')\">Hide</a></td>\n";
 		s += "\t\t\t\t\t\t</tr>\n";
-		s += getUserField("kd" + i + "u", "dmapping", "Create", 5);
+		s += getUserField("kd" + i + "u", "dmapping", "Create", 6);
 		s += "\t\t\t\t\t</form>\n";
 												
 		return s;
@@ -209,12 +227,12 @@ public class TemplatesUnmappedTags {
 	 * @return String
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
-		String re = "\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		String re = "\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td colspan=\"" + 3 + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 4 ? 1 : 2) + "\" align=\"center\">\n";
+		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns == 4 ? 1 : 3) + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
 		re += "\t\t\t\t\t\t</tr>\n";

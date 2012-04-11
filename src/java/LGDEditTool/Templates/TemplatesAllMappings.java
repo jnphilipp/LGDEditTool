@@ -48,7 +48,7 @@ public class TemplatesAllMappings {
 			//insert tablehead
 			s = "\t\t\t\t\t<h2>List of all K-Mappings</h2>\n";
 			s += "\t\t\t\t\t<table class=\"table\">\n";
-			s += "\t\t\t\t\t\t<tr class=\"mapping\">\n";
+			s += "\t\t\t\t\t\t<tr>\n";
 			s += "\t\t\t\t\t\t\t<th>k</th>\n";
 			s += "\t\t\t\t\t\t\t<th>property</th>\n";
 			s += "\t\t\t\t\t\t\t<th>object</th>\n";
@@ -66,7 +66,7 @@ public class TemplatesAllMappings {
 			//insert tablehead
 			s = "\t\t\t\t\t<h2>List of all KV-Mappings</h2>\n";
 			s += "\t\t\t\t\t<table class=\"table\">\n";
-			s += "\t\t\t\t\t\t<tr class=\"mapping\">\n";
+			s += "\t\t\t\t\t\t<tr>\n";
 			s += "\t\t\t\t\t\t\t<th>k</th>\n";
 			s += "\t\t\t\t\t\t\t<th>v</th>\n";
 			s += "\t\t\t\t\t\t\t<th>property</th>\n";
@@ -86,7 +86,7 @@ public class TemplatesAllMappings {
 			//insert tablehead
 			s = "\t\t\t\t\t<h2>List of all Datatype-Mappings</h2>\n";
 			s += "\t\t\t\t\t<table class=\"table\">\n";
-			s += "\t\t\t\t\t\t<tr class=\"mapping\">\n";
+			s += "\t\t\t\t\t\t<tr>\n";
 			s += "\t\t\t\t\t\t\t<th>k</th>\n";
 			s += "\t\t\t\t\t\t\t<th>datatype</th>\n";
 			s += "\t\t\t\t\t\t\t<th>affected Entities</th>\n";
@@ -98,6 +98,24 @@ public class TemplatesAllMappings {
 
 			//insert edithistory from db
 			s += listAllDatatypeMappings(Integer.parseInt(site));
+		}
+		else if ( type.equalsIgnoreCase("literal") ) {
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>List of all Literal-Mappings</h2>\n";
+			s += "\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t<th>k</th>\n";
+			s += "\t\t\t\t\t\t\t<th>property</th>\n";
+			s += "\t\t\t\t\t\t\t<th>language</th>\n";
+			s += "\t\t\t\t\t\t\t<th>affected Entities</th>\n";
+			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
+			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
+			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t<th>commit</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
+
+			//insert edithistory from db
+			s += listAllLiteralMappings(Integer.parseInt(site));
 		}
 
 		//insert table foot
@@ -172,7 +190,26 @@ public class TemplatesAllMappings {
 
 		return s;
 	}
-    
+
+	/**
+	 * SQL query to get all k-mappings
+	 * @param site current site
+	 * @return String
+	 * @throws Exception 
+	 */
+	private static String listAllLiteralMappings(int site) throws Exception {
+		DatabaseBremen database = DatabaseBremen.getInstance();
+		String s = "";
+
+		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!=''" : "(user_id='main' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, property, language, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+
+		for ( int i = 0; i < a.length; i++ ) {
+			s += addLiteralMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site);
+		}
+
+		return s;
+	}
+
 	/**
 	 * Template for K-Mappings.
 	 * @param id id
@@ -197,7 +234,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t<td>Commit</td>\n";
 		s += "\t\t\t\t\t\t</tr>\n";
 		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		s += "\t\t\t\t\t\t\t<tr id=\"k" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t\t<tr id=\"k" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
@@ -215,7 +252,7 @@ public class TemplatesAllMappings {
     
     //delete
     s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    s += "\t\t\t\t\t\t\t<tr id=\"kd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+    s += "\t\t\t\t\t\t\t<tr id=\"kd" + id + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
@@ -234,7 +271,7 @@ public class TemplatesAllMappings {
 		//commit
 		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
 			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			s += "\t\t\t\t\t\t\t<tr id=\"kc" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"kc" + id + "\" style=\"display: none;\">\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + object + "</td>\n";
@@ -279,7 +316,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t</tr>\n";
     s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+    s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
@@ -299,7 +336,7 @@ public class TemplatesAllMappings {
 
 		//delete
     s += "\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t<tr id=\"kvd" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -320,7 +357,7 @@ public class TemplatesAllMappings {
 		//commit
 		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
 			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=kv&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			s += "\t\t\t\t\t\t\t<tr id=\"kvc" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"kvc" + id + "\" style=\"display: none;\">\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + v + "</td>\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -363,7 +400,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t<td>Commit</td>\n";
 		s += "\t\t\t\t\t\t</tr>\n";
 		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		s += "\t\t\t\t\t\t\t<tr id=\"tk" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t\t<tr id=\"tk" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"datatype\" value=\"" + datatype + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -379,7 +416,7 @@ public class TemplatesAllMappings {
     
     //delete
     s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-    s += "\t\t\t\t\t\t\t<tr id=\"tkd" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+    s += "\t\t\t\t\t\t\t<tr id=\"tkd" + id + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
     s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -396,7 +433,7 @@ public class TemplatesAllMappings {
 		//commit
 		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
 			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-			s += "\t\t\t\t\t\t\t<tr id=\"tkc" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"tkc" + id + "\" style=\"display: none;\">\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
 			s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -414,6 +451,86 @@ public class TemplatesAllMappings {
 	}
 
 	/**
+	 * Template for Literal-Mappings.
+	 * @param id id
+	 * @param k k
+	 * @param property property
+	 * @param language language
+	 * @param affectedEntities affected Entities
+	 * @param site current site
+	 * @return String
+	 */
+	private static String addLiteralMapping(int id, String k, String property, String language ,String affectedEntities, String user, int site) {
+		String s = "\t\t\t\t\t\t<tr id=\"lk" + id + "a\">\n";
+		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		s += "\t\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
+		s += "\t\t\t\t\t\t\t<td>" + language + "</td>\n";
+		s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lk" + id + "')\">Edit</a></td>\n";
+		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lkd" + id + "')\">Delete</a></td>\n";
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lkc" + id + "')\">Commit</a></td>\n";
+		else if ( user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
+		s += "\t\t\t\t\t\t</tr>\n";
+		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=literal&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		s += "\t\t\t\t\t\t\t<tr id=\"lk" + id + "\" style=\"display: none;\">\n";
+		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" value=\"" + language + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
+		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"alanguage\" value=\"" + language + "\" />\n";
+		s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lk" + id + "')\">Hide</a></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
+		s += "\t\t\t\t\t\t\t</tr>\n";
+		s += getUserField("lk" + id + "u", "lmapping", "Save", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 6 : 7));
+    s += "\t\t\t\t\t\t</form>\n";
+    
+    //delete
+    s += "\t\t\t\t\t\t<form action=\"?tab=all&type=literal&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t\t\t<tr id=\"lkd" + id + "\" style=\"display: none;\">\n";
+    s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+    s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+    s += "\t\t\t\t\t\t\t\t<td>" + language + "</td>\n";
+    s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+    s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"language\" value=\"" + language + "\" />\n";
+    s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+    s += "\t\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lkd" + id + "')\">Hide</a></td>\n";
+		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+			s += "\t\t\t\t\t\t<td>Commit</td>\n";
+    s += "\t\t\t\t\t\t\t</tr>\n";
+		s += getUserField("lkd" + id + "u", "lmapping", "Delete", (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? 6 : 7));
+		s += "\t\t\t\t\t\t</form>\n";
+
+		//commit
+		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) ) {
+			s += "\t\t\t\t\t\t<form action=\"?tab=all&type=literal&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			s += "\t\t\t\t\t\t\t<tr id=\"lkc" + id + "\" style=\"display: none;\">\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + property + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + language + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + property + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"language\" value=\"" + language + "\" />\n";
+			s += "\t\t\t\t\t\t\t\t<td>Edit</td>\n";
+			s += "\t\t\t\t\t\t\t\t<td>Delete</td>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lkc" + id + "')\">Hide</a></td>\n";
+			s += "\t\t\t\t\t\t\t</tr>\n";
+			s += getUserField("lkc" + id + "u", "lmapping", "Commit", 7);
+			s += "\t\t\t\t\t\t</form>\n";
+		}
+
+		return s;
+	}
+
+	/**
 	 * Template for user fields.
 	 * @param id id for toggle visiblity
 	 * @param submitName submit name
@@ -422,7 +539,7 @@ public class TemplatesAllMappings {
 	 * @return String
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
-		String re = "\t\t\t\t\t\t\t<tr id=\"" + id + "\" class=\"mapping\" style=\"display: none;\">\n";
+		String re = "\t\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";
 		re += "\t\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";

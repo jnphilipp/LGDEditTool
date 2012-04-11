@@ -28,13 +28,35 @@ import LGDEditTool.db.DatabaseBremen;
  */
 public class TemplatesUnmappedTags {
 	/**
+	 * search field.
+	 * @return 
+	 */
+	public static String search() {
+		String re = "\t\t\t\t<fieldset class=\"search\">\n";
+		re += "\t\t\t\t\t<legend>Search</legend>\n";
+		re += "\t\t\t\t\t<form method=\"get\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t<ul>\n";
+		re += "\t\t\t\t\t\t\t<li>\n";
+		re += "\t\t\t\t\t\t\t\t<label>Search:</label>\n";
+		re += "\t\t\t\t\t\t\t\t<input type=\"text\" id=\"search\" name=\"search\" required />\n";
+		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"tab\" value=\"unmapped\">\n";
+		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" />\n";
+		re += "\t\t\t\t\t\t\t</li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=unmapped\">Clear search.</a></li>\n";
+		re += "\t\t\t\t\t\t</ul>\n";
+		re += "\t\t\t\t\t</form>\n";
+		re += "\t\t\t\t</fieldset>\n";
+		return re;
+	}
+
+	/**
 	 * Template Unmapped Tags. This Template is used by the 'UnmappedTags'-tab.
 	 * @param ksite current K-Mapping site
 	 * @param kvsite current KV-Mapping site
 	 * @throws Exception
 	 * @return Returns a String with HTML-code.
 	 */
-	static public String unmappedTags(String ksite, String kvsite) throws Exception {
+	static public String unmappedTags(String ksite, String kvsite, String search) throws Exception {
 		DatabaseBremen.getInstance().connect();
 
 		//kmapping table
@@ -50,7 +72,7 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t</tr>\n";
 
 		//fill table with k-mappings
-		s += listAllk(Integer.valueOf(ksite),Integer.valueOf(kvsite));
+		s += listAllk(Integer.valueOf(ksite),Integer.valueOf(kvsite), search);
 		s += "\t\t\t\t</table>\n";
 
 		//prev-next-site
@@ -74,7 +96,7 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t</tr>\n";
                 
 		//fill table with kv-mappings
-		s += listAllkv(Integer.valueOf(ksite),Integer.valueOf(kvsite));
+		s += listAllkv(Integer.valueOf(ksite),Integer.valueOf(kvsite), search);
 		s += "\t\t\t\t</table>\n";
 
 		//prev-next-site
@@ -98,11 +120,11 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception 
 	 * @return Returns a String with HTML-code.
 	 */
-	private static String listAllk(int ksite, int kvsite) throws Exception {
+	private static String listAllk(int ksite, int kvsite, String search) throws Exception {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, usage_count, distinct_value_count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM ( Select k FROM  lgd_map_datatype WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_resource_prefix ) b WHERE a.k=b.k) LIMIT 20 OFFSET " + (ksite-1)*20);
+		Object[][] a = database.execute("SELECT k, usage_count, distinct_value_count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM ( Select k FROM lgd_map_datatype WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' UNION ALL SELECT k FROM lgd_map_resource_prefix ) b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "AND k='" + (search.contains("#") ? search.split("#")[0] : search) + "'")) + " LIMIT 20 OFFSET " + (ksite-1)*20);
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += kMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), ksite, kvsite);
@@ -180,11 +202,11 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception 
          * @return Returns a String with HTML-code.
 	 */
-	static private String listAllkv(int ksite,int kvsite) throws Exception {
+	static private String listAllkv(int ksite,int kvsite, String search) throws Exception {
 		String s = new String();
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, v, usage_count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') b WHERE a.k=b.k) LIMIT 20 OFFSET " + (kvsite-1)*20);
+		Object[][] a = database.execute("SELECT k, v, usage_count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%'" : (search.contains("#") ? "AND k='" + search.split("#")[0] + "' AND v='" + search.split("#")[1] + "'" : "AND k='" + search + "' OR v='" + search + "'"))) + " LIMIT 20 OFFSET " + (kvsite-1)*20);
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += kvMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString());

@@ -45,7 +45,7 @@
 	//boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
-		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "#" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
+		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "#" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
 	User user = User.getInstance();
 	user.createUser(request);
@@ -78,6 +78,10 @@
 					else if ( request.getParameter("tab").equals("history") ) { %>
 			$(function() {
 				$("#search").autocomplete("autocomplete_history.jsp")
+			});
+			<% } else if ( request.getParameter("tab").equals("unmapped") ) { %>
+			$(function() {
+				$("#search").autocomplete("autocomplete_unmapped.jsp")
 			});
 			<% } %>
 
@@ -166,7 +170,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else { %>
 			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
 			<% out.println(search.equals("") ? "" : "<li><a href=\"?tab=ontology&search=" + search + "\">Ontology</a></li>"); %>
-			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>
 			<% if ( user.isAdmin() ) {
@@ -224,7 +228,9 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
 				out.println("<div class=\"pane\">");
 				out.println(Templates.branch(search));
-				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString())));
+				out.println(TemplatesUnmappedTags.search());
+				out.println("\t\t\t\t<br /><br />");
+				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString()), search));
 				out.println("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("all") ) {

@@ -401,7 +401,13 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=datatype&site=" + site + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t\t<tr id=\"tk" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"datatype\" value=\"" + datatype + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td align=\"center\"><label>Datatype: </label>\n";
+		s += "\t\t\t\t\t\t\t\t\t<div class=\"select\"><select name=\"datatype\">\n";
+		s += "\t\t\t\t\t\t\t\t\t\t<option value=\"boolean\">boolean</option>\n";
+		s += "\t\t\t\t\t\t\t\t\t\t<option value=\"int\">int</option>\n";
+		s += "\t\t\t\t\t\t\t\t\t\t<option value=\"float\">float</option>\n";
+		s += "\t\t\t\t\t\t\t\t\t</select></div>\n";
+		s += "\t\t\t\t\t\t\t\t</td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + datatype + "\" />\n";

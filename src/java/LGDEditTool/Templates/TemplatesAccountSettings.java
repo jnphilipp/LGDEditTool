@@ -34,6 +34,7 @@ public class TemplatesAccountSettings {
 		re += "\t\t\t\t\t\t\t<li><a>Change Password</a></li>\n";
 		re += "\t\t\t\t\t\t\t<li><a>Change Email</a></li>\n";
 		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=account&setting=branch\">Switch Working Branch</a></li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=account&setting=reset\">Reset Userbranch</a></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 		re += "\t\t\t\t\t</aside>\n";
 
@@ -61,6 +62,14 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t\t\t\t</ul>\n";
 			re += "\t\t\t\t\t\t\t</form>\n";
 			re += "\t\t\t\t\t\t</fieldset>\n";
+			re += "\t\t\t\t\t</article>\n";
+		}
+		else if ( setting.equals("reset") ) {
+			re += "\t\t\t\t\t<article>\n";
+			re += "\t\t\t\t\t\t<p>If you want to reset all Mappings you had changed press the button below, please.</p>\n";
+			re += "\t\t\t\t\t\t<form action=\"?tab=account&setting=restore\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			re += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"userspace\" value=\"Reset\" />\n";
+			re += "\t\t\t\t\t\t</form>\n";
 			re += "\t\t\t\t\t</article>\n";
 		}
 

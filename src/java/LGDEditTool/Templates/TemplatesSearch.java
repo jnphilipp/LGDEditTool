@@ -472,7 +472,13 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tk" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"datatype\" value=\"" + datatype + "\" style=\"width: 10em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td align=\"center\"><label>Datatype: </label>\n";
+		re += "\t\t\t\t\t\t\t\t<div class=\"select\"><select name=\"datatype\">\n";
+		re += "\t\t\t\t\t\t\t\t\t<option value=\"boolean\">boolean</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t<option value=\"int\">int</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t<option value=\"float\">float</option>\n";
+		re += "\t\t\t\t\t\t\t\t</select></div>\n";
+		re += "\t\t\t\t\t\t\t</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + datatype + "\" />\n";

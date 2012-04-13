@@ -40,8 +40,8 @@ public class TemplatesOntology {
 		DatabaseBremen.getInstance().connect();
 		String s = "";
 
-		if ( search.contains("#") )
-			search = search.split("#")[0];
+		if ( search.contains("~") )
+			search = search.split("~")[0];
 
 		s += "\t\t\t\t<div id=\"ontology\">\n";
 		s += leftside(search);

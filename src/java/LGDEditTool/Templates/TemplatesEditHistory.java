@@ -201,7 +201,7 @@ public class TemplatesEditHistory {
 		String re = "";
 		Object[][] a;
 
-			a = database.execute("SELECT k, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("#") ? search.split("#")[0] : search) + "'")) + " GROUP BY k, property, object, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.equals("") || sort.equals("v") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((ksite-1)*10));
+			a = database.execute("SELECT k, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, property, object, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.equals("") || sort.equals("v") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((ksite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			re += addkMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), ksite, kvsite, dsite, lsite, search, sort);
@@ -222,7 +222,7 @@ public class TemplatesEditHistory {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, v, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%'" : (search.contains("#") ? " AND k='" + search.split("#")[0] + "' AND v='" + search.split("#")[1] + "'" : " AND k='" + search + "' OR v='" + search + "'"))) + " GROUP BY k, property, object, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((kvsite-1)*10));
+		Object[][] a = database.execute("SELECT k, v, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%'" : (search.contains("~") ? " AND k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "'" : " AND k='" + search + "' OR v='" + search + "'"))) + " GROUP BY k, property, object, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((kvsite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			s += addkvMapping(i, a[i][9].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), a[i][8].toString(), a[i][5].toString(), a[i][6].toString(), a[i][7].toString(), ksite, kvsite, dsite, lsite, search, sort);
@@ -233,7 +233,7 @@ public class TemplatesEditHistory {
 	static private String searchDatatypeHistoryDB(int ksite, int kvsite, int dsite, int lsite, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
-		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, id FROM lgd_map_datatype_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("#") ? search.split("#")[0] : search) + "'")) + " GROUP BY k, datatype, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
+		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, id FROM lgd_map_datatype_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, datatype, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			s += addDatatypeMapping(i, a[i][7].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][6].toString(), a[i][3].toString(), a[i][4].toString(), a[i][5].toString(), ksite, kvsite, dsite, lsite, search, sort);
@@ -244,7 +244,7 @@ public class TemplatesEditHistory {
 	private static String searchLiteralHistoryDB(int ksite, int kvsite, int dsite, int lsite, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
-		Object[][] a = database.execute("SELECT k, property, language, count(k), user_id, comment, timestamp, action, id FROM lgd_map_literal_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("#") ? search.split("#")[0] : search) + "'")) + " GROUP BY k, property, language, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
+		Object[][] a = database.execute("SELECT k, property, language, count(k), user_id, comment, timestamp, action, id FROM lgd_map_literal_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, property, language, user_id, comment, timestamp, id ORDER BY " + (sort.equals("") ? "" : sort + ",") + " timestamp DESC Limit 10 OFFSET " + ((dsite-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			s += addLiteralMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), ksite, kvsite, dsite, lsite, search, sort);
@@ -328,7 +328,7 @@ public class TemplatesEditHistory {
     String s = "\t\t\t\t\t<tr id=\"kv" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
-    s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "#" + v + "\">" + v + "</a></td>\n";
+    s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "~" + v + "\">" + v + "</a></td>\n";
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(property) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + Functions.shortenURL(object) + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -343,7 +343,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
-    s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "#" + v + "\">" + v + "</a></td>\n";
+    s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "~" + v + "\">" + v + "</a></td>\n";
     s += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + object + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";

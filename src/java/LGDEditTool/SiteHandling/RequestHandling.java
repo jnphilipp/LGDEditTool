@@ -117,6 +117,14 @@ public class RequestHandling {
 
 			re = "K-Mapping successfully created.";
 		}//#########################################################################
+		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Clear") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
+			Object[][] a = database.execute("SELECT last_history_id FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND property='" + request.getParameter("property") + "' AND object='" + request.getParameter("object") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+			int hid = Integer.parseInt(a[0][0].toString());
+			a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'cleared', '" + User.getInstance().getUsername() + "'," + hid + ") RETURNING id");
+			database.execute("UPDATE lgd_map_resource_k set object=(SELECT object FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND user_id='main'), property=(SELECT property FROM lgd_map_resource_k WHERE k='" + request.getParameter("k") + "' AND user_id='main'), last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND object='" + request.getParameter("object") + "' AND property='" + request.getParameter("property") + "' AND user_id='" + User.getInstance().getUsername() + "'");
+
+			re = "K-Mapping successfully cleared.";
+		}//#########################################################################
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Save") && request.getParameter("k") != null  && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("SELECT last_history_id FROM lgd_map_resource_kv WHERE k='" + request.getParameter("k") + "' AND v='" + request.getParameter("v") + "' AND property='" + request.getParameter("aproperty") + "' AND object='" + request.getParameter("aobject") + "' AND user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'");
 			int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));

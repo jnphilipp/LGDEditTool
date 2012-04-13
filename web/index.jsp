@@ -15,6 +15,7 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="LGDEditTool.Templates.TemplatesEditedMappings"%>
 <%@page import="LGDEditTool.Templates.TemplatesAccountSettings"%>
 <%@page import="LGDEditTool.db.DatabaseBremen"%>
 <%@page import="LGDEditTool.Templates.Templates"%>
@@ -45,7 +46,7 @@
 	//boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
-		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "#" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
+		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "~" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
 	User user = User.getInstance();
 	user.createUser(request);
@@ -173,7 +174,10 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Unmapped Tags</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>
-			<% if ( user.isAdmin() ) {
+			<% if ( !User.getInstance().getView().equals("lgd_user_main") ) {
+					out.println("<li><a " + (request.getParameter("tab").equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&type=k" + (search.equals("") ? "" : "&search=" + search) + "\">Edited Mappings</a></li>");
+				}
+				if ( user.isAdmin() ) {
 					out.println("<li><a " + (request.getParameter("tab").equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
 				}
 				else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
@@ -236,14 +240,14 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			else if ( request.getParameter("tab").equals("all") ) {
 				out.println("<div class=\"pane\">");
 				out.println("\t\t\t\t<ul id=\"tabs\">");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=all&type=literal\">Literal-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") == null || request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=all&type=literal\">Literal-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
 				out.println(Templates.branch(search));
-				out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
+				out.print(TemplatesAllMappings.listAllMappings((request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
@@ -253,6 +257,19 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				out.println(TemplatesEditHistory.search());
 				out.println("\t\t\t\t<br /><br />");
 				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), (request.getParameter("lsite") != null ? request.getParameter("lsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				out.println("\t\t\t</div>");
+			}
+			else if ( request.getParameter("tab").equals("edited") && !User.getInstance().getView().equals("lgd_user_main") ) {
+				out.println("<div class=\"pane\">");
+				out.println("\t\t\t\t<ul id=\"tabs\">");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") == null || request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=edited&type=k\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=edited&type=kv\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=edited&type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=edited&type=literal\">Literal-Mappings</a></li>");
+				out.println("\t\t\t\t</ul>");
+				out.println("\t\t\t\t<div class=\"pane\">");
+				out.print(TemplatesEditedMappings.listEditedMappings((request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
+				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
 			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {

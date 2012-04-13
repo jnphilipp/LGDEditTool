@@ -77,7 +77,6 @@ public class TemplatesAllMappings {
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
 				s += "\t\t\t\t\t\t<th>commit</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
-			//al.add(tableHead);
 
 			//insert edithistory from db
 			s += listAllKVMappings(Integer.parseInt(site));
@@ -164,7 +163,7 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, v, property, object, user_id ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString(), a[i][4].toString(), site);
@@ -311,7 +310,7 @@ public class TemplatesAllMappings {
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + id + "')\">Edit</a></td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvd" + id + "')\">Delete</a></td>\n";
 		if ( !user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kc" + id + "')\">Commit</a></td>\n";
+			s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kvc" + id + "')\">Commit</a></td>\n";
 		else if ( user.equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
 			s += "\t\t\t\t\t\t<td>Commit</td>\n";
     s += "\t\t\t\t\t</tr>\n";
@@ -477,7 +476,7 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t\t<tr id=\"lk" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" value=\"" + language + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" value=\"" + language + "\" style=\"width: 27em;\" /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";

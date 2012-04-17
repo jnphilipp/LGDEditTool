@@ -51,7 +51,7 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t\t\t\t<ul>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><label>Old password:</label><input type=\"password\" name=\"old\" required /></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><label>New password:</label><input type=\"password\" name=\"new\" required /></li>\n";
-			re += "\t\t\t\t\t\t\t\t\t<li><label>Confirm New Password:</label><input type=\"password\" name=\"new2\" required /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>Confirm new password:</label><input type=\"password\" name=\"new2\" required /></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"password\" value=\"Save\" /></li>\n";
 			re += "\t\t\t\t\t\t\t\t</ul>\n";
 			re += "\t\t\t\t\t\t\t</form>\n";

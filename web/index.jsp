@@ -133,7 +133,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 			<a>Login</a>
 			<article>
 				<fieldset>
-					<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
+					<legend>Log in (<a href="?tab=signup" style="font-size: 9pt;">Sign up</a>)</legend>
 					<form action="?tab=search" method="post" accept-charset="UTF-8">
 						<ul>
 							<li>
@@ -159,7 +159,13 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 
 		<ul id="tabs">
 			<% if ( !user.isLoggedIn() ) {
-				out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
+				if ( request.getParameter("tab") == null )
+					out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
+				else {
+					out.println("<li><a " + (request.getParameter("tab").equals("login") ? "class=\"current\"" : "") + " href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
+					if ( request.getParameter("tab").equals("signup") )
+						out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Sign up</a></li>");
+				}
 			}
 			else {
 				if ( request.getParameter("tab") == null ) { %>
@@ -188,13 +194,15 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		</ul>
 
 		<div id="panes">
-			<% if ( !user.isLoggedIn() ) { %>
+			<% if ( !user.isLoggedIn() ) {
+				if ( request.getParameter("tab") == null || request.getParameter("tab").equals("login") ) {
+			%>
 			<div class="pane">
 				<div class="tlogin">
 					<article>
 						<fieldset>
-							<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
-							<form action="?tab=search" method="post" accept-charset="UTF-8">
+							<legend>Log in (<a href="?tab=signup" style="font-size: 9pt;">Sign up</a>)</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&search=" + search); %>" method="post" accept-charset="UTF-8">
 								<table>
 									<tr><th>Login or Email</th></tr>
 									<tr><td><input type="text" name="user" required /></td></tr>
@@ -208,6 +216,39 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				</div>
 			</div>
 			<% }
+				else if ( request.getParameter("tab").equals("signup") ) { %>
+			<div class="pane">
+				<div class="tlogin">
+					<article>
+						<fieldset>
+							<legend>Sign up</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&search=" + search); %>" method="post" accept-charset="UTF-8">
+								<table>
+									<tr>
+										<th>Username:</th>
+										<td><input type="text" name="user" required /></td>
+									</tr>
+									<tr>
+										<th>Email:</th>
+										<td><input type="email" name="email" required /></td>
+									</tr>
+									<tr>
+										<th>Password:</th>
+										<td><input type="password" name="password" required /></td>
+									</tr>
+									<tr>
+										<th>Confirm password:</th>
+										<td><input type="password" name="password2" required /></td>
+									</tr>
+									<tr><td></td><td><input type="submit" name="signup" value="Sign up" /></td></tr>
+								</table>
+							</form>
+						</fieldset>
+					</article>
+				</div>
+			</div>
+			<% }
+			}
 			else if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");

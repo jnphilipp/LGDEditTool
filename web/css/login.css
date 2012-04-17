@@ -96,6 +96,5 @@ div.tlogin fieldset label { font-family: monospace;
 div.login fieldset input[type=password],
 div.login fieldset input[type=text],
 div.tlogin fieldset input[type=password],
-div.tlogin fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
-	font-family: monospace;
-	width: 100%;}
+div.tlogin fieldset input[type=email],
+div.tlogin fieldset input[type=text] { width: 100%;}

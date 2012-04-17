@@ -76,7 +76,7 @@ public final class User {
 			DatabaseBremen db = DatabaseBremen.getInstance();
 			db.connect();
 			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE email='" + this.username + "'");
-			this.admin = Boolean.parseBoolean(a[0][0].toString());
+			this.admin = a[0][0].toString().equals("t");
 			this.view = a[0][1].toString();
 		}
 	}

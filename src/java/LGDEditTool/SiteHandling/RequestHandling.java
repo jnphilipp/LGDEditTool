@@ -433,6 +433,37 @@ public class RequestHandling {
 				User.getInstance().createUser(request.getParameter("new"), User.getInstance().getView(), true, User.getInstance().isAdmin());
 				re = "Email successfully changed.";
 			}
+		}//#########################################################################
+		else if ( request.getParameter("signup") != null && request.getParameter("signup").equals("Sign up") && request.getParameter("user") != null && request.getParameter("email") != null && request.getParameter("password") != null && request.getParameter("password2") != null ) {
+			if ( !request.getParameter("password").equals(request.getParameter("password2")) )
+				return "The two passwords do not match.";
+
+			Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + request.getParameter("user") + "'");
+			if ( a.length != 0 )
+				return "Your username exists already.";
+
+			a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("email") + "'");
+			if ( a.length != 0 )
+				return "Your Email exists already.";
+
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(request.getParameter("password").getBytes());
+
+			byte[] byteData = md.digest();
+			//convert the byte to hex
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			database.execute("INSERT INTO lgd_user VALUES ('" + request.getParameter("email") + "', '" + request.getParameter("user") + "', '" + sb + "', FALSE, 'lgd_user_" + request.getParameter("user") + "')");
+			database.execute(Functions.createView(request.getParameter("user"), request.getParameter("email")));
+			database.execute(Functions.createViewHistory(request.getParameter("user"), request.getParameter("email")));
+			database.execute(Functions.createViewUnmapped(request.getParameter("user"), request.getParameter("email")));
+
+			User.getInstance().createUser(request.getParameter("user"), "lgd_user_" + request.getParameter("email"), true, false);
+			User.getInstance().createCookie(response);
+			re = "Sign up successful.";
 		}
 
 		return re;

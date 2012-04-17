@@ -81,12 +81,13 @@ public final class User {
 		}
 	}
 
-	public void createUser(String username) {
+	/*public void createUser(String username) {
 		this.username = username;
-	}
+	}*/
 
-	public void createUser(String username, boolean loggedIn, boolean admin) {
+	public void createUser(String username, String view, boolean loggedIn, boolean admin) {
 		this.username = username;
+		this.view = view;
 		this.loggedIn = loggedIn;
 		this.admin = admin;
 	}
@@ -113,6 +114,9 @@ public final class User {
 	}
 
 	public void createCookie(HttpServletResponse response) throws Exception {
+		if ( this.username == "")
+			return;
+
 		Cookie u = new Cookie("lgd_username", this.username);
 		u.setMaxAge(365 * 24 * 60 * 60);
 

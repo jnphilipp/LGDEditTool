@@ -289,6 +289,7 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 	</body>
 </html>
 <%
+User.getInstance().createCookie(response);
 DatabaseBremen db = DatabaseBremen.getInstance();
 db.disconnect();
 %>

@@ -54,14 +54,14 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT email, admin FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT email, view, admin FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND password='" + sb + "'");
 
 			if ( a.length == 0 ) {
-				User.getInstance().createUser("", false, false);
+				User.getInstance().createUser("", "", false, false);
 				re = "Login or password incorrect.";
 			}
 			else {
-				User.getInstance().createUser(a[0][0].toString(), true, Boolean.parseBoolean(a[0][1].toString()));
+				User.getInstance().createUser(a[0][0].toString(), a[0][1].toString(), true, Boolean.parseBoolean(a[0][2].toString()));
 				User.getInstance().createCookie(response);
 				re = "Login successful.";
 			}

@@ -31,8 +31,8 @@ public class TemplatesAccountSettings {
 		re += "\t\t\t\t<section class=\"account\">\n";
 		re += "\t\t\t\t\t<aside>\n";
 		re += "\t\t\t\t\t\t<ul>\n";
-		re += "\t\t\t\t\t\t\t<li><a>Change Password</a></li>\n";
-		re += "\t\t\t\t\t\t\t<li><a>Change Email</a></li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=account&setting=password\">Change Password</a></li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=account&setting=email\">Change Email</a></li>\n";
 		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=account&setting=branch\">Switch Working Branch</a></li>\n";
 		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=account&setting=reset\">Reset Userbranch</a></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
@@ -41,6 +41,35 @@ public class TemplatesAccountSettings {
 		if ( setting.equals("start") ) {
 			re += "\t\t\t\t\t<article>\n";
 			re += "\t\t\t\t\t\t<p>Please choose the setting you wish to change.</p>\n";
+			re += "\t\t\t\t\t</article>\n";
+		}
+		else if ( setting.equals("password") ) {
+			re += "\t\t\t\t\t<article>\n";
+			re += "\t\t\t\t\t\t<fieldset style=\"width: 25em;\">\n";
+			re += "\t\t\t\t\t\t\t<legend>Change Password</legend>\n";
+			re += "\t\t\t\t\t\t\t<form action=\"?tab=account&setting=password" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			re += "\t\t\t\t\t\t\t\t<ul>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>Old password:</label><input type=\"text\" name=\"old\" required /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>New password:</label><input type=\"text\" name=\"new\" required /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>Confirm New Password:</label><input type=\"text\" name=\"new2\" required /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"change\" value=\"Save\" /></li>\n";
+			re += "\t\t\t\t\t\t\t\t</ul>\n";
+			re += "\t\t\t\t\t\t\t</form>\n";
+			re += "\t\t\t\t\t\t</fieldset>\n";
+			re += "\t\t\t\t\t</article>\n";
+		}
+		else if ( setting.equals("email") ) {
+			re += "\t\t\t\t\t<article>\n";
+			re += "\t\t\t\t\t\t<fieldset style=\"width: 25em;\">\n";
+			re += "\t\t\t\t\t\t\t<legend>Change Email</legend>\n";
+			re += "\t\t\t\t\t\t\t<form action=\"?tab=account&setting=email" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			re += "\t\t\t\t\t\t\t\t<ul>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>New Email:</label><input type=\"text\" name=\"email\" required /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>Password:</label><input type=\"text\" name=\"password\" required /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"change\" value=\"Save\" /></li>\n";
+			re += "\t\t\t\t\t\t\t\t</ul>\n";
+			re += "\t\t\t\t\t\t\t</form>\n";
+			re += "\t\t\t\t\t\t</fieldset>\n";
 			re += "\t\t\t\t\t</article>\n";
 		}
 		else if ( setting.equals("branch") ) {

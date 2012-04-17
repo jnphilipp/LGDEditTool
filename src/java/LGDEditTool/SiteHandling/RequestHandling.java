@@ -361,7 +361,19 @@ public class RequestHandling {
 
 			re = "Working branch successfully changed.";
 		}//#########################################################################
-		else if ( request.getParameter("password") != null && request.getParameter("password").equals("Save") && request.getParameter("user") != null && request.getParameter("old") != null && request.getParameter("new") != null && request.getParameter("new2") != null ) {
+		else if ( request.getParameter("userspace") != null && request.getParameter("userspace").equals("Reset") ) {
+			database.execute("DELETE FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_resource_k_history WHERE userspace='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_resource_kv_history WHERE userspace='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_literal_history WHERE userspace='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "'");
+			database.execute("DELETE FROM lgd_map_datatype_history WHERE userspace='" + User.getInstance().getUsername() + "'");
+
+			re = "Userbranch successfully reseted.";
+		}//#########################################################################
+		else if ( request.getParameter("password") != null && request.getParameter("password").equals("Save") && request.getParameter("old") != null && request.getParameter("new") != null && request.getParameter("new2") != null ) {
 			if ( !request.getParameter("new").equals(request.getParameter("new2")) )
 				return "The two passwords do not match.";
 
@@ -375,7 +387,7 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
 
 			md.reset();
 			md.update(request.getParameter("new").getBytes());
@@ -394,7 +406,7 @@ public class RequestHandling {
 				re = "Password successfully changed.";
 			}
 		}//#########################################################################
-		else if ( request.getParameter("email") != null && request.getParameter("email").equals("Save") && request.getParameter("user") != null && request.getParameter("password") != null && request.getParameter("new") != null ) {
+		else if ( request.getParameter("email") != null && request.getParameter("email").equals("Save") && request.getParameter("password") != null && request.getParameter("new") != null ) {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(request.getParameter("password").getBytes());
 
@@ -405,7 +417,7 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT email, username FROM lgd_user WHERE email='" + request.getParameter("user") + "' AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT email, username FROM lgd_user WHERE email='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
 
 			if ( a.length == 0 ) {
 				re = "Password incorrect.";

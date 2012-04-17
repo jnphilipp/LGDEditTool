@@ -53,7 +53,6 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t\t\t\t\t<li><label>New password:</label><input type=\"password\" name=\"new\" required /></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><label>Confirm New Password:</label><input type=\"password\" name=\"new2\" required /></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"password\" value=\"Save\" /></li>\n";
-			re += "\t\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" />\n";
 			re += "\t\t\t\t\t\t\t\t</ul>\n";
 			re += "\t\t\t\t\t\t\t</form>\n";
 			re += "\t\t\t\t\t\t</fieldset>\n";
@@ -68,7 +67,6 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t\t\t\t\t<li><label>New Email:</label><input type=\"text\" name=\"new\" required /></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><label>Password:</label><input type=\"password\" name=\"password\" required /></li>\n";
 			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"email\" value=\"Save\" /></li>\n";
-			re += "\t\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" />\n";
 			re += "\t\t\t\t\t\t\t\t</ul>\n";
 			re += "\t\t\t\t\t\t\t</form>\n";
 			re += "\t\t\t\t\t\t</fieldset>\n";

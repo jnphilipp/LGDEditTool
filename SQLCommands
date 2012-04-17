@@ -15,28 +15,28 @@ INSERT INTO lgd_user VALUES ('main', '', '', FALSE, 'lgd_user_main');
 
 
 
-CREATE TABLE lgd_map_resource_k_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, property TEXT NOT NULL,  object TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+CREATE TABLE lgd_map_resource_k_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, property TEXT NOT NULL,  object TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email) ON UPDATE CASCADE, comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_resource_k ADD COLUMN user_id TEXT;
-ALTER TABLE lgd_map_resource_k ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_resource_k ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 UPDATE lgd_map_resource_k SET user_id ='main';
 ALTER TABLE lgd_map_resource_k ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_resource_k ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_k_history(id);
 ALTER TABLE lgd_map_resource_k_history ADD COLUMN userspace TEXT;
-ALTER TABLE lgd_map_resource_k_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_resource_k_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 ALTER TABLE lgd_map_resource_k_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_k_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_k_history(id);
 
 
 
 
-CREATE TABLE lgd_map_resource_kv_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, v TEXT NOT NULL, property TEXT NOT NULL, object TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+CREATE TABLE lgd_map_resource_kv_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, v TEXT NOT NULL, property TEXT NOT NULL, object TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email) ON UPDATE CASCADE, comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_resource_kv ADD COLUMN user_id TEXT;
-ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 UPDATE lgd_map_resource_kv SET user_id ='main';
 ALTER TABLE lgd_map_resource_kv ADD COLUMN last_history_id INTEGER;
-ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_kv_history(id);
+ALTER TABLE lgd_map_resource_kv ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_resource_kv_history(id)  ON UPDATE CASCADE;
 ALTER TABLE lgd_map_resource_kv_history ADD COLUMN userspace TEXT;
-ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 ALTER TABLE lgd_map_resource_kv_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_resource_kv_history(id);
 
@@ -45,14 +45,14 @@ ALTER TABLE lgd_map_resource_kv_history ADD FOREIGN KEY(history_id) REFERENCES l
 
 ALTER TYPE lgd_datatype ADD VALUE 'deleted';
 ALTER TABLE lgd_map_datatype DROP CONSTRAINT lgd_map_datatype_pkey;
-CREATE TABLE lgd_map_datatype_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, datatype lgd_datatype NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+CREATE TABLE lgd_map_datatype_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, datatype lgd_datatype NOT NULL, user_id TEXT REFERENCES lgd_user(email) ON UPDATE CASCADE, comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_datatype ADD COLUMN user_id TEXT;
-ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 UPDATE lgd_map_datatype SET user_id ='main';
 ALTER TABLE lgd_map_datatype ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_datatype ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_datatype_history(id);
 ALTER TABLE lgd_map_datatype_history ADD COLUMN userspace TEXT;
-ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 ALTER TABLE lgd_map_datatype_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_datatype_history(id);
 
@@ -60,14 +60,14 @@ ALTER TABLE lgd_map_datatype_history ADD FOREIGN KEY(history_id) REFERENCES lgd_
 
 
 ALTER TABLE lgd_map_literal DROP CONSTRAINT lgd_map_literal_k_key;
-CREATE TABLE lgd_map_literal_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, property TEXT NOT NULL, language TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email), comment TEXT, timestamp TEXT NOT NULL, action TEXT);
+CREATE TABLE lgd_map_literal_history(id SERIAL PRIMARY KEY, k TEXT NOT NULL, property TEXT NOT NULL, language TEXT NOT NULL, user_id TEXT REFERENCES lgd_user(email) ON UPDATE CASCADE, comment TEXT, timestamp TEXT NOT NULL, action TEXT);
 ALTER TABLE lgd_map_literal ADD COLUMN user_id TEXT;
-ALTER TABLE lgd_map_literal ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_literal ADD FOREIGN KEY(user_id) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 UPDATE lgd_map_literal SET user_id ='main';
 ALTER TABLE lgd_map_literal ADD COLUMN last_history_id INTEGER;
 ALTER TABLE lgd_map_literal ADD FOREIGN KEY(last_history_id) REFERENCES lgd_map_literal_history(id);
 ALTER TABLE lgd_map_literal_history ADD COLUMN userspace TEXT;
-ALTER TABLE lgd_map_literal_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email);
+ALTER TABLE lgd_map_literal_history ADD FOREIGN KEY(userspace) REFERENCES lgd_user(email) ON UPDATE CASCADE;
 ALTER TABLE lgd_map_literal_history ADD COLUMN history_id INTEGER;
 ALTER TABLE lgd_map_literal_history ADD FOREIGN KEY(history_id) REFERENCES lgd_map_literal_history(id);
 

@@ -360,6 +360,67 @@ public class RequestHandling {
 			User.getInstance().updateView(request.getParameter("branch"));
 
 			re = "Working branch successfully changed.";
+		}//#########################################################################
+		else if ( request.getParameter("password") != null && request.getParameter("password").equals("Save") && request.getParameter("user") != null && request.getParameter("old") != null && request.getParameter("new") != null && request.getParameter("new2") != null ) {
+			if ( !request.getParameter("new").equals(request.getParameter("new2")) )
+				return "The two passwords do not match.";
+
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(request.getParameter("old").getBytes());
+
+			byte[] byteData = md.digest();
+			//convert the byte to hex
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("user") + "' AND password='" + sb + "'");
+
+			md.reset();
+			md.update(request.getParameter("new").getBytes());
+			byteData = md.digest();
+			//convert the byte to hex
+			sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			if ( a.length == 0 ) {
+				re = "Password incorrect.";
+			}
+			else {
+				database.execute("UPDATE lgd_user SET password='" + sb + "' WHERE email='" + a[0][0] + "'");
+				re = "Password successfully changed.";
+			}
+		}//#########################################################################
+		else if ( request.getParameter("email") != null && request.getParameter("email").equals("Save") && request.getParameter("user") != null && request.getParameter("password") != null && request.getParameter("new") != null ) {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(request.getParameter("password").getBytes());
+
+			byte[] byteData = md.digest();
+			//convert the byte to hex
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			Object[][] a = database.execute("SELECT email, username FROM lgd_user WHERE email='" + request.getParameter("user") + "' AND password='" + sb + "'");
+
+			if ( a.length == 0 ) {
+				re = "Password incorrect.";
+			}
+			else {
+				database.execute("UPDATE lgd_user SET email='" + request.getParameter("new") + "' WHERE email='" + a[0][0] + "'");
+				database.execute("DROP VIEW lgd_user_" + a[0][1]);
+				database.execute("DROP VIEW lgd_user_" + a[0][1] + "_history");
+				database.execute("DROP VIEW lgd_user_" + a[0][1] + "_unmapped");
+				database.execute(Functions.createView(a[0][1].toString(), request.getParameter("new")));
+				database.execute(Functions.createViewHistory(a[0][1].toString(), request.getParameter("new")));
+				database.execute(Functions.createViewUnmapped(a[0][1].toString(), request.getParameter("new")));
+				User.getInstance().createUser(request.getParameter("new"), User.getInstance().getView(), true, User.getInstance().isAdmin());
+				re = "Email successfully changed.";
+			}
 		}
 
 		return re;

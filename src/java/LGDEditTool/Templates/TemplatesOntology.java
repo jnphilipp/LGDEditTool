@@ -110,13 +110,13 @@ public class TemplatesOntology {
 				s += "\t\t\t\t\t\t<div><a href=\"javascript:treeview('" + i + "')\">+</a>" + a[i][0] + "\n";
 				s += "\t\t\t\t\t\t<div class=\"hidden\" id=\"" + i + "\">\n";
 				s +="\t\t\t\t\t\t<a href=\"javascript:treeview('00" + i + "')\">\\<b id=\"" + i + "p\" style=\"display:inline;\" >+</b><b id=\"" + i + "m\" style=\"display:none\">-</b></a>" + search + "\n";
-				s +="\t\t\t\t\t\t\t" + addSubClasses(search, "00" + i);
+				s +="\t\t\t\t\t\t\t" + addSubClasses(search, "00" + i, 1);
 				s +="\t\t\t\t\t\t</div>\n";
 			}
 		}
 		else { 
 			int i = 0;
-			String sub = addSubClasses(search, "" + i);
+			String sub = addSubClasses(search, "" + i, 1);
 			if ( sub.equals("") ) {
 				s += "\t\t\t\t\t\t<div>\n";
 				s +="\t\t\t\t\t\t\\-" + search + "\n";
@@ -125,7 +125,7 @@ public class TemplatesOntology {
 			else {
 				s += "\t\t\t\t\t\t<div>\n";
 				s +="\t\t\t\t\t\t<a href=\"javascript:treeview('00" + i + "')\">\\<b id=\"" + i + "p\" style=\"display:inline\" >+</b><b id=\"" + i + "m\" style=\"display:none\">-</b></a>" + search + "\n";
-				s +="\t\t\t\t\t\t\t" + addSubClasses(search, "00" + i) + "\n";
+				s +="\t\t\t\t\t\t\t" + addSubClasses(search, "00" + i, 1) + "\n";
 				s +="\t\t\t\t\t\t</div>\n";
 			}
 		}
@@ -133,20 +133,38 @@ public class TemplatesOntology {
 		return s;
 	}
 
-	private static String addSubClasses(String search, String id) throws Exception {
+	private static String addSubClasses(String k, String id, int depth) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT v FROM lgd_map_resource_kv WHERE k='" + search + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY v ORDER BY v");
+		Object[][] a = database.execute("SELECT v FROM lgd_map_resource_kv WHERE k='" + k + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY v ORDER BY v");
 
 		s += "\t\t\t\t\t\t<div class=\"hidden\" id=\"" + id + "\">\n";
 		for ( int i = 0; i < a.length; i++ ) {
-			String sub = "";//addSubClasses(a[i][0].toString(), "" + id + i);
+			String sub = "";
+			if ( !a[i][0].equals(k) )
+				sub = addSubClasses(a[i][0].toString(), "" + id + i, depth + 1);
+			//else
+			//	sub = addSubClasses(a[i][0].toString(), "" + id + i, false);
 			if ( sub.equals("") ) {
-				s +="\t\t\t\t\t\t\\-" + a[i][0] + "<br />\n";
+				s += "\t\t\t\t\t\t";
+				for ( int j = 0; j < depth; j++ )
+					s += "| ";
+				if ( i == 0 )
+					s += "\\-" + a[i][0] + "<br />\n";
+				else
+					s += "|-" + a[i][0] + "<br />\n";
 			}
 			else {
-				s += "\t\t\t\t\t\t<a href=\"javascript:treeview('" + id + i + "')\">\\<b id=\"" + i + "p\" style=\"display:inline\" >+</b><b id=\"" + i + "m\" style=\"display:none\">-</b></a>" + a[i][0] + "<br />\n";
+				s += "\t\t\t\t\t\t<a href=\"javascript:treeview('" + id + i + "')\">";
+				for ( int j = 0; j < depth; j++ )
+					s += "| ";
+
+				if ( i == 0 )
+					s += "\\<b id=\"" + i + "p\" style=\"display:inline\" >+</b><b id=\"" + i + "m\" style=\"display:none\">-</b></a>" + a[i][0] + "<br />\n";
+				else
+					s += "|<b id=\"" + i + "p\" style=\"display:inline\" >+</b><b id=\"" + i + "m\" style=\"display:none\">-</b></a>" + a[i][0] + "<br />\n";
+
 				s += "\t\t\t\t\t\t\t" + sub + "\n";
 			}
 		}

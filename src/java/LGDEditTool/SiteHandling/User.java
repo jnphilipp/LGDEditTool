@@ -17,26 +17,50 @@
 
 package LGDEditTool.SiteHandling;
 
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.Functions;
 import java.security.MessageDigest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import LGDEditTool.db.DatabaseBremen;
 
 /**
- *
+ * Specified exactly one user, and handles all necessary attributes.
  * @author J. Nathanael Philipp
  * @version 1.0
  */
 public final class User {
+	/**
+	 * Holding the instance of User.
+	 */
 	private static User user;
 
+	/**
+	 * email -> primary key of lgd_user
+	 */
 	private String username = "";
+	/**
+	 * Is <code>flase</code> if the user isn't logged in, else it is <code>true</code>.
+	 */
 	private boolean loggedIn = false;
+	/**
+	 * Is <code>true</code> if the user is an administrator, else it is <code>false</code>.
+	 */
 	private boolean admin = false;
+	/**
+	 * Representing the view for the auto completion and is user to determine whether the user is working on his own branch or the main branch.
+	 */
+	private String view = Functions.MAIN_BRANCH;
 
+	/**
+	 * Constructor, not used.
+	 */
 	private User() {}
 
+	/**
+	 * Creates, if necessary, a new instance of the User and returns it.
+	 * @return instance of this class
+	 */
 	public static synchronized User getInstance() {
 		if ( user == null )
 			user = new User();
@@ -44,6 +68,11 @@ public final class User {
 		return user;
 	}
 
+	/**
+	 * Sets the attributes from the values passed by cookies.
+	 * @param request HTTP request
+	 * @throws Exception 
+	 */
 	public void createUser(HttpServletRequest request) throws Exception {
 		Cookie[] cookies = request.getCookies();
                 
@@ -73,29 +102,54 @@ public final class User {
 		if ( this.loggedIn ) {
 			DatabaseBremen db = DatabaseBremen.getInstance();
 			db.connect();
-			Object[][] a = db.execute("SELECT admin FROM lgd_user WHERE email='" + this.username + "' OR username='" + this.username + "'");
-			this.admin = Boolean.parseBoolean(a[0][0].toString());
+			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE username='" + this.username + "'");
+			this.admin = Boolean.parseBoolean(a[0][0].toString());//t -> user ist admin
+			this.view = a[0][1].toString();//view
 		}
 	}
 
-	public void createUser(String username) {
+	/**
+	 * Sets the attributes specified by the parameters.
+	 * @param username Email
+	 * @param view View
+	 * @param loggedIn is logged in
+	 * @param admin  is administrator
+	 */
+	public void createUser(String username, String view, boolean loggedIn, boolean admin) {
 		this.username = username;
-	}
-
-	public void createUser(String username, boolean loggedIn, boolean admin) {
-		this.username = username;
+		this.view = view;
 		this.loggedIn = loggedIn;
 		this.admin = admin;
 	}
 
+	/**
+	 * Returns the email. (primary key of lgd_user)
+	 * @return Email
+	 */
 	public String getUsername() {
 		return this.username;
 	}
 
+	/**
+	 * Returns the view, which is mostly used to determine the branch.
+	 * @return view
+	 */
+	public String getView() {
+		return this.view;
+	}
+
+	/**
+	 * Returns whether the user is logged in or not.
+	 * @return <code>true</code> if the user is logged in, else <code>false</code>
+	 */
 	public boolean isLoggedIn() {
 		return this.loggedIn;
 	}
 
+	/**
+	 * Returns whether the user is an administrator or not.
+	 * @return <code>true</code> if the user is an administrator in, else <code>false</code>
+	 */
 	public boolean isAdmin() {
 		return this.admin;
 	}
@@ -103,9 +157,18 @@ public final class User {
 	public void logout() {
 		this.loggedIn = false;
 		this.admin = false;
+		this.view = Functions.MAIN_BRANCH;
 	}
 
+	/**
+	 * Creates to cookies, one contains the username (email), the other is a md5-hash and determines whether the user is logged in or not.
+	 * @param response HTTP response, for saving the cookies
+	 * @throws Exception 
+	 */
 	public void createCookie(HttpServletResponse response) throws Exception {
+		if ( this.username == "")
+			return;
+
 		Cookie u = new Cookie("lgd_username", this.username);
 		u.setMaxAge(365 * 24 * 60 * 60);
 
@@ -120,9 +183,20 @@ public final class User {
 		}
 
 		Cookie l = new Cookie("lgd_loggedIn", sb.toString());
-		l.setMaxAge(60 *60);
+		l.setMaxAge(60 * 60);
 
 		response.addCookie(u);
 		response.addCookie(l);
+	}
+
+	/**
+	 * Updates the view to the given value an saves it in the database.
+	 * @param newView the new view
+	 * @throws Exception 
+	 */
+	public void updateView(String newView) throws Exception {
+		DatabaseBremen db = DatabaseBremen.getInstance();
+		db.connect();
+		this.view = db.execute("UPDATE lgd_user set view='" + (newView.equals("main") ? Functions.MAIN_BRANCH : "lgd_user_" + db.execute("SELECT username FROM lgd_user WHERE email='" + this.username + "'")[0][0]) + "' WHERE email='" + this.username + "' RETURNING view")[0][0].toString();
 	}
 }

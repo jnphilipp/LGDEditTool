@@ -41,13 +41,18 @@ fieldset.search input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
 	font-family: monospace;
 	width: 40em;}
 
-fieldset.search input[type=submit] { font-family: monospace;
-	font-size: 11pt;
-	text-align: center;
-	border: 1px solid #666;
-	background: #efefef;
-	color: black;}
+div.select select {
+   background: transparent;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   border: 1px solid rgba(106, 105, 106, 0.6);
+   height: 34px;
+}
 
-fieldset.search input[type=submit]:hover { background: #F7F7F7;
-	color: blue;
-	font-weight: bold;}
+div.select {
+   width: 240px;
+   height: 34px;
+   overflow: hidden;
+   background: url(../images/down_arrow_select.jpg) no-repeat right #ddd;
+}

@@ -15,8 +15,10 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
+<%@page import="LGDEditTool.Templates.TemplatesEditedMappings"%>
+<%@page import="LGDEditTool.Templates.TemplatesAccountSettings"%>
 <%@page import="LGDEditTool.db.DatabaseBremen"%>
-<%@page import="LGDEditTool.Templates.TemplatesShowMessage"%>
+<%@page import="LGDEditTool.Templates.Templates"%>
 <%@page import="java.security.MessageDigest"%>
 <%-- 
     Document   : index
@@ -29,6 +31,7 @@
 <%@page import="java.sql.DriverManager" %>
 <%@page import="java.sql.SQLException" %>
 <%@page import="java.util.Calendar"%>
+<%@page import="LGDEditTool.Functions"%>
 <%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
 <%@page import="LGDEditTool.SiteHandling.User"%>
 <%@page import="LGDEditTool.SiteHandling.RequestHandling" %>
@@ -43,21 +46,15 @@
 	boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
-		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ?request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(")-1)) + (request.getParameter("search").contains(",") ? "#" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
+		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "~" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
-	User user = User.getInstance();
-	user.createUser(request);
+	User.getInstance().createUser(request);
 
-	if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null ) {
+	if ( request.getParameter("recaptcha_challenge_field") != null && request.getParameter("recaptcha_response_field") != null )
 		captcha = RequestHandling.checkCaptcha(request);
-	}
 
 	if ( request.getParameter("captcha") == null && captcha )
-		message = RequestHandling.doRequestHandling(request, response, user);
-
-/*	if ( message.equals("Login successful.") ) {
-		out.println(user.isLoggedIn());
-	}*/
+		message = RequestHandling.doRequestHandling(request, response);
 %>
 
 <!DOCTYPE HTML>
@@ -79,15 +76,19 @@
         <script type="text/javascript" src="./js/jquery.autocomplete.js"></script>
 		<script>
 			<% if ( request.getParameter("tab") == null || request.getParameter("tab").equals("search") ) { %>
-                            $(function() {
-                                $("#search").autocomplete("autocomplete_search.jsp")
-                            });
-                        <% }
-                        else if ( request.getParameter("tab").equals("history") ) { %>
-                            $(function() {
-                                $("#search").autocomplete("autocomplete_history.jsp")
-                            });
-                        <% } %>
+			$(function() {
+				$("#search").autocomplete("autocomplete_search.jsp")
+			});
+			<% }
+					else if ( request.getParameter("tab").equals("history") ) { %>
+			$(function() {
+				$("#search").autocomplete("autocomplete_history.jsp")
+			});
+			<% } else if ( request.getParameter("tab").equals("unmapped") ) { %>
+			$(function() {
+				$("#search").autocomplete("autocomplete_unmapped.jsp")
+			});
+			<% } %>
 
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
@@ -95,6 +96,10 @@
 
 				if ( id.indexOf("d") != -1 )
 					id = id.replace("d", "");
+				else if ( id.indexOf("c") != -1 )
+					id = id.replace("c", "");
+				else if ( id.indexOf("kl") != -1 )
+					id = id.replace("kl", "k");
 				var s = document.getElementById(id + 'a');
 
 				if ( e.style.display == 'none' ) {
@@ -139,15 +144,15 @@
 	</head>
 	<body>
 		<% if ( !message.equals("") ) {
-			out.println(TemplatesShowMessage.showMessage(message));
+			out.println(Templates.showMessage(message));
 		}
-if ( (user == null || !user.isLoggedIn()) ) { %>
+		if ( !User.getInstance().isLoggedIn() ) { %>
 		<div class="login" style="right: 20px; position: absolute;">
 			<a>Login</a>
 			<article>
 				<fieldset>
-					<legend>Log in (<a style="font-size: 9pt;">Signup</a>)</legend>
-					<form action="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : request.getParameter("tab")) + (search.equals("") ? "" : "&search=" + search)); %>" method="post" accept-charset="UTF-8">
+					<legend>Log in (<a href="?tab=signup" style="font-size: 9pt;">Sign up</a>)</legend>
+					<form action="?tab=search<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>" method="post" accept-charset="UTF-8">
 						<ul>
 							<li>
 								<label>Login or Email</label>
@@ -165,45 +170,122 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 		</div>
 		<% } else { %>
 		<div class="login" style="right: 20px; position: absolute;">
-			<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="<% out.print("?tab=" + (request.getParameter("tab") == null ? "search" : (request.getParameter("tab").equals("settings") ? "search" : (request.getParameter("tab").equals("account") ? "search" : request.getParameter("tab")))) + (search.equals("") ? "" : "&search=" + search)); %>&logout=yes">Logout</a>
+			<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=search&amp;logout=yes<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
 
 		<ul id="tabs">
-			<% if ( request.getParameter("tab") == null ) { %>
-			<li><a class="current" href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<li><a href="?tab=unmapped">Unmapped Tags</a></li>
-			<li><a href="?tab=all&type=k">All Mappings</a></li>
-			<li><a href="?tab=history">Edit-History</a></li>
-			<% }
-				else { %>
-			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&search=" + search)); %>">Search</a></li>
-			<% out.print(search.equals("") ? "" : "<li><a " + (request.getParameter("tab").equals("ontology") ? "class=\"current\"" : "") + "href=\"?tab=ontology&search=" + search + "\">Ontology</a></li>"); %>
-			<li><a <% if ( request.getParameter("tab").equals("unmapped") ) { out.print("class=\"current\""); } %> href="?tab=unmapped">Unmapped Tags</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&type=k">All Mappings</a></li>
-			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&search=" + search)); %>">Edit-History</a></li>
-			<% if ( user.isAdmin() ) {
+			<% /*if ( !user.isLoggedIn() ) {
+				if ( request.getParameter("tab") == null )
+					out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
+				else {
+					out.println("<li><a " + (request.getParameter("tab").equals("login") ? "class=\"current\"" : "") + " href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
+					if ( request.getParameter("tab").equals("signup") )
+						out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Sign up</a></li>");
+				}
+			}
+			else {*/
+				if ( request.getParameter("tab") == null ) {
+					out.println("<li><a class=\"current\" href=\"?tab=search" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Search</a></li>");
+					if ( User.getInstance().isLoggedIn() )
+						out.println("\t\t\t<li><a href=\"?tab=unmapped\">Unmapped Tags</a></li>");
+					out.println("\t\t\t<li><a href=\"?tab=all&amp;type=k\">All Mappings</a></li>");
+					out.println("\t\t\t<li><a href=\"?tab=history\">Edit-History</a></li>");
+			} 
+			else { %>
+			<li><a <% if ( request.getParameter("tab").equals("search") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&amp;search=" + search)); %>">Search</a></li>
+			<% out.print(search.equals("") ? "" : "<li><a href=\"?tab=ontology&amp;search=" + search + "\">Ontology</a></li>");
+			if ( User.getInstance().isLoggedIn() )
+				out.print("<li><a " + (request.getParameter("tab").equals("unmapped") ? "class=\"current\"" : "") + " href=\"?tab=unmapped" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Unmapped Tags</a></li>");
+			%>
+			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&amp;type=k">All Mappings</a></li>
+			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&amp;search=" + search)); %>">Edit-History</a></li>
+			<% if ( !User.getInstance().getView().equals("lgd_user_main") ) {
+					out.println("<li><a " + (request.getParameter("tab").equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Edited Mappings</a></li>");
+				}
+				if ( User.getInstance().isAdmin() ) {
 					out.println("<li><a " + (request.getParameter("tab").equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
 				}
-				else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
+				if ( request.getParameter("tab").equals("signup") && !User.getInstance().isLoggedIn() )
+						out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Sign up</a></li>");
+				else if ( User.getInstance().isLoggedIn() && request.getParameter("tab").equals("account") ) {
 					out.println("<li><a class=\"current\" href=\"?tab=account\">Acoount Settings</a></li>");
 				}
-			} %>
+			//}
+		} %>
 		</ul>
 
 		<div id="panes">
-			<%
-			if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
+			<%--<% if ( !user.isLoggedIn() ) {
+				if ( request.getParameter("tab") == null || request.getParameter("tab").equals("login") ) {
+			%>
+			<div class="pane">
+				<div class="tlogin">
+					<article>
+						<fieldset>
+							<legend>Log in (<a href="?tab=signup" style="font-size: 9pt;">Sign up</a>)</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&search=" + search); %>" method="post" accept-charset="UTF-8">
+								<table>
+									<tr><th>Login or Email</th></tr>
+									<tr><td><input type="text" name="user" required /></td></tr>
+									<tr><th>Password (<a style="font-size: 9pt;">forgot password</a>)</th></tr>
+									<tr><td><input type="password" name="password" required /></td></tr>
+									<tr><td><input type="submit" name="login" value="Log in" /></td></tr>
+								</table>
+							</form>
+						</fieldset>
+					</article>
+				</div>
+			</div>
+			<% }
+				else if ( request.getParameter("tab").equals("signup") ) { %>
+			<div class="pane">
+				<div class="tlogin">
+					<article>
+						<fieldset>
+							<legend>Sign up</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&search=" + search); %>" method="post" accept-charset="UTF-8">
+								<table>
+									<tr>
+										<th>Username:</th>
+										<td><input type="text" name="user" required /></td>
+									</tr>
+									<tr>
+										<th>Email:</th>
+										<td><input type="email" name="email" required /></td>
+									</tr>
+									<tr>
+										<th>Password:</th>
+										<td><input type="password" name="password" required /></td>
+									</tr>
+									<tr>
+										<th>Confirm password:</th>
+										<td><input type="password" name="password2" required /></td>
+									</tr>
+									<tr><td></td><td><input type="submit" name="signup" value="Sign up" /></td></tr>
+								</table>
+							</form>
+						</fieldset>
+					</article>
+				</div>
+			</div>--%>
+			<% //}
+			//}
+			/*else*/ if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
+					if ( User.getInstance().isLoggedIn() )
+						out.println(Templates.branch(search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t</div>");
 				}
 				else {
 					out.println("<div class=\"pane\">");
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.println(TemplatesSearch.captcha(request, search));
+						out.println(TemplatesSearch.captcha(request, search));
+					if ( User.getInstance().isLoggedIn() )
+						out.println(Templates.branch(search));
 					out.println(TemplatesSearch.search());
 					out.println("\t\t\t\t<br /><br />");
 					out.println(TemplatesSearch.searchResult(search));
@@ -211,128 +293,106 @@ if ( (user == null || !user.isLoggedIn()) ) { %>
 				}
 			}
 			else if ( request.getParameter("tab").equals("ontology") ) {
-				if ( !search.equals("") ) {
-					out.println("<div class=\"pane\">\n");
-					out.println(TemplatesOntology.ontologie(user,search)+"<br>\n");                            
-					out.println("</div>\n");
-				}
-				else {
-					out.println("<div class=\"pane\">\n");
-					out.println("<h3>you must search first</h3>\n");
-					out.println("</div>\n");
-				}
+				out.println("<div class=\"pane\">\n");
+				out.println(TemplatesOntology.ontology(search));
+				out.println("\t\t\t</div>\n");
 			}
-			else if ( request.getParameter("tab").toString().equals("unmapped") ) {
+			else if ( request.getParameter("tab").toString().equals("unmapped") && User.getInstance().isLoggedIn() ) {
 				out.println("<div class=\"pane\">");
-				if ( request.getParameter("ksite") == null || request.getParameter("kvsite") == null ) {
-					out.println(TemplatesUnmappedTags.unmappedTags("1","1"));
-				}
-				else {
-                                    if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
-						out.print(TemplatesUnmappedTags.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite")));
-						out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
-					}
-                                        else{
-                                                out.println(TemplatesUnmappedTags.unmappedTags(request.getParameter("ksite").toString(),request.getParameter("kvsite").toString()));
-                                        }
-				}
-				out.println("</div>");
+				out.println(Templates.branch(search));
+				out.println(TemplatesUnmappedTags.search());
+				out.println("\t\t\t\t<br /><br />");
+				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString()), search));
+				out.println("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("all") ) {
 				out.println("<div class=\"pane\">");
-                                out.println(TemplatesAllMappings.search()+"\n<br />\n");
-                                if (!search.equals("")){
-                                    out.print(TemplatesAllMappings.searchResult(search));
-                                }else
-                                {
-                                    out.println("\t\t\t\t<ul id=\"tabs\">");
-                                    out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&type=k\">K-Mappings</a></li>");
-                                    out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&type=kv\">KV-Mappings</a></li>");
-                                    out.println("\t\t\t\t\t<li><a " + (request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&type=datatype\">Datatype-Mappings</a></li>");
-                                    out.println("\t\t\t\t</ul>");
-                                    out.println("\t\t\t\t<div class=\"pane\">");
-                                
-                                    if ( request.getParameter("site") == null ) {
-					out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), "1"));
-                                    }
-                                    else {
-					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha ) {
-						out.print(TemplatesAllMappings.captcha(request, request.getParameter("type"), request.getParameter("site")));
-						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
-					}
-					else {
-						out.print(TemplatesAllMappings.listAllMappings(request.getParameter("type"), request.getParameter("site")));
-					}
-                                    }
-                                }
+				out.println("\t\t\t\t<ul id=\"tabs\">");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") == null || request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=k\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=kv\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=literal\">Literal-Mappings</a></li>");
+				out.println("\t\t\t\t</ul>");
+				out.println("\t\t\t\t<div class=\"pane\">");
+				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+					out.print(TemplatesAllMappings.captcha(request, (request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
+				out.println(Templates.branch(search));
+				out.print(TemplatesAllMappings.listAllMappings((request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println("\t\t\t\t</div>");
-				out.print("\t\t\t</div>");
+				out.println("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("history") ) {
 				out.println("<div class=\"pane\">");
-                                out.println(TemplatesEditHistory.search()+"\n<br />\n");
-
-                                    if ( request.getParameter("ksite") != null && request.getParameter("kvsite") != null && request.getParameter("dsite") != null ) {
-					out.println(TemplatesEditHistory.editHistory(request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
-					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-						out.println(TemplatesEditHistory.captcha(request, request.getParameter("ksite"), request.getParameter("kvsite"), request.getParameter("dsite")));
-                                    }
-                                    else {
-					out.println(TemplatesEditHistory.editHistory("1", "1", "1", search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
-                                    }
-                                
-				out.println("</div>");
+				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
+					out.println(TemplatesEditHistory.captcha(request, (request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), (request.getParameter("lsite") != null ? request.getParameter("lsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				out.println(Templates.branch(search));
+				out.println(TemplatesEditHistory.search());
+				out.println("\t\t\t\t<br /><br />");
+				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), (request.getParameter("lsite") != null ? request.getParameter("lsite") : "1"), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
+				out.println("\t\t\t</div>");
 			}
-			else if ( user.isAdmin() && request.getParameter("tab").equals("settings") ) {
+			else if ( request.getParameter("tab").equals("edited") && !User.getInstance().getView().equals("lgd_user_main") ) {
+				out.println("<div class=\"pane\">");
+				out.println("\t\t\t\t<ul id=\"tabs\">");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") == null || request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=kv\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=literal\">Literal-Mappings</a></li>");
+				out.println("\t\t\t\t</ul>");
+				out.println("\t\t\t\t<div class=\"pane\">");
+				out.print(TemplatesEditedMappings.listEditedMappings((request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
+				out.println("\t\t\t\t</div>");
+				out.println("\t\t\t</div>");
+			}
+			else if ( User.getInstance().isAdmin() && request.getParameter("tab").equals("settings") ) {
 			%>
 			<div class="pane">
 				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 			</div>
 			<%
-			} else if ( user.isLoggedIn() && request.getParameter("tab").equals("account") ) {
-			%>
+			} else if ( User.getInstance().isLoggedIn() && request.getParameter("tab").equals("account") ) {
+				out.println("<div class=\"pane\">");
+				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : "")));
+				out.println("\t\t\t</div>");
+			}
+			else if ( request.getParameter("tab").equals("signup") ) { %>
 			<div class="pane">
-				<section class="account">
-					<aside>
-						<ul>
-							<li><a>Change Password</a></li>
-							<li><a>Change Email</a></li>
-						</ul>
-					</aside>
+				<div class="tlogin">
 					<article>
 						<fieldset>
-							<legend>Change Password</legend>
-							<form autocomplete="off">
-								<ul>
-									<li>
-										<label>Old password:</label>
-										<input type="password" name="opassword" required />
-									</li>
-									<li>
-										<label>New password:</label>
-										<input type="password" name="npassword" required />
-									</li>
-									<li>
-										<label>New password:</label>
-										<input type="password" name="npassword2" required />
-									</li>
-									<li>
-										<input type="submit" name="send" value="Change" />
-									</li>
-								</ul>
+							<legend>Sign up</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>" method="post" accept-charset="UTF-8">
+								<table>
+									<tr>
+										<th>Username:</th>
+										<td><input type="text" name="user" required /></td>
+									</tr>
+									<tr>
+										<th>Email:</th>
+										<td><input type="email" name="email" required /></td>
+									</tr>
+									<tr>
+										<th>Password:</th>
+										<td><input type="password" name="password" required /></td>
+									</tr>
+									<tr>
+										<th>Confirm password:</th>
+										<td><input type="password" name="password2" required /></td>
+									</tr>
+									<tr><td></td><td><input type="submit" name="signup" value="Sign up" /></td></tr>
+								</table>
 							</form>
 						</fieldset>
 					</article>
-				</section>
+				</div>
 			</div>
-			<%
-			}
-			%>
+		<% } %>
 		</div>
 		<small style="float: right;">© swp12-10 (<% out.print((Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH) ) + "." + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "." + Calendar.getInstance().get(Calendar.YEAR)); %>)</small>
 	</body>
 </html>
 <%
+User.getInstance().createCookie(response);
 DatabaseBremen db = DatabaseBremen.getInstance();
 db.disconnect();
 %>

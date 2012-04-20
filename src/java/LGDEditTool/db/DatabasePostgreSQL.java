@@ -32,6 +32,9 @@ import java.util.Properties;
  * @version 1.1
  */
 public class DatabasePostgreSQL {
+	/**
+	 * Is <code>true</code> if the JDBC driver for PostgreSQL exists, else it is <code>false</code>.
+	 */
 	private boolean driver = true;
 	private Connection connection = null;
 	private Statement statement = null;

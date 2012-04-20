@@ -81,3 +81,32 @@ article.message { display: block;
 	border-radius: 8px;}
 
 article.message p { text-align: center;}
+
+input[type=submit] { font-family: monospace;
+	font-size: 11pt;
+	font-weight: normal;
+	text-align: center;
+	border: 1px solid #666;
+	background: #efefef;
+	color: black;}
+
+input[type=submit]:hover { background: #F7F7F7;
+	color: blue;
+	font-weight: bold;}
+
+input[type=password],
+input[type=email],
+input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;}
+
+textarea { resize: none;
+	border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;}
+
+#ontology { display: table;
+	width: 100%;}
+#ontology section { display: table-cell;
+	width: 40%;}
+
+#ontology aside { display: table-cell;
+	padding-left: 2em;}

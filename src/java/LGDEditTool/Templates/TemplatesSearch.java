@@ -20,6 +20,9 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
+import javax.servlet.http.HttpServletRequest;
+import net.tanesha.recaptcha.ReCaptcha;
+import net.tanesha.recaptcha.ReCaptchaFactory;
 
 /**
  *
@@ -147,7 +150,7 @@ public class TemplatesSearch {
 	private static String kMappingEdit(String search, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
@@ -180,7 +183,7 @@ public class TemplatesSearch {
 	private static String kMappingDelete(String search, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -214,7 +217,7 @@ public class TemplatesSearch {
 	private static String kMappingCommit(String search, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -308,7 +311,7 @@ public class TemplatesSearch {
 	private static String kvMappingEdit(String search, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -345,7 +348,7 @@ public class TemplatesSearch {
 	private static String kvMappingDelete(String search, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -382,7 +385,7 @@ public class TemplatesSearch {
 	private static String kvMappingCommit(String search, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kvc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -469,14 +472,14 @@ public class TemplatesSearch {
 	private static String datatypeMappingEdit(String search, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tk" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td align=\"center\"><label>Datatype: </label>\n";
 		re += "\t\t\t\t\t\t\t\t<div class=\"select\"><select name=\"datatype\">\n";
-		re += "\t\t\t\t\t\t\t\t\t<option value=\"boolean\">boolean</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t<option value=\"int\">int</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t<option value=\"float\">float</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t<option value=\"boolean\" " + (datatype.equals("boolean") ? "selected" : "") + ">boolean</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t<option value=\"int\" " + (datatype.equals("int") ? "selected" : "") + ">int</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t<option value=\"float\" " + (datatype.equals("float") ? "selected" : "") + ">float</option>\n";
 		re += "\t\t\t\t\t\t\t\t</select></div>\n";
 		re += "\t\t\t\t\t\t\t</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
@@ -506,7 +509,7 @@ public class TemplatesSearch {
 	private static String datatypeMappingDelete(String search, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tkd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
@@ -537,7 +540,7 @@ public class TemplatesSearch {
 	private static String datatypeMappingCommit(String search, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tkc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
@@ -617,7 +620,7 @@ public class TemplatesSearch {
 	private static String literalMappingEdit(String search, int i, String k, String property, String language, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lk" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
@@ -650,7 +653,7 @@ public class TemplatesSearch {
 	private static String literalMappingDelete(String search, int i, String k, String property, String language, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lkd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -684,7 +687,7 @@ public class TemplatesSearch {
 	private static String literalMappingCommit(String search, int i, String k, String property, String language, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lkc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -711,15 +714,97 @@ public class TemplatesSearch {
 	 * @return String
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
-		String re = "\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";
-		re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
-		re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
-		re += "\t\t\t\t\t\t\t</td>\n";
-		re += "\t\t\t\t\t\t\t<td colspan=\"" + 3 + "\" align=\"center\">\n";
-		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
-		re += "\t\t\t\t\t\t\t</td>\n";
-		re += "\t\t\t\t\t\t</tr>\n";
+		String re = "";
+		if ( !User.getInstance().isLoggedIn() ) {
+			re = "\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Username:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"text\" name=\"user\" value=\"" + User.getInstance().getUsername() + "\" style=\"width: 25em;\" placeholder=\"Username\" required />\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"" + 3 + "\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+		else {
+			re = "\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<label>Comment:</label>\n";
+			re += "\t\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t\t<td colspan=\"" + 3 + "\" align=\"center\">\n";
+			re += "\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"" + submitName + "\" value=\"" + submitValue + "\" />\n";
+			re += "\t\t\t\t\t\t\t</td>\n";
+			re += "\t\t\t\t\t\t</tr>\n";
+		}
+
+		return re;
+	}
+
+	public static String captcha(HttpServletRequest request, String search) {
+		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
+
+		String re = "\t\t\t\t<article class=\"captcha\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
+		re += "\t\t\t\t\t\t<ul>\n";
+		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
+		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";
+		re += "\t\t\t\t\t\t</ul>\n";
+
+		if ( request.getParameter("kmapping") != null ) {
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
+			if ( !request.getParameter("kmapping").equals("Delete") ) {
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
+			}
+
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kmapping\" value=\"" + request.getParameter("kmapping") + "\" />\n";
+		}//#########################################################################
+		else if ( request.getParameter("kvmapping") != null ) {
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + request.getParameter("v") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"object\" value=\"" + request.getParameter("object") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
+			if ( !request.getParameter("kvmapping").equals("Delete") ) {
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aobject\" value=\"" + request.getParameter("aobject") + "\" />\n";
+			}
+
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"kvmapping\" value=\"" + request.getParameter("kvmapping") + "\" />\n";
+		}//#########################################################################
+		else if ( request.getParameter("dmapping") != null ) {
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"datatype\" value=\"" + request.getParameter("datatype") + "\" />\n";
+			if ( !request.getParameter("dmapping").equals("Delete") )
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"adatatype\" value=\"" + request.getParameter("adatatype") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"dmapping\" value=\"" + request.getParameter("dmapping") + "\" />\n";
+		}//#########################################################################
+		else if ( request.getParameter("lmapping") != null ) {
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + request.getParameter("k") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"language\" value=\"" + request.getParameter("language") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"property\" value=\"" + request.getParameter("property") + "\" />\n";
+			if ( !request.getParameter("lmapping").equals("Delete") ) {
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + request.getParameter("aproperty") + "\" />\n";
+				re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"alanguage\" value=\"" + request.getParameter("alanguage") + "\" />\n";
+			}
+
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"user\" value=\"" + request.getParameter("user") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"comment\" value=\"" + request.getParameter("comment") + "\" />\n";
+			re += "\t\t\t\t\t\t<input type=\"hidden\" name=\"lmapping\" value=\"" + request.getParameter("lmapping") + "\" />\n";
+		}
+
+		re += "\t\t\t\t\t</form>\n";
+		re += "\t\t\t\t</article>\n";
 
 		return re;
 	}

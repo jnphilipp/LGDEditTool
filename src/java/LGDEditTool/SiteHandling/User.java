@@ -50,7 +50,7 @@ public final class User {
 	/**
 	 * Representing the view for the auto completion and is user to determine whether the user is working on his own branch or the main branch.
 	 */
-	private String view = "";
+	private String view = Functions.MAIN_BRANCH;
 
 	/**
 	 * Constructor, not used.
@@ -102,8 +102,8 @@ public final class User {
 		if ( this.loggedIn ) {
 			DatabaseBremen db = DatabaseBremen.getInstance();
 			db.connect();
-			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE email='" + this.username + "'");
-			this.admin = a[0][0].toString().equals("t");//t -> user ist admin
+			Object[][] a = db.execute("SELECT admin, view FROM lgd_user WHERE username='" + this.username + "'");
+			this.admin = Boolean.parseBoolean(a[0][0].toString());//t -> user ist admin
 			this.view = a[0][1].toString();//view
 		}
 	}
@@ -157,6 +157,7 @@ public final class User {
 	public void logout() {
 		this.loggedIn = false;
 		this.admin = false;
+		this.view = Functions.MAIN_BRANCH;
 	}
 
 	/**

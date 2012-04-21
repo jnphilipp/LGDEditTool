@@ -42,11 +42,15 @@
 <%@page import="LGDEditTool.Templates.TemplatesOntology" %>
 <% request.setCharacterEncoding("UTF-8");
 	String search = "";
+	String tab = "";
 	String message = "";
 	boolean captcha = true;
 
 	if ( request.getParameter("search") != null )
 		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "~" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
+
+	if ( request.getParameter("tab") != null )
+		tab = request.getParameter("tab");
 
 	User.getInstance().createUser(request);
 
@@ -90,6 +94,9 @@
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
 				var u = document.getElementById(id + 'u');
+				<% if ( tab.equals("unmapped") )
+					out.println("var m = document.getElementById(id + 'm');");
+				%>
 
 				if ( id.indexOf("d") != -1 )
 					id = id.replace("d", "");
@@ -103,11 +110,17 @@
 					e.style.display = 'table-row';
 					u.style.display = 'table-row';
 					s.style.display = 'none';
+					<% if ( tab.equals("unmapped") )
+						out.println("m.style.display = 'table-row';");
+					%>
 				}
 				else {
 					e.style.display = 'none';
 					u.style.display = 'none';
 					s.style.display = 'table-row';
+					<% if ( tab.equals("unmapped") )
+						out.println("m.style.display = 'none';");
+					%>
 				}
 			}
 
@@ -119,15 +132,15 @@
 				else {
 					e.style.display='none';
 				}
-                                var p= document.getElementById(id+"p");
-                                if ( p.style.display != 'inline' ){
+				var p= document.getElementById(id+"p");
+				if ( p.style.display != 'inline' ){
 					e.style.display='inline';
 				}
 				else {
 					e.style.display='none';
 				}
-                                var m= document.getElementById(id+"m");
-                                if ( p.style.display != 'inline' ){
+				var m= document.getElementById(id+"m");
+				if ( p.style.display != 'inline' ){
 					e.style.display='inline';
 				}
 				else {
@@ -259,7 +272,7 @@
 			</div>--%>
 			<% //}
 			//}
-			/*else*/ if ( request.getParameter("tab") == null || request.getParameter("tab").toString().equals("search") ) {
+			/*else*/ if ( request.getParameter("tab") == null || request.getParameter("tab").equals("search") ) {
 				if ( search.equals("") ) {
 					out.println("<div class=\"pane\">");
 					if ( User.getInstance().isLoggedIn() )
@@ -284,12 +297,12 @@
 				out.println(TemplatesOntology.ontology(search));
 				out.println("\t\t\t</div>\n");
 			}
-			else if ( request.getParameter("tab").toString().equals("unmapped") && User.getInstance().isLoggedIn() ) {
+			else if ( request.getParameter("tab").equals("unmapped") && User.getInstance().isLoggedIn() ) {
 				out.println("<div class=\"pane\">");
 				out.println(Templates.branch(search));
 				out.println(TemplatesUnmappedTags.search());
 				out.println("\t\t\t\t<br /><br />");
-				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite").toString()), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite").toString()), search));
+				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite")), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite")), search, (request.getParameter("sort") == null ? "" : request.getParameter("sort"))));
 				out.println("\t\t\t</div>");
 			}
 			else if ( request.getParameter("tab").equals("all") ) {

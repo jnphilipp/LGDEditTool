@@ -18,11 +18,11 @@
 package LGDEditTool.SiteHandling;
 
 import LGDEditTool.Functions;
+import LGDEditTool.db.DatabaseBremen;
 import java.security.MessageDigest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import LGDEditTool.db.DatabaseBremen;
 
 /**
  * Specified exactly one user, and handles all necessary attributes.
@@ -36,7 +36,7 @@ public final class User {
 	private static User user;
 
 	/**
-	 * email -> primary key of lgd_user
+	 * Contains the username of the user.
 	 */
 	private String username = "";
 	/**
@@ -91,7 +91,7 @@ public final class User {
 
 				byte byteData[] = md.digest();
 				//convert the byte to hex
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				for (int j = 0; j < byteData.length; j++) {
 					sb.append(Integer.toString((byteData[j] & 0xff) + 0x100, 16).substring(1));
 				}
@@ -166,7 +166,7 @@ public final class User {
 	 * @throws Exception 
 	 */
 	public void createCookie(HttpServletResponse response) throws Exception {
-		if ( this.username == "")
+		if ( this.username.equals("") )
 			return;
 
 		Cookie u = new Cookie("lgd_username", this.username);
@@ -177,7 +177,7 @@ public final class User {
 
 		byte byteData[] = md.digest();
 		//convert the byte to hex
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < byteData.length; i++) {
 			sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 		}
@@ -197,6 +197,6 @@ public final class User {
 	public void updateView(String newView) throws Exception {
 		DatabaseBremen db = DatabaseBremen.getInstance();
 		db.connect();
-		this.view = db.execute("UPDATE lgd_user set view='" + (newView.equals("main") ? Functions.MAIN_BRANCH : "lgd_user_" + db.execute("SELECT username FROM lgd_user WHERE email='" + this.username + "'")[0][0]) + "' WHERE email='" + this.username + "' RETURNING view")[0][0].toString();
+		this.view = db.execute("UPDATE lgd_user set view='" + (newView.equals("main") ? Functions.MAIN_BRANCH : "lgd_user_" + db.execute("SELECT username FROM lgd_user WHERE username='" + this.username + "'")[0][0]) + "' WHERE username='" + this.username + "' RETURNING view")[0][0].toString();
 	}
 }

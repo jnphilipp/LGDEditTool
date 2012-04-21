@@ -203,7 +203,7 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!=''" : "(user_id='main' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, property, language, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!=''" : "(user_id='main' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, property, language, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addLiteralMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site);
@@ -238,8 +238,8 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=k&site=" + site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t\t<tr id=\"k" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
@@ -321,8 +321,8 @@ public class TemplatesAllMappings {
     s += "\t\t\t\t\t\t<tr id=\"kv" + id + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
-    s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
-    s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
+    s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
+    s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
     s += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
     s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
@@ -484,7 +484,7 @@ public class TemplatesAllMappings {
 		s += "\t\t\t\t\t\t<form action=\"?tab=all&type=literal&site=" + site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t\t<tr id=\"lk" + id + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" value=\"" + language + "\" style=\"width: 27em;\" /></td>\n";
 		s += "\t\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		s += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
@@ -765,8 +765,8 @@ public class TemplatesAllMappings {
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (!User.getInstance().isLoggedIn() ? "&captcha=yes" : "") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
@@ -881,8 +881,8 @@ public class TemplatesAllMappings {
 		re += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" class=\"mapping\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";

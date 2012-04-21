@@ -134,7 +134,7 @@ public class TemplatesUnmappedTags {
 	}
 
 	private static String kMapping(int i, String k, String usage_count, String distinct_value_count, int ksite, int kvsite) {
-		String s = "";
+		String s;
 
 		s = "\t\t\t\t\t<tr id=\"k" + i + "a\">\n";
 		s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
@@ -149,8 +149,8 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t<form action=\"?tab=search&search=" + k + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t<tr id=\"k" + i + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
-		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" placeholder=\"object\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" placeholder=\"object\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">Hide</a></td>\n";
 		s += "\t\t\t\t\t\t\t<td>Literal</td>\n";
@@ -163,7 +163,7 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t<form action=\"?tab=search&search=" + k + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t<tr id=\"kl" + i + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" placeholder=\"language\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t<td>Mapping</td>\n";
@@ -216,7 +216,7 @@ public class TemplatesUnmappedTags {
 	}
 
 	private static String kvMapping(int i, String k, String v, String usage_count) {
-		String s = "";
+		String s;
 		s = "\t\t\t\t\t<tr id=\"kv" + i + "a\">\n";
 		s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -228,8 +228,8 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t<form action=\"?tab=search&search=" + k + "-" + v + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td>k: " + k + "<br />v: " + v + "</td>\n";
-		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
-		s += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" placeholder=\"object\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" placeholder=\"object\" style=\"width: 27em;\" required /></td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
 		s += "\t\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">Hide</a></td>\n";

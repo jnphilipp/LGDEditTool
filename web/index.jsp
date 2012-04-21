@@ -75,20 +75,17 @@
 		<script type="text/javascript" src="./js/jquery.js"></script>
         <script type="text/javascript" src="./js/jquery.autocomplete.js"></script>
 		<script>
-			<% if ( request.getParameter("tab") == null || request.getParameter("tab").equals("search") ) { %>
 			$(function() {
-				$("#search").autocomplete("autocomplete_search.jsp")
+			<% if ( request.getParameter("tab") == null || request.getParameter("tab").equals("search") )
+				out.println("$(\"#search\").autocomplete(\"autocomplete_search.jsp\")");
+			else if ( request.getParameter("tab").equals("history") )
+				out.println("$(\"#search\").autocomplete(\"autocomplete_history.jsp\")");
+			else if ( request.getParameter("tab").equals("unmapped") )
+				out.println("$(\"#search\").autocomplete(\"autocomplete_unmapped.jsp\")");
+			%>
+					$(".property").autocomplete("autocomplete_property.jsp")
+					$(".object").autocomplete("autocomplete_object.jsp")
 			});
-			<% }
-					else if ( request.getParameter("tab").equals("history") ) { %>
-			$(function() {
-				$("#search").autocomplete("autocomplete_history.jsp")
-			});
-			<% } else if ( request.getParameter("tab").equals("unmapped") ) { %>
-			$(function() {
-				$("#search").autocomplete("autocomplete_unmapped.jsp")
-			});
-			<% } %>
 
 			function toggle_visibility(id) {
 				var e = document.getElementById(id);
@@ -176,17 +173,7 @@
 		<h1>LGDEditTool</h1>
 
 		<ul id="tabs">
-			<% /*if ( !user.isLoggedIn() ) {
-				if ( request.getParameter("tab") == null )
-					out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
-				else {
-					out.println("<li><a " + (request.getParameter("tab").equals("login") ? "class=\"current\"" : "") + " href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Log in</a></li>");
-					if ( request.getParameter("tab").equals("signup") )
-						out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&search=" + search) + "\">Sign up</a></li>");
-				}
-			}
-			else {*/
-				if ( request.getParameter("tab") == null ) {
+			<% if ( request.getParameter("tab") == null ) {
 					out.println("<li><a class=\"current\" href=\"?tab=search" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Search</a></li>");
 					if ( User.getInstance().isLoggedIn() )
 						out.println("\t\t\t<li><a href=\"?tab=unmapped\">Unmapped Tags</a></li>");
@@ -201,7 +188,7 @@
 			%>
 			<li><a <% if ( request.getParameter("tab").equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&amp;type=k">All Mappings</a></li>
 			<li><a <% if ( request.getParameter("tab").equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&amp;search=" + search)); %>">Edit-History</a></li>
-			<% if ( !User.getInstance().getView().equals("lgd_user_main") ) {
+			<% if ( !User.getInstance().getView().equals("lgd_user_main") && User.getInstance().isLoggedIn() ) {
 					out.println("<li><a " + (request.getParameter("tab").equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Edited Mappings</a></li>");
 				}
 				if ( User.getInstance().isAdmin() ) {
@@ -389,6 +376,19 @@
 		<% } %>
 		</div>
 		<small style="float: right;">© swp12-10 (<% out.print((Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH) ) + "." + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "." + Calendar.getInstance().get(Calendar.YEAR)); %>)</small>
+		<%--
+		/*Properties p = new Properties();
+		FileOutputStream stream = new FileOutputStream("namespaces.properties");
+		p.store(stream, null);
+		String key = "lgd";
+		String val = "http://linkedgeodata.org/ontology/";
+		p.setProperty(key, val);
+		p.store(stream,null);
+		stream.close();*/
+		
+		out.println(Functions.expand(getServletContext(), "lgd"));
+		
+		--%>
 	</body>
 </html>
 <%

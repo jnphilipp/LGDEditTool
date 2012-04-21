@@ -174,7 +174,7 @@ $.Autocompleter = function(input, options) {
 			var result;
 			if( data && data.length ) {
 				for (var i=0; i < data.length; i++) {
-					if( data[i].result.toLowerCase() == q.toLowerCase() ) {
+					if( data[i].result == q ) {
 						result = data[i];
 						break;
 					}
@@ -253,7 +253,7 @@ $.Autocompleter = function(input, options) {
 		if ( currentValue.length >= options.minChars) {
 			$input.addClass(options.loadingClass);
 			if (!options.matchCase)
-				currentValue = currentValue.toLowerCase();
+				currentValue = currentValue;
 			request(currentValue, receiveData, hideResultsNow);
 		} else {
 			stopLoading();
@@ -292,7 +292,7 @@ $.Autocompleter = function(input, options) {
 	function autoFill(q, sValue){
 		// autofill in the complete box w/the first match as long as the user hasn't entered in more data
 		// if the last user key pressed was backspace, don't autofill
-		if( options.autoFill && (lastWord($input.val()).toLowerCase() == q.toLowerCase()) && lastKeyPressCode != KEY.BACKSPACE ) {
+		if( options.autoFill && (lastWord($input.val()) == q) && lastKeyPressCode != KEY.BACKSPACE ) {
 			// fill in the value (keep the case the user has typed)
 			$input.val($input.val() + sValue.substring(lastWord(previousValue).length));
 			// select the portion of the value not typed by the user (so the next character will erase)
@@ -343,7 +343,7 @@ $.Autocompleter = function(input, options) {
 
 	function request(term, success, failure) {
 		if (!options.matchCase)
-			term = term.toLowerCase();
+			term = term;
 		var data = cache.load(term);
 		// recieve the cached data
 		if (data && data.length) {
@@ -439,10 +439,10 @@ $.Autocompleter.Cache = function(options) {
 	
 	function matchSubset(s, sub) {
 		if (!options.matchCase) 
-			s = s.toLowerCase();
+			s = s;
 		var i = s.indexOf(sub);
 		if (options.matchContains == "word"){
-			i = s.toLowerCase().search("\\b" + sub.toLowerCase());
+			i = s.search("\\b" + sub);
 		}
 		if (i == -1) return false;
 		return i == 0 || options.matchContains;
@@ -480,7 +480,7 @@ $.Autocompleter.Cache = function(options) {
 			if ( value === false )
 				continue;
 				
-			var firstChar = value.charAt(0).toLowerCase();
+			var firstChar = value.charAt(0);
 			// if no lookup array for this character exists, look it up now
 			if( !stMatchSets[firstChar] ) 
 				stMatchSets[firstChar] = [];

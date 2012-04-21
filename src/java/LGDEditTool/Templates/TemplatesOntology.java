@@ -21,7 +21,6 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
-import java.util.ArrayList;
 
 /**
  *
@@ -144,8 +143,6 @@ public class TemplatesOntology {
 			String sub = "";
 			if ( !a[i][0].equals(k) )
 				sub = addSubClasses(a[i][0].toString(), "" + id + i, depth + 1);
-			//else
-			//	sub = addSubClasses(a[i][0].toString(), "" + id + i, false);
 			if ( sub.equals("") ) {
 				s += "\t\t\t\t\t\t";
 				for ( int j = 0; j < depth; j++ )

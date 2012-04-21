@@ -153,8 +153,8 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" value=\"" + object + "\" style=\"width: 27em;\" required /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"aproperty\" value=\"" + property + "\" />\n";
@@ -315,8 +315,8 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 23em;\" /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"object\" name=\"object\" value=\"" + object + "\" style=\"width: 23em;\" /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"v\" value=\"" + v + "\" />\n";
@@ -623,7 +623,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lk" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
-		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
+		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" name=\"language\" value=\"" + language + "\" style=\"width: 27em;\" /></td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + affectedEntities + "</td>\n";
 		re += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
@@ -714,7 +714,7 @@ public class TemplatesSearch {
 	 * @return String
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
-		String re = "";
+		String re;
 		if ( !User.getInstance().isLoggedIn() ) {
 			re = "\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";
 			re += "\t\t\t\t\t\t\t<td colspan=\"" + (columns - 3) + "\" align=\"center\">\n";

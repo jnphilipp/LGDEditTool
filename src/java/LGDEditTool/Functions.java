@@ -18,7 +18,12 @@
 
 package LGDEditTool;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Properties;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -71,23 +76,71 @@ public class Functions {
 		return re;
 	}
 
-        /**
-         * Template for Database. Transform Date-String to Database Date-Type-String
-         * @return String in YYYY-MM-ddTHH:mm:ss format.
-         */
+	/**
+	 * Template for Database. Transform Date-String to Database Date-Type-String
+	 * @return String in YYYY-MM-ddTHH:mm:ss format.
+	 */
 	public static String getTimestamp() {
 		return Calendar.getInstance().get(Calendar.YEAR) + "-" + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "-" + (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + "T" + (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 10 ? "0" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY) : Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + ":" + (Calendar.getInstance().get(Calendar.MINUTE) < 10 ? "0" + Calendar.getInstance().get(Calendar.MINUTE) : Calendar.getInstance().get(Calendar.MINUTE)) + ":" + (Calendar.getInstance().get(Calendar.SECOND) < 10 ? "0" + Calendar.getInstance().get(Calendar.SECOND) : Calendar.getInstance().get(Calendar.SECOND));
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return 
+	 */
 	public static String createView(String username) {
 		return "CREATE VIEW lgd_user_" + username + " AS SELECT k, v, COUNT(k) FROM lgd_map_resource_kv WHERE (user_id = '" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id = '" + username + "')) GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k=lgd_map_resource_k.k AND ((user_id = '" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND (k, v) NOT IN (SELECT k, v FROM  lgd_map_resource_kv WHERE user_id = '" + username + "')))) + (SELECT COUNT(k) FROM lgd_map_datatype WHERE k=lgd_map_resource_k.k AND ((user_id = '" + username + "' AND datatype != 'deleted') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = '" + username + "')))) + (SELECT COUNT(k) FROM lgd_map_literal WHERE k=lgd_map_resource_k.k AND ((user_id = '" + username + "' AND property != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id = '" + username + "')))) FROM lgd_map_resource_k WHERE (user_id='" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + username + "')) GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_datatype WHERE ((user_id = '" + username + "' AND datatype != 'deleted') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = '" + username + "'))) AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE (user_id='" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + username + "'))) GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_literal WHERE ((user_id = '" + username + "' AND property != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id = '" + username + "'))) AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE (user_id='" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + username + "'))) GROUP BY k ORDER BY k, v";
 	}
-	
+
+	/**
+	 * 
+	 * @param username
+	 * @return 
+	 */
 	public static String createViewHistory(String username) {
 		return "CREATE VIEW lgd_user_" + username + "_history AS SELECT k, v, COUNT(k) FROM lgd_map_resource_kv_history WHERE userspace='" + username + "' GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv_history WHERE k=lgd_map_resource_k_history.k AND userspace='" + username + "') + (SELECT COUNT(k) FROM lgd_map_datatype_history WHERE k=lgd_map_resource_k_history.k AND userspace='" + username + "') + (SELECT COUNT(k) FROM lgd_map_literal_history WHERE k=lgd_map_resource_k_history.k AND userspace='" + username + "') FROM lgd_map_resource_k_history WHERE userspace='" + username + "' GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_datatype_history WHERE userspace='" + username + "' AND k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + username + "') GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_literal_history WHERE userspace='" + username + "' AND k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + username + "') GROUP BY k ORDER BY k, v";
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return 
+	 */
 	public static String createViewUnmapped(String username) {
 		return "CREATE VIEW lgd_user_" + username + "_unmapped AS SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_stat_tags_kv c WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='main' OR user_id='" + username + "') b WHERE c.k=b.k) AND c.k=a.k) AS count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM ( Select k FROM lgd_map_datatype WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_resource_prefix ) b WHERE a.k=b.k) GROUP BY k UNION ALL SELECT k, v, COUNT(k) AS count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='main' OR user_id='" + username + "') b WHERE a.k=b.k) GROUP BY k, v ORDER BY k, v";
+	}
+
+	/**
+	 * Expands the namespaces, such as lgd to the full URL, specified by the namespaces.properties-file.
+	 * @param servlet ServletContext
+	 * @param key Key, which is to be expanded.
+	 * @return expanded key
+	 * @throws IOException 
+	 */
+	public static String expand(ServletContext servlet, String key) throws IOException {
+		InputStream inputStream = servlet.getResourceAsStream("/WEB-INF/namespaces.properties");
+		Properties props = new Properties();
+		props.load(inputStream);
+		String value = props.getProperty(key);
+		inputStream.close();
+
+		return value;
+	}
+
+	/**
+	 * Returns all key, which can be expanded.
+	 * @param servlet ServletContext
+	 * @return List of all keys.
+	 * @throws IOException 
+	 */
+	public static Enumeration<Object> getNamespaceKeys(ServletContext servlet) throws IOException {
+		InputStream inputStream = servlet.getResourceAsStream("/WEB-INF/namespaces.properties");
+		Properties props = new Properties();
+		props.load(inputStream);
+		Enumeration<Object> keys = props.keys();
+		inputStream.close();
+
+		return keys;
 	}
 }

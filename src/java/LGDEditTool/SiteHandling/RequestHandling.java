@@ -17,14 +17,13 @@
 
 package LGDEditTool.SiteHandling;
 
-import java.util.Calendar;
+import LGDEditTool.Functions;
+import LGDEditTool.db.DatabaseBremen;
 import java.security.MessageDigest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
-import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
 
 /**
  * Timestap: YYYY-MM-ddThh:mm:ss (2011-05-31T23:51:36)
@@ -57,7 +56,7 @@ public class RequestHandling {
 			Object[][] a = database.execute("SELECT username, view, admin FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND password='" + sb + "'");
 
 			if ( a.length == 0 ) {
-				User.getInstance().createUser("", "", false, false);
+				User.getInstance().createUser("", Functions.MAIN_BRANCH, false, false);
 				re = "Login or password incorrect.";
 			}
 			else {

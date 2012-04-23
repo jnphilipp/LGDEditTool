@@ -84,7 +84,7 @@
         <script type="text/javascript" src="./js/jquery.autocomplete.js"></script>
 		<script>
 			$(function() {
-			<% if ( tab.equals("search") )
+			<% if ( tab.equals("") || tab.equals("search") )
 				out.println("$(\"#search\").autocomplete(\"autocomplete_search.jsp\")");
 			else if ( tab.equals("history") )
 				out.println("$(\"#search\").autocomplete(\"autocomplete_history.jsp\")");

@@ -57,23 +57,23 @@ public class TemplatesSearch {
 	 * @return String
 	 * @throws Exception 
 	 */
-	public static String searchResult(String search) throws Exception {
+	public static String searchResult(String search, String sort) throws Exception {
 		DatabaseBremen.getInstance().connect();
 		String re = "", tmp;
 
-		tmp = kMapping((search.contains("~") ? search.split("~")[0] : search ));
+		tmp = kMapping((search.contains("~") ? search.split("~")[0] : search ), sort);
 		if ( !tmp.equals("") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + kvMapping(search);
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + kvMapping(search, sort);
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.contains("~") ? search.split("~")[0] : search ));
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.contains("~") ? search.split("~")[0] : search ), sort);
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + literalMapping((search.contains("~") ? search.split("~")[0] : search ));
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + literalMapping((search.contains("~") ? search.split("~")[0] : search ), sort);
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
@@ -89,10 +89,10 @@ public class TemplatesSearch {
 	 * @return String
 	 * @throws Exception 
 	 */
-	private static String kMapping(String search) throws Exception {
+	private static String kMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND property != '' AND object != '' AND (k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object, user_id ORDER BY k");
+		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) as count FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND property != '' AND object != '' AND (k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -101,10 +101,10 @@ public class TemplatesSearch {
 		re += "\t\t\t\t<h2>K-Mappings</h2>\n";
 		re += "\t\t\t\t<table class=\"table\">\n";
 		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th>k</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>edit</th>\n";
 		re += "\t\t\t\t\t\t<th>delete</th>\n";
 		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
@@ -125,12 +125,12 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += kMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+			re += kMappingEdit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 			//delete
-			re += kMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+			re += kMappingDelete(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 			//commit
 			if ( !a[i][3].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				re += kMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+				re += kMappingCommit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 		}
 
 		re += "\t\t\t\t</table>\n";
@@ -147,10 +147,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kMappingEdit(String search, int i, String k, String property, String object, String affectedEntities) {
+	private static String kMappingEdit(String search, String sort, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"k" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
@@ -180,10 +180,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kMappingDelete(String search, int i, String k, String property, String object, String affectedEntities) {
+	private static String kMappingDelete(String search, String sort, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -214,10 +214,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kMappingCommit(String search, int i, String k, String property, String object, String affectedEntities) {
+	private static String kMappingCommit(String search, String sort, int i, String k, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -241,14 +241,14 @@ public class TemplatesSearch {
 	 * @return String
 	 * @throws Exception 
 	 */
-	private static String kvMapping(String search) throws Exception {
+	private static String kvMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
 		if ( search.contains("~") )
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY count(k), v");
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.contains("k") ? sort + ", v" : sort) + " ASC"));
 		else
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY count(k), v");
+			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.contains("k") ? sort + ", v" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -257,11 +257,11 @@ public class TemplatesSearch {
 		re += "\t\t\t\t<h2>KV-Mappings</h2>\n";
 		re += "\t\t\t\t<table class=\"table\">\n";
 		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th>k</th>\n";
-		re += "\t\t\t\t\t\t<th>v</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("v") ? "dv" : "v") + "\">v</a></th>\n";
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>edit</th>\n";
 		re += "\t\t\t\t\t\t<th>delete</th>\n";
 
@@ -284,12 +284,12 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += kvMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
+			re += kvMappingEdit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 			//delete
-			re += kvMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
+			re += kvMappingDelete(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 			//commit
 			if ( !a[i][4].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				re += kvMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
+				re += kvMappingCommit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString());
 		}
 
 		re += "\t\t\t\t</table>";
@@ -308,10 +308,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kvMappingEdit(String search, int i, String k, String v, String property, String object, String affectedEntities) {
+	private static String kvMappingEdit(String search, String sort, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -345,10 +345,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kvMappingDelete(String search, int i, String k, String v, String property, String object, String affectedEntities) {
+	private static String kvMappingDelete(String search, String sort, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kvd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -382,10 +382,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String kvMappingCommit(String search, int i, String k, String v, String property, String object, String affectedEntities) {
+	private static String kvMappingCommit(String search, String sort, int i, String k, String v, String property, String object, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"kvc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -412,10 +412,10 @@ public class TemplatesSearch {
 	 * @return String
 	 * @throws Exception 
 	 */
-	private static String datatypeMapping(String search) throws Exception {
+	private static String datatypeMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND datatype != 'deleted' AND (k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY k");
+		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND datatype != 'deleted' AND (k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -424,9 +424,9 @@ public class TemplatesSearch {
 		re += "\t\t\t\t<h2>Datatype-Mappings</h2>\n";
 		re += "\t\t\t\t<table class=\"table\">\n";
 		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th>k</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 		re += "\t\t\t\t\t\t<th>datatype</th>\n";
-		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
 
@@ -447,12 +447,12 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += datatypeMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
+			re += datatypeMappingEdit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 			//delete
-			re += datatypeMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
+			re += datatypeMappingDelete(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 			//commit
 			if ( !a[i][2].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				re += datatypeMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
+				re += datatypeMappingCommit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString());
 		}
 
 		re += "\t\t\t\t</table>";
@@ -469,10 +469,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String datatypeMappingEdit(String search, int i, String k, String datatype, String affectedEntities) {
+	private static String datatypeMappingEdit(String search, String sort, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tk" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td align=\"center\"><label>Datatype: </label>\n";
@@ -506,10 +506,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String datatypeMappingDelete(String search, int i, String k, String datatype, String affectedEntities) {
+	private static String datatypeMappingDelete(String search, String sort, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tkd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
@@ -537,10 +537,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String datatypeMappingCommit(String search, int i, String k, String datatype, String affectedEntities) {
+	private static String datatypeMappingCommit(String search, String sort, int i, String k, String datatype, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"tkc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
@@ -557,10 +557,10 @@ public class TemplatesSearch {
 		return re;
 	}
 
-	private static String literalMapping(String search) throws Exception {
+	private static String literalMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND property != '' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property!='' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND property != '' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, language, user_id ORDER BY k");
+		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND property != '' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property!='' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND property != '' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, language, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -569,10 +569,10 @@ public class TemplatesSearch {
 		re += "\t\t\t\t<h2>Literal-Mappings</h2>\n";
 		re += "\t\t\t\t<table class=\"table\">\n";
 		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th>k</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>language</th>\n";
-		re += "\t\t\t\t\t\t<th>affected Entities</th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
 
@@ -594,12 +594,12 @@ public class TemplatesSearch {
 			re += "\t\t\t\t\t</tr>\n";
 
 			//edit
-			re += literalMappingEdit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+			re += literalMappingEdit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 			//delete
-			re += literalMappingDelete(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+			re += literalMappingDelete(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 			//commit
 			if ( !a[i][3].equals("main") && !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				re += literalMappingCommit(search, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
+				re += literalMappingCommit(search, sort, i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString());
 		}
 
 		re += "\t\t\t\t</table>";
@@ -617,10 +617,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String literalMappingEdit(String search, int i, String k, String property, String language, String affectedEntities) {
+	private static String literalMappingEdit(String search, String sort, int i, String k, String property, String language, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lk" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td><input type=\"text\" class=\"property\" name=\"property\" value=\"" + property + "\" style=\"width: 27em;\" required /></td>\n";
@@ -650,10 +650,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String literalMappingDelete(String search, int i, String k, String property, String language, String affectedEntities) {
+	private static String literalMappingDelete(String search, String sort, int i, String k, String property, String language, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lkd" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";
@@ -684,10 +684,10 @@ public class TemplatesSearch {
 	 * @param affectedEntities affected entities
 	 * @return String
 	 */
-	private static String literalMappingCommit(String search, int i, String k, String property, String language, String affectedEntities) {
+	private static String literalMappingCommit(String search, String sort, int i, String k, String property, String language, String affectedEntities) {
 		String re = "";
 
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t<tr id=\"lkc" + i + "\" style=\"display: none;\">\n";
 		re += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		re += "\t\t\t\t\t\t\t<td>" + property + "</td>\n";

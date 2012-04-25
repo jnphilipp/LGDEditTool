@@ -55,140 +55,113 @@ public class TemplatesEditHistory {
 	 * @param sort sort object
 	 * @return 
 	 */
-	static public String editHistory(String ksite, String kvsite, String dsite, String lsite, String search, String sort) throws Exception {
-		DatabaseBremen.getInstance().connect();
+	static public String editHistory(String type, String site, String search, String sort) throws Exception {
+		DatabaseBremen.getInstance().connect();// make sure database is connected
+		String s = "";
+                
+		if ( !site.equals("") ) {
+			if ( Integer.valueOf(site) < 1 ) {
+				site = "1";
+			}
+		} //set negativ site value to 1
 
-		//kmappings
-		//insert tablehead
-		String re = "\t\t\t\t<h2>K-Mapping-History</h2>\n";
-		re += "\t\t\t\t<table class=\"table\">\n";
-		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">timestamp</a></th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">k</a></th>\n";
-		re += "\t\t\t\t\t\t<th>property</a></th>\n";
-		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">affected Entities</a></th>\n";
-		re += "\t\t\t\t\t\t<th>action</th>\n";
-		if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-			re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=username&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">user</a></th>\n";
-		re += "\t\t\t\t\t\t<th>comment</th>\n";
-		re += "\t\t\t\t\t\t<th>restore</th>\n";
-		re += "\t\t\t\t\t</tr>\n";
+		if ( type.equals("k") ) {//K-Mappings
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>K-Mapping-History</h2>\n";
+			s += "\t\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&site=" + site + "\">timestamp</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&site=" + site + "\">k</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>property</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>object</th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>action</th>\n";
+			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
+			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
 
-		//insert edithistory from db for k-mappings
-		re += searchKHistoryDB(Integer.parseInt(ksite), Integer.parseInt(kvsite), Integer.parseInt(dsite), Integer.parseInt(lsite), search, sort);
-
-		//inser table foot
-		re += "\t\t\t\t</table>\n";
-		re += "\t\t\t\t<div style=\"float: right;\">\n";
-		if ( Integer.valueOf(ksite) > 1 ) {
-			int prevsite = Integer.valueOf(ksite) - 1;
-			re += "\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;";
+			//insert history from db
+			s += searchKHistoryDB(Integer.parseInt(site), search, sort);
+			s += "\t\t\t\t\t</table>\n";
 		}
-		int nextsite = Integer.valueOf(ksite) + 1;
-		re += "<a href=\"?tab=history&ksite=" + nextsite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">next&#62;</a>\n";
-		re += "\t\t\t\t</div>\n";
+		else if ( type.equals("kv") ) {//KV-Mappings
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>KV-Mapping-History</h2>\n";
+			s += "\t\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&site=" + site + "\">timestamp</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&site=" + site + "\">k</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("v") ? "dv" : "v") + "&site=" + site + "\">v</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>property</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>object</th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>action</th>\n";
+			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
+			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
 
-		//kvmappings
-		//insert tablehead
-		re += "\t\t\t\t<h2>KV-Mapping-History</h2>\n";
-		re += "\t\t\t\t<table class=\"table\">\n";
-		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">timestamp</a></th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">k</a></th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("v") ? "dv" : "v") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">v</a></th>\n";
-		re += "\t\t\t\t\t\t<th>property</th>\n";
-		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">affected Entities</a></th>\n";
-		re += "\t\t\t\t\t\t<th>action</th>\n";
-		if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-			re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=user_id&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">user</a></th>\n";
-		re += "\t\t\t\t\t\t<th>comment</th>\n";
-		re += "\t\t\t\t\t\t<th>restore</th>\n";
-		re += "\t\t\t\t\t</tr>\n";
+			//insert history from db
+			s += searchKVHistoryDB(Integer.parseInt(site), search, sort);
+			s += "\t\t\t\t\t</table>\n";
+		}
+		else if ( type.equals("datatype") ) {//Datatype-Mappings
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>Datatype-Mapping-History</h2>\n";
+			s += "\t\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&site=" + site + "\">timestamp</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&site=" + site + "\">k</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>datatype</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>action</th>\n";
+			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
+			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
 
-		//insert edithistory from db for kv-mappings
-		re += searchKVHistoryDB(Integer.parseInt(ksite), Integer.parseInt(kvsite), Integer.parseInt(dsite), Integer.parseInt(lsite), search, sort);
+			//insert history from db
+			s += searchDatatypeHistoryDB(Integer.parseInt(site), search, sort);
+			s += "\t\t\t\t\t</table>\n";
+		}
+		if ( type.equals("literal") ) {//Literal-Mappings
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>Literal-Mapping-History</h2>\n";
+			s += "\t\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&site=" + site + "\">timestamp</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&site=" + site + "\">k</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>property</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>language</th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>action</th>\n";
+			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
+			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
 
-		//inser table foot
-		re += "\t\t\t\t</table>\n";
-		re += "\t\t\t\t<div style=\"float: right;\">\n";
-
-		if( Integer.valueOf(kvsite) > 1 ) {
-			int prevsite = Integer.valueOf(kvsite) - 1;
-			re += "\t\t\t\t\t<a href=\"?tab=history&ksite=" + ksite + "&kvsite=" + prevsite + "&dsite=" + dsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;";
+			//insert history from db
+			s += searchKHistoryDB(Integer.parseInt(site), search, sort);
+			s += "\t\t\t\t\t</table>\n";
 		}
 
-		nextsite = Integer.valueOf(kvsite) + 1;
-		re += "\t\t\t\t\t<a href=\"?tab=history&ksite="+ ksite + "&kvsite=" + nextsite + "&dsite=" + dsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">next&#62;</a>\n";
-		re += "\t\t\t\t</div>\n";
-
-		//datatype mappings
-		//insert tablehead
-		re += "\t\t\t\t<h2>Datatype-Mapping-History</h2>\n";
-		re += "\t\t\t\t<table class=\"table\">\n";
-		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">timestamp</a></th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">k</a></th>\n";
-		re += "\t\t\t\t\t\t<th>datatype</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">affected Entities</a></th>\n";
-		re += "\t\t\t\t\t\t<th>action</th>\n";
-		if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-			re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=user_id&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">user</a></th>\n";
-		re += "\t\t\t\t\t\t<th>comment</th>\n";
-		re += "\t\t\t\t\t\t<th>restore</th>\n";
-		re += "\t\t\t\t\t</tr>\n";
-
-		//insert edithistory from db for kv-mappings
-		re += searchDatatypeHistoryDB(Integer.parseInt(ksite), Integer.parseInt(kvsite), Integer.parseInt(dsite), Integer.parseInt(lsite), search, sort);
-
-		//inser table foot
-		re += "\t\t\t\t</table>\n";
-		re += "\t\t\t\t<div style=\"float: right;\">\n";
-
-		if( Integer.valueOf(kvsite) > 1 ) {
-			int prevsite = Integer.valueOf(dsite) - 1;
-			re += "\t\t\t\t\t<a href=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + prevsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;";
+		//next/prev-site links
+		s += "\t\t\t\t\t<div style=\"float: right;\">\n";
+		if ( Integer.valueOf(site) > 1 ) {
+			int prevsite = Integer.valueOf(site) - 1;
+			s += "\t\t\t\t\t\t<a href=\"?tab=history&type=" + type + "&site="+ prevsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;";
 		}
-
-		nextsite = Integer.valueOf(dsite) + 1;
-		re += "\t\t\t\t\t<a href=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + nextsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">next&#62;</a>\n";
-		re += "\t\t\t\t</div>\n";
-
-
-		//lmappings
-		//insert tablehead
-		re += "\t\t\t\t<h2>Literal-Mapping-History</h2>\n";
-		re += "\t\t\t\t<table class=\"table\">\n";
-		re += "\t\t\t\t\t<tr>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("timestamp") ? "dtimestamp" : "timestamp") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">timestamp</a></th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("k") ? "dk" : "k") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">k</a></th>\n";
-		re += "\t\t\t\t\t\t<th>property</a></th>\n";
-		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">affected Entities</a></th>\n";
-		re += "\t\t\t\t\t\t<th>action</th>\n";
-		if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-			re += "\t\t\t\t\t\t<th><a href=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + "&sort=user_id&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + "\">user</a></th>\n";
-		re += "\t\t\t\t\t\t<th>comment</th>\n";
-		re += "\t\t\t\t\t\t<th>restore</th>\n";
-		re += "\t\t\t\t\t</tr>\n";
-
-		//insert edithistory from db for k-mappings
-		re += searchLiteralHistoryDB(Integer.parseInt(ksite), Integer.parseInt(kvsite), Integer.parseInt(dsite), Integer.parseInt(lsite), search, sort);
-
-		//inser table foot
-		re += "\t\t\t\t</table>\n";
-		re += "\t\t\t\t<div style=\"float: right;\">\n";
-		if ( Integer.valueOf(ksite) > 1 ) {
-			int prevsite = Integer.valueOf(lsite) - 1;
-			re += "\t\t\t\t\t<a href=\"?tab=history&ksite="+ prevsite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + prevsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;";
-		}
-		nextsite = Integer.valueOf(lsite) + 1;
-		re += "<a href=\"?tab=history&ksite=" + nextsite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + nextsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">next&#62;</a>\n";
-		re += "\t\t\t\t</div>\n";
+		int nextsite = Integer.valueOf(site) + 1;
+		s += "\t\t\t\t\t\t<a href=\"?tab=history&type=" + type + "&site=" + nextsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">next&#62;</a>\n";
+		s += "\t\t\t\t\t</div>\n";
 
 
-		return re;
+		return s;
 	}
 
 	/**
@@ -199,15 +172,15 @@ public class TemplatesEditHistory {
 	 * @param sort sort element
 	 * @throws Exception 
 	 */
-	static private String searchKHistoryDB(int ksite, int kvsite, int dsite, int lsite, String search, String sort) throws Exception {
+	static private String searchKHistoryDB(int site, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
 
-			a = database.execute("SELECT k, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, property, object, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((ksite-1)*10));
+			a = database.execute("SELECT k, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, property, object, user_id, comment, timestamp, history_id, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
-			re += addkMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), ksite, kvsite, dsite, lsite, search, sort);
+			re += addkMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), site, search, sort);
 		}
 
 		return re;
@@ -221,36 +194,36 @@ public class TemplatesEditHistory {
 	 * @param sort sort element
 	 * @throws Exception 
 	 */
-	static private String searchKVHistoryDB(int ksite, int kvsite, int dsite, int lsite, String search, String sort) throws Exception {
+	static private String searchKVHistoryDB(int site, String search, String sort) throws Exception {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, v, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%'" : (search.contains("~") ? " AND k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "'" : " AND k='" + search + "' OR v='" + search + "'"))) + " GROUP BY k, property, object, user_id, comment, timestamp, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((kvsite-1)*10));
+		Object[][] a = database.execute("SELECT k, v, property, object, count(k), user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%'" : (search.contains("~") ? " AND k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "'" : " AND k='" + search + "' OR v='" + search + "'"))) + " GROUP BY k, property, object, user_id, comment, timestamp, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
-			s += addkvMapping(i, a[i][9].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), a[i][8].toString(), a[i][5].toString(), a[i][6].toString(), a[i][7].toString(), ksite, kvsite, dsite, lsite, search, sort);
+			s += addkvMapping(i, a[i][9].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), a[i][8].toString(), a[i][5].toString(), a[i][6].toString(), a[i][7].toString(), site, search, sort);
 		}
 		return s;
 	}
 
-	static private String searchDatatypeHistoryDB(int ksite, int kvsite, int dsite, int lsite, String search, String sort) throws Exception {
+	static private String searchDatatypeHistoryDB(int site, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
-		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, id FROM lgd_map_datatype_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, datatype, user_id, comment, timestamp, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((dsite-1)*10));
+		Object[][] a = database.execute("SELECT k, datatype, count(k), user_id, comment, timestamp, action, id FROM lgd_map_datatype_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, datatype, user_id, comment, timestamp, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
-			s += addDatatypeMapping(i, a[i][7].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][6].toString(), a[i][3].toString(), a[i][4].toString(), a[i][5].toString(), ksite, kvsite, dsite, lsite, search, sort);
+			s += addDatatypeMapping(i, a[i][7].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][6].toString(), a[i][3].toString(), a[i][4].toString(), a[i][5].toString(), site, search, sort);
 		}
 		return s;
 	}
 
-	private static String searchLiteralHistoryDB(int ksite, int kvsite, int dsite, int lsite, String search, String sort) throws Exception {
+	private static String searchLiteralHistoryDB(int site, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
-		Object[][] a = database.execute("SELECT k, property, language, count(k), user_id, comment, timestamp, action, id FROM lgd_map_literal_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, property, language, user_id, comment, timestamp, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((dsite-1)*10));
+		Object[][] a = database.execute("SELECT k, property, language, count(k), user_id, comment, timestamp, action, id FROM lgd_map_literal_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " GROUP BY k, property, language, user_id, comment, timestamp, id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
-			s += addLiteralMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), ksite, kvsite, dsite, lsite, search, sort);
+			s += addLiteralMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), site, search, sort);
 		}
 		return s;
 	}
@@ -272,7 +245,7 @@ public class TemplatesEditHistory {
 	 * @param sort sort element
 	 * @return 
 	 */
-	private static String addkMapping(int i, String id, String k, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, int lsite, String search, String sort) {
+	private static String addkMapping(int i, String id, String k, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
 		String s = "\t\t\t\t\t<tr id=\"k" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -286,7 +259,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
+    s += "\t\t\t\t\t<form action=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&site="+ site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
     s += "\t\t\t\t\t\t<tr id=\"k" + i + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -327,7 +300,7 @@ public class TemplatesEditHistory {
 	 * @param sort sort element
 	 * @return 
 	 */
-	static private String addkvMapping(int i, String id, String k, String v, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, int lsite, String search, String sort) {
+	static private String addkvMapping(int i, String id, String k, String v, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
     String s = "\t\t\t\t\t<tr id=\"kv" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -342,7 +315,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('kv" + i + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t<form action=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&site="+ site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"kv" + i + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -367,7 +340,7 @@ public class TemplatesEditHistory {
 		return s;
 	}
 
-	static private String addDatatypeMapping(int i, String id, String k, String datatype, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, int lsite, String search, String sort) {
+	static private String addDatatypeMapping(int i, String id, String k, String datatype, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
     String s = "\t\t\t\t\t<tr id=\"tk" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -380,7 +353,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('tk" + i + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+    s += "\t\t\t\t\t<form action=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&site="+ site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"tk" + i + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
@@ -418,7 +391,7 @@ public class TemplatesEditHistory {
 	 * @param sort sort element
 	 * @return 
 	 */
-	private static String addLiteralMapping(int i, String id, String k, String property, String language, String affectedEntities, String action, String user_id, String comment, String timestamp, int ksite, int kvsite, int dsite, int lsite, String search, String sort) {
+	private static String addLiteralMapping(int i, String id, String k, String property, String language, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
 		String s = "\t\t\t\t\t<tr id=\"lk" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -432,7 +405,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('lk" + i + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&ksite="+ ksite +"&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
+    s += "\t\t\t\t\t<form action=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&site="+ site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
     s += "\t\t\t\t\t\t<tr id=\"lk" + i + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -500,12 +473,12 @@ public class TemplatesEditHistory {
 	 * @param kvsite current KV-mappings Site
 	 * @return Returns a String with HTML-code.
 	 */
-	public static String captcha(HttpServletRequest request, String ksite, String kvsite, String dsite, String lsite, String search, String sort) {
+	public static String captcha(HttpServletRequest request, String type, String site, String search, String sort) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
 		String re;
 
 		re = "\t\t\t\t<article class=\"captcha\">\n";
-		re += "\t\t\t\t\t<form action=\"?tab=history&ksite=" + ksite + "&kvsite=" + kvsite + "&dsite=" + dsite + "&lsite=" + lsite + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
+		re += "\t\t\t\t\t<form action=\"?tab=history&type=" + type + "&site=" + site + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
 		re += "\t\t\t\t\t\t<ul>\n";
 		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
 		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";

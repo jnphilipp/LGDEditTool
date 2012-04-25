@@ -43,6 +43,7 @@
 <% request.setCharacterEncoding("UTF-8");
 	String search = "";
 	String tab = "";
+	String type = "k";
 	String sort = "k";
 	String message = "";
 	boolean captcha = true;
@@ -55,6 +56,9 @@
 
 	if ( request.getParameter("sort") != null )
 		sort = request.getParameter("sort");
+
+	if ( request.getParameter("type") != null )
+		type = request.getParameter("type");
 
 	User.getInstance().createUser(request);
 
@@ -272,12 +276,20 @@
 			}
 			else if ( tab.equals("history") ) {
 				out.println("<div class=\"pane\">");
+				out.println("\t\t\t\t<ul id=\"tabs\">");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("k") ? "class=\"current\"" : "") + " href=\"?tab=history&amp;type=k" + (search.equals("") ? "" : "&search=" + search) + "\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=history&amp;type=kv" + (search.equals("") ? "" : "&search=" + search) + "\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=history&amp;type=datatype" + (search.equals("") ? "" : "&search=" + search) + "\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=history&amp;type=literal" + (search.equals("") ? "" : "&search=" + search) + "\">Literal-Mappings</a></li>");
+				out.println("\t\t\t\t</ul>");
+				out.println("\t\t\t\t<div class=\"pane\">");
 				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.println(TemplatesEditHistory.captcha(request, (request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), (request.getParameter("lsite") != null ? request.getParameter("lsite") : "1"), search, sort));
+					out.println(TemplatesEditHistory.captcha(request, type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));
 				out.println(Templates.branch(search));
 				out.println(TemplatesEditHistory.search());
 				out.println("\t\t\t\t<br /><br />");
-				out.println(TemplatesEditHistory.editHistory((request.getParameter("ksite") != null ? request.getParameter("ksite") : "1"), (request.getParameter("kvsite") != null ? request.getParameter("kvsite") : "1"), (request.getParameter("dsite") != null ? request.getParameter("dsite") : "1"), (request.getParameter("lsite") != null ? request.getParameter("lsite") : "1"), search, sort));
+				out.println(TemplatesEditHistory.editHistory(type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));
+				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
 			else if ( tab.equals("edited") && !User.getInstance().getView().equals("lgd_user_main") ) {

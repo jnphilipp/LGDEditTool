@@ -31,7 +31,7 @@ public class TemplatesUnmappedTags {
 	 * search field.
 	 * @return 
 	 */
-	public static String search() {
+	public static String search(String type) {
 		String re = "\t\t\t\t<fieldset class=\"search\">\n";
 		re += "\t\t\t\t\t<legend>Search</legend>\n";
 		re += "\t\t\t\t\t<form method=\"get\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
@@ -42,7 +42,7 @@ public class TemplatesUnmappedTags {
 		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"tab\" value=\"unmapped\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" />\n";
 		re += "\t\t\t\t\t\t\t</li>\n";
-		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=unmapped&sort=dusage_count\">Clear search.</a></li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=unmapped&type=" + type + "&sort=dusage_count\">Clear search.</a></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 		re += "\t\t\t\t\t</form>\n";
 		re += "\t\t\t\t</fieldset>\n";
@@ -56,59 +56,58 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception
 	 * @return Returns a String with HTML-code.
 	 */
-	static public String unmappedTags(String ksite, String kvsite, String search, String sort) throws Exception {
-		DatabaseBremen.getInstance().connect();
-
-		//kmapping table
-		String s = "\t\t\t\t<h2>List of all Unmapped Tags</h2>\n";
-		s += "\t\t\t\t<table class=\"table\">\n";
-		s += "\t\t\t\t\t<tr>\n";
-		s += "\t\t\t\t\t\t<th><a href=\"?tab=unmapped&ksite=" + ksite + "&kvsite=" + kvsite + "&sort=" + (sort.equals("k") ? "dk" : "k") + (search.equals("") ? "" : "&search=" + search) + "\">k</a></th>\n";
-		s += "\t\t\t\t\t\t<th><a href=\"?tab=unmapped&ksite=" + ksite + "&kvsite=" + kvsite + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + (search.equals("") ? "" : "&search=" + search) + "\">usage_count</a></th>\n";
-		s += "\t\t\t\t\t\t<th>distinct_value_count</th>\n";
-		s += "\t\t\t\t\t\t<th>create mapping</th>\n";
-		s += "\t\t\t\t\t\t<th>create literal</th>\n";
-		s += "\t\t\t\t\t\t<th>create datatype</th>\n";
-		s += "\t\t\t\t\t</tr>\n";
-
-		//fill table with k-mappings
-		s += listAllk(Integer.valueOf(ksite),Integer.valueOf(kvsite), search, sort);
-		s += "\t\t\t\t</table>\n";
-
-		//prev-next-site
-		s += "\t\t\t\t<div style=\"float: right;\">\n";
-		if(Integer.valueOf(ksite)>1){
-			Integer prevsite=Integer.valueOf(ksite)-1;
-			s += "\t\t\t\t\t<a href=\"?tab=unmapped&sort=" + sort + "&ksite="+ prevsite.toString() + "&kvsite="+kvsite+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; ";
-		}
-		Integer nextsite=Integer.valueOf(ksite)+1;
-		s += "\t\t\t\t\t<a href=\"?tab=unmapped&sort=" + sort + "&ksite="+ nextsite.toString() + "&kvsite="+kvsite+"\">next&#62;</a>\n";
-		s += "\t\t\t\t</div>\n";
-		s += "\t\t\t\t<br /><br /><br />\n";
-
-		//kvmapping table
-		s += "\t\t\t\t<table class=\"table\">\n";
-		s += "\t\t\t\t\t<tr>\n";
-		s += "\t\t\t\t\t\t<th><a href=\"?tab=unmapped&ksite=" + ksite + "&kvsite=" + kvsite + "&sort=" + (sort.equals("k") ? "dk" : "k") + (search.equals("") ? "" : "&search=" + search) + "\">k</a></th>\n";
-		s += "\t\t\t\t\t\t<th><a href=\"?tab=unmapped&ksite=" + ksite + "&kvsite=" + kvsite + "&sort=" + (sort.equals("v") ? "dv" : "v") + (search.equals("") ? "" : "&search=" + search) + "\">v</a></th>\n";
-		s += "\t\t\t\t\t\t<th><a href=\"?tab=unmapped&ksite=" + ksite + "&kvsite=" + kvsite + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + (search.equals("") ? "" : "&search=" + search) + "\">usage_count</a></th>\n";
-		s += "\t\t\t\t\t\t<th>create</th>\n";
-		s += "\t\t\t\t\t</tr>\n";
+	static public String unmappedTags(String type, String site, String search, String sort) throws Exception {
+		DatabaseBremen.getInstance().connect();// make sure database is connected
+		String s = "";
                 
-		//fill table with kv-mappings
-		s += listAllkv(Integer.valueOf(ksite),Integer.valueOf(kvsite), search, sort);
-		s += "\t\t\t\t</table>\n";
+		if ( !site.equals("") ) {
+			if ( Integer.valueOf(site) < 1 ) {
+				site = "1";
+			}
+		} //set negativ site value to 1
 
-		//prev-next-site
-		s += "\t\t\t\t<div style=\"float: right;\">\n";
-		if(Integer.valueOf(kvsite)>1){
-			Integer prevsite=Integer.valueOf(kvsite)-1;
-			s += " \t\t\t\t\t<a href=\"?tab=unmapped&sort=" + sort + "&ksite="+ ksite + "&kvsite="+prevsite.toString()+"\">&#60;prev</a>&nbsp;&nbsp;&nbsp; ";
+		if ( type.equals("k") ) {//K-Mappings
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>List of unmapped K-Tags</h2>\n";
+			s += "\t\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t\t<th><a href=\"?tab=unmapped&type=k&site=" + site + "&sort=" + (sort.equals("k") ? "dk" : "k") + (search.equals("") ? "" : "&search=" + search) + "\">k</a></th>\n";
+			s += "\t\t\t\t\t\t\t\t<th><a href=\"?tab=unmapped&type=k&site=" + site + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + (search.equals("") ? "" : "&search=" + search) + "\">usage_count</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>distinct_value_count</th>\n";
+			s += "\t\t\t\t\t\t\t<th>create mapping</th>\n";
+			s += "\t\t\t\t\t\t\t<th>create literal</th>\n";
+			s += "\t\t\t\t\t\t\t<th>create datatype</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
+
+			//insert history from db
+			s += listAllK(Integer.parseInt(site), search, sort);
+			s += "\t\t\t\t\t</table>\n";
 		}
-		Integer nextsite2=Integer.valueOf(kvsite)+1;
-		s += "\t\t\t\t\t<a href=\"?tab=unmapped&sort=" + sort + "&ksite="+ ksite + "&kvsite="+nextsite2.toString()+"\">next&#62;</a>\n";
-		s += "\t\t\t\t</div>\n";
-		s += "\t\t\t\t<br />\n";
+		if ( type.equals("kv") ) {//K-Mappings
+			//insert tablehead
+			s = "\t\t\t\t\t<h2>List of unmapped KV-Tags</h2>\n";
+			s += "\t\t\t\t\t\t<table class=\"table\">\n";
+			s += "\t\t\t\t\t\t\t<tr>\n";
+			s += "\t\t\t\t\t\t\t\t<th><a href=\"?tab=unmapped&type=kv&site=" + site + "&sort=" + (sort.equals("k") ? "dk" : "k") + (search.equals("") ? "" : "&search=" + search) + "\">k</a></th>\n";
+			s += "\t\t\t\t\t\t\t\t<th><a href=\"?tab=unmapped&type=kv&site=" + site + "&sort=" + (sort.equals("v") ? "dv" : "v") + (search.equals("") ? "" : "&search=" + search) + "\">v</a></th>\n";
+			s += "\t\t\t\t\t\t\t\t<th><a href=\"?tab=unmapped&type=kv&site=" + site + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + (search.equals("") ? "" : "&search=" + search) + "\">usage_count</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th>create</th>\n";
+			s += "\t\t\t\t\t\t</tr>\n";
+
+			//insert history from db
+			s += listAllKV(Integer.parseInt(site), search, sort);
+			s += "\t\t\t\t\t</table>\n";
+		}
+
+		//next/prev-site links
+		s += "\t\t\t\t\t<div style=\"float: right;\">\n";
+		if ( Integer.valueOf(site) > 1 ) {
+			int prevsite = Integer.valueOf(site) - 1;
+			s += "\t\t\t\t\t\t<a href=\"?tab=unmapped&type=" + type + "&site="+ prevsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">&#60;prev</a>&nbsp;&nbsp;&nbsp;";
+		}
+		int nextsite = Integer.valueOf(site) + 1;
+		s += "\t\t\t\t\t\t<a href=\"?tab=unmapped&type=" + type + "&site=" + nextsite + (search.equals("") ? "" : "&search=" + search) + "&sort=" + sort + "\">next&#62;</a>\n";
+		s += "\t\t\t\t\t</div>\n";
 
 		return s;
 	}
@@ -120,20 +119,20 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception 
 	 * @return Returns a String with HTML-code.
 	 */
-	private static String listAllk(int ksite, int kvsite, String search, String sort) throws Exception {
+	private static String listAllK(int site, String search, String sort) throws Exception {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, usage_count, distinct_value_count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM (Select k FROM lgd_map_datatype WHERE datatype != 'deleted' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal WHERE property != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE property != '' AND object != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_resource_kv WHERE property != '' AND object != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_resource_prefix) b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " LIMIT 20 OFFSET " + (ksite-1)*20);
+		Object[][] a = database.execute("SELECT k, usage_count, distinct_value_count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM (Select k FROM lgd_map_datatype WHERE datatype != 'deleted' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal WHERE property != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE property != '' AND object != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_resource_kv WHERE property != '' AND object != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "') UNION ALL SELECT k FROM lgd_map_resource_prefix) b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " LIMIT 20 OFFSET " + (site-1)*20);
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += kMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), ksite, kvsite);
+			s += kMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), site);
 		}
 
 		return s;
 	}
 
-	private static String kMapping(int i, String k, String usage_count, String distinct_value_count, int ksite, int kvsite) {
+	private static String kMapping(int i, String k, String usage_count, String distinct_value_count, int site) {
 		String s;
 
 		s = "\t\t\t\t\t<tr id=\"k" + i + "a\">\n";
@@ -214,11 +213,11 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception 
          * @return Returns a String with HTML-code.
 	 */
-	static private String listAllkv(int ksite,int kvsite, String search, String sort) throws Exception {
+	static private String listAllKV(int site, String search, String sort) throws Exception {
 		String s = new String();
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
-		Object[][] a = database.execute("SELECT k, v, usage_count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE property != '' AND object != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "')) b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND (k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%')" : (search.contains("~") ? "AND (k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "')" : "AND (k='" + search + "' OR v='" + search + "')"))) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? "k, v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? "k, v" : sort) + " ASC") + " LIMIT 20 OFFSET " + (kvsite-1)*20);
+		Object[][] a = database.execute("SELECT k, v, usage_count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE property != '' AND object != '' AND (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername() + "' OR user_id='main") + "')) b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND (k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%')" : (search.contains("~") ? "AND (k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "')" : "AND (k='" + search + "' OR v='" + search + "')"))) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? "k, v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? "k, v" : sort) + " ASC") + " LIMIT 20 OFFSET " + (site-1)*20);
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += kvMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString());

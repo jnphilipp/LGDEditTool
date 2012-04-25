@@ -194,21 +194,13 @@
 		<h1>LGDEditTool</h1>
 
 		<ul id="tabs">
-			<%-- if ( request.getParameter("tab") == null ) {
-					out.println("<li><a class=\"current\" href=\"?tab=search" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Search</a></li>");
-					if ( User.getInstance().isLoggedIn() )
-						out.println("\t\t\t<li><a href=\"?tab=unmapped\">Unmapped Tags</a></li>");
-					out.println("\t\t\t<li><a href=\"?tab=all&amp;type=k\">All Mappings</a></li>");
-					out.println("\t\t\t<li><a href=\"?tab=history\">Edit-History</a></li>");
-			} 
-			else { --%>
 			<li><a <% if ( tab.equals("search") || tab.equals("") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&amp;search=" + search)); %>">Search</a></li>
 			<% out.print(search.equals("") ? "" : "<li><a  " + (tab.equals("ontology") ? "class=\"current\"" : "") + " href=\"?tab=ontology&amp;search=" + search + "\">Ontology</a></li>");
 			if ( User.getInstance().isLoggedIn() )
-				out.print("<li><a " + (tab.equals("unmapped") ? "class=\"current\"" : "") + " href=\"?tab=unmapped" + (search.equals("") ? "" : "&amp;search=" + search) + "&amp;sort=dusage_count" + "\">Unmapped Tags</a></li>");
+				out.print("<li><a " + (tab.equals("unmapped") ? "class=\"current\"" : "") + " href=\"?tab=unmapped&type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "&amp;sort=dusage_count" + "\">Unmapped Tags</a></li>");
 			%>
 			<li><a <% if ( tab.equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&amp;type=k">All Mappings</a></li>
-			<li><a <% if ( tab.equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history<% out.print((search.equals("") ? "" : "&amp;search=" + search)); %>">Edit-History</a></li>
+			<li><a <% if ( tab.equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history&type=k<% out.print((search.equals("") ? "" : "&amp;search=" + search)); %>">Edit-History</a></li>
 			<% if ( !User.getInstance().getView().equals("lgd_user_main") && User.getInstance().isLoggedIn() ) {
 					out.println("<li><a " + (tab.equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Edited Mappings</a></li>");
 				}
@@ -252,25 +244,31 @@
 			}
 			else if ( tab.equals("unmapped") && User.getInstance().isLoggedIn() ) {
 				out.println("<div class=\"pane\">");
+				out.println("\t\t\t\t<ul id=\"tabs\">");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("k") ? "class=\"current\"" : "") + " href=\"?tab=unmapped&amp;type=k&amp;sort=dusage_count" + (search.equals("") ? "" : "&search=" + search) + "\">K-Tags</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=unmapped&amp;type=kv&amp;sort=dusage_count" + (search.equals("") ? "" : "&search=" + search) + "\">KV-Tags</a></li>");
+				out.println("\t\t\t\t</ul>");
+				out.println("\t\t\t\t<div class=\"pane\">");
 				out.println(Templates.branch(search));
-				out.println(TemplatesUnmappedTags.search());
+				out.println(TemplatesUnmappedTags.search(type));
 				out.println("\t\t\t\t<br /><br />");
-				out.println(TemplatesUnmappedTags.unmappedTags((request.getParameter("ksite") == null ? "1" : request.getParameter("ksite")), (request.getParameter("kvsite") == null ? "1" : request.getParameter("kvsite")), search, sort));
+				out.println(TemplatesUnmappedTags.unmappedTags(type, (request.getParameter("site") == null ? "1" : request.getParameter("site")), search, sort));
+				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
 			else if ( tab.equals("all") ) {
 				out.println("<div class=\"pane\">");
 				out.println("\t\t\t\t<ul id=\"tabs\">");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") == null || request.getParameter("type").equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=k\">K-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=kv\">KV-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=datatype\">Datatype-Mappings</a></li>");
-				out.println("\t\t\t\t\t<li><a " + (request.getParameter("type") != null && request.getParameter("type").equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=literal\">Literal-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("k") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=k\">K-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("kv") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=kv\">KV-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("datatype") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=datatype\">Datatype-Mappings</a></li>");
+				out.println("\t\t\t\t\t<li><a " + (type.equals("literal") ? "class=\"current\"" : "") + " href=\"?tab=all&amp;type=literal\">Literal-Mappings</a></li>");
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
 				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.print(TemplatesAllMappings.captcha(request, (request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
+					out.print(TemplatesAllMappings.captcha(request, type, (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println(Templates.branch(search));
-				out.print(TemplatesAllMappings.listAllMappings((request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site")), sort));
+				out.print(TemplatesAllMappings.listAllMappings(type, (request.getParameter("site") == null ? "1" : request.getParameter("site")), sort));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
 			}
@@ -286,7 +284,7 @@
 				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
 					out.println(TemplatesEditHistory.captcha(request, type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));
 				out.println(Templates.branch(search));
-				out.println(TemplatesEditHistory.search());
+				out.println(TemplatesEditHistory.search(type));
 				out.println("\t\t\t\t<br /><br />");
 				out.println(TemplatesEditHistory.editHistory(type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));
 				out.println("\t\t\t\t</div>");

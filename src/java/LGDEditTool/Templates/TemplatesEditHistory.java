@@ -29,7 +29,7 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
  * @author Alexander Richter
  */
 public class TemplatesEditHistory {
-	public static String search() {
+	public static String search(String type) {
 		String re = "\t\t\t\t<fieldset class=\"search\">\n";
 		re += "\t\t\t\t\t<legend>Search</legend>\n";
 		re += "\t\t\t\t\t<form method=\"get\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
@@ -40,7 +40,7 @@ public class TemplatesEditHistory {
 		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"tab\" value=\"history\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" />\n";
 		re += "\t\t\t\t\t\t\t</li>\n";
-		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=history\">Clear search.</a></li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=history&type=" + type + "\">Clear search.</a></li>\n";
 		re += "\t\t\t\t\t\t</ul>\n";
 		re += "\t\t\t\t\t</form>\n";
 		re += "\t\t\t\t</fieldset>\n";

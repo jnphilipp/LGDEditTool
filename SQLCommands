@@ -9,7 +9,6 @@ CREATE INDEX idx_lgd_stats_kv_k_v ON lgd_stat_tags_kv(k, v);
 
 
 CREATE TABLE lgd_user(username text PRIMARY KEY, email text, password text, admin boolean not null, view TEXT);
-ALTER TABLE lgd_user ADD CONSTRAINT email UNIQUE(email);
 INSERT INTO lgd_user VALUES ('main', '', '', FALSE, 'lgd_user_main');
 
 

@@ -72,8 +72,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -106,8 +112,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -138,8 +150,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Save") && request.getParameter("k") != null  && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("aobject") != null && request.getParameter("aproperty") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -172,8 +190,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -196,8 +220,14 @@ public class RequestHandling {
 		else if ( request.getParameter("kmappingedit") != null && request.getParameter("kmappingedit").equals("Restore") && request.getParameter("id") != null && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			Object[][] a;
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -226,8 +256,14 @@ public class RequestHandling {
 		else if ( request.getParameter("kvmappingedit") != null && request.getParameter("kvmappingedit").equals("Restore") && request.getParameter("id") != null && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			Object[][] a;
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -256,8 +292,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("adatatype") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -288,8 +330,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -312,8 +360,14 @@ public class RequestHandling {
 		else if ( request.getParameter("dmappingedit") != null && request.getParameter("dmappingedit").equals("Restore") && request.getParameter("id") != null && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
 			Object[][] a;
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -340,8 +394,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("lmapping") != null && request.getParameter("lmapping").equals("Save") && request.getParameter("k") != null && request.getParameter("language") != null && request.getParameter("property") != null && request.getParameter("alanguage") != null && request.getParameter("aproperty") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -374,8 +434,14 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("lmapping") != null && request.getParameter("lmapping").equals("Delete") && request.getParameter("k") != null && request.getParameter("language") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -399,8 +465,14 @@ public class RequestHandling {
 		else if ( request.getParameter("lmappingedit") != null && request.getParameter("lmappingedit").equals("Restore") && request.getParameter("id") != null && request.getParameter("k") != null && request.getParameter("property") != null && request.getParameter("language") != null && request.getParameter("comment") != null ) {
 			Object[][] a;
 			String username;
-			if ( request.getParameter("user") != null )
+			if ( request.getParameter("user") != null ) {
 				username = request.getParameter("user");
+				a = database.execute("SELECT username FROM lgd_user WHERE username='" + username + "'");
+				if ( a.length == 0 )
+					database.execute("INSERT INTO lgd_user VALUES ('" + username + "', '', '', FALSE, '" + Functions.MAIN_BRANCH + "')");
+				User.getInstance().createUser(username, Functions.MAIN_BRANCH, false, false);
+				User.getInstance().createCookie(response);
+			}
 			else
 				username = User.getInstance().getUsername();
 
@@ -502,9 +574,15 @@ public class RequestHandling {
 			if ( !request.getParameter("password").equals(request.getParameter("password2")) )
 				return "The two passwords do not match.";
 
-			Object[][] a = database.execute("SELECT username FROM lgd_user WHERE username='" + request.getParameter("user") + "'");
-			if ( a.length != 0 )
-				return "Your username exists already.";
+			Object[][] a = database.execute("SELECT username, email FROM lgd_user WHERE username='" + request.getParameter("user") + "'");
+			boolean update = false;
+
+			if ( a.length != 0 ) {
+				if ( a[0][1].equals("") )
+					update = true;
+				else
+					return "Your username exists already.";
+			}
 
 			a = database.execute("SELECT email FROM lgd_user WHERE email='" + request.getParameter("email") + "'");
 			if ( a.length != 0 )
@@ -520,7 +598,10 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			database.execute("INSERT INTO lgd_user VALUES ('" + request.getParameter("user") + "', '" + request.getParameter("email") + "', '" + sb + "', FALSE, 'lgd_user_" + request.getParameter("user") + "')");
+			if ( update )
+				database.execute("UPDATE lgd_user SET email='" + request.getParameter("email") + "', password='" + sb + "', admin=FALSE, view='lgd_user_" + request.getParameter("user") + "' WHERE username='" + request.getParameter("user") + "'");
+			else
+				database.execute("INSERT INTO lgd_user VALUES ('" + request.getParameter("user") + "', '" + request.getParameter("email") + "', '" + sb + "', FALSE, 'lgd_user_" + request.getParameter("user") + "')");
 			database.execute(Functions.createView(request.getParameter("user")));
 			database.execute(Functions.createViewHistory(request.getParameter("user")));
 			database.execute(Functions.createViewUnmapped(request.getParameter("user")));

@@ -425,7 +425,6 @@ public class RequestHandling {
 			else
 				database.execute("UPDATE lgd_map_literal SET language='" + request.getParameter("language") + "', property='" + request.getParameter("property") + "', last_history_id=" + a[0][0] + " WHERE  k='" + request.getParameter("k") + "' AND user_id='main'");
 
-
 			/*** If you want to delete everything from a userspace after a commit ***/
 			//database.execute("DELETE FROM lgd_map_literal WHERE k='" + request.getParameter("k") + "' AND user_id='" + User.getInstance().getUsername() + "'");
 			//database.execute("DELETE FROM lgd_map_literal_history WHERE k='" + request.getParameter("k") + "' AND userspace='" + User.getInstance().getUsername() + "'");
@@ -609,6 +608,77 @@ public class RequestHandling {
 			User.getInstance().createUser(request.getParameter("user"), "lgd_user_" + request.getParameter("email"), true, false);
 			User.getInstance().createCookie(response);
 			re = "Sign up successful.";
+		}//#########################################################################
+		if ( (request.getParameter("commitK") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
+			Object[][] b = database.execute("SELECT k, property, object FROM lgd_map_resource_k WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')");
+
+			for ( Object[] k : b ) {
+				Object[][] a = database.execute("SELECT last_history_id, property, object FROM lgd_map_resource_k WHERE k='" + k[0] + "' AND user_id='main'");
+
+				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+				a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + k[0] + "', '" + (hid == -1 ? "" : a[0][1]) + "', '" + (hid == -1 ? "" : a[0][2]) + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+
+				if ( hid == -1 )
+					database.execute("INSERT INTO lgd_map_resource_k VALUES ('" + k[0] + "', '" + k[1] + "', '" + k[2] + "', 'main', " + a[0][0] + ")");
+				else
+					database.execute("UPDATE lgd_map_resource_k SET object='" + k[2] + "', property='" + k[1] + "', last_history_id=" + a[0][0] + " WHERE  k='" + k[0] + "' AND user_id='main'");
+			}
+
+			re = "All K-Mappings successfully commited.";
+		}//#########################################################################
+		if ( (request.getParameter("commitKV") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
+			Object[][] b = database.execute("SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')");
+
+			for ( Object[] k : b ) {
+				Object[][] a = database.execute("SELECT last_history_id, property, object FROM lgd_map_resource_kv WHERE k='" + k[0] + "' AND v='" + k[1] + "' AND user_id='main'");
+
+				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+				a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + k[0] + "', '" + k[1] + "', '" + (hid == -1 ? "" : a[0][1]) + "', '" + (hid == -1 ? "" : a[0][2]) + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+
+				if ( hid == -1 )
+					database.execute("INSERT INTO lgd_map_resource_kv VALUES ('" + k[0] + "', '" + k[1] + "', '" + k[2] + "', '" + k[3] + "', 'main', " + a[0][0] + ")");
+				else
+					database.execute("UPDATE lgd_map_resource_kv SET object='" + k[3] + "', property='" + k[2] + "', last_history_id=" + a[0][0] + " WHERE  k='" + k[0] + "' AND v='" + k[1] + "' AND user_id='main'");
+			}
+
+			re = "All KV-Mappings successfully commited.";
+		}//#########################################################################
+		if ( (request.getParameter("commitDatatype") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
+			Object[][] b = database.execute("SELECT k, datatype FROM lgd_map_datatype WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')");
+
+			for ( Object[] k : b ) {
+				Object[][] a = database.execute("SELECT last_history_id, datatype FROM lgd_map_datatype WHERE k='" + k[0] + "' AND user_id='main'");
+
+				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+				a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + k[0] + "', '" + (hid == -1 ? "" : a[0][1]) + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+
+				if ( hid == -1 )
+					database.execute("INSERT INTO lgd_map_datatype VALUES ('" + k[0] + "', '" + k[1] + "', 'main', " + a[0][0] + ")");
+				else
+					database.execute("UPDATE lgd_map_datatype SET datatype='" + k[1] + "', last_history_id=" + a[0][0] + " WHERE  k='" + k[0] + "' AND user_id='main'");
+			}
+
+			re = "All Datatype-Mappings successfully commited.";
+		}//#########################################################################
+		if ( (request.getParameter("commitLiteral") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
+			Object[][] b = database.execute("SELECT k, property, language FROM lgd_map_literal WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')");
+
+			for ( Object[] k : b ) {
+				Object[][] a = database.execute("SELECT last_history_id, property, language FROM lgd_map_literal WHERE k='" + k[0] + "' AND user_id='main'");
+
+				int hid = (a.length == 0 ? -1 : Integer.parseInt(a[0][0] == null ? "-2" : a[0][0].toString()));
+				a = database.execute("INSERT INTO lgd_map_literal_history VALUES (DEFAULT, '" + k[0] + "', '" + (hid == -1 ? "" : a[0][1]) + "', '" + (hid == -1 ? "" : a[0][2]) + "', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'commit', 'main'" + (hid == -1 || hid == -2 ? "" : "," + hid) + ") RETURNING id");
+
+				if ( hid == -1 )
+					database.execute("INSERT INTO lgd_map_literal VALUES ('" + k[0] + "', '" + k[1] + "', '" + k[2] + "', 'main', " + a[0][0] + ")");
+				else
+					database.execute("UPDATE lgd_map_literal SET language='" + k[2] + "', property='" + k[1] + "', last_history_id=" + a[0][0] + " WHERE  k='" + k[0] + "' AND user_id='main'");
+			}
+
+			re = "All Literal-Mappings successfully commited.";
+		}//#########################################################################
+		if ( request.getParameter("commitAll") != null && request.getParameter("comment") != null ) {
+			re = "All Mappings successfully commited.";
 		}
 
 		return re;

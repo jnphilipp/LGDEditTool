@@ -301,6 +301,8 @@
 				out.println("\t\t\t\t<div class=\"pane\">");
 				out.print(TemplatesEditedMappings.listEditedMappings((request.getParameter("type") == null ? "" : request.getParameter("type")), (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
 				out.println("\t\t\t\t</div>");
+				out.println("\t\t\t\t<br /><br />");
+				out.println(TemplatesEditedMappings.commit(type, search, sort));
 				out.println("\t\t\t</div>");
 			}
 			else if ( User.getInstance().isAdmin() && tab.equals("settings") ) {

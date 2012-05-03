@@ -27,6 +27,29 @@ import LGDEditTool.db.DatabaseBremen;
 * @version 1.0
 */
 public class TemplatesEditedMappings {
+	public static String commit(String type, String search, String sort) {
+		String s = "";
+
+		s += "\t\t\t\t<fieldset class=\"search\">\n";
+		s += "\t\t\t\t\t<legend>Commit Mappings</legend>\n";
+		s += "\t\t\t\t\t<form action=\"?tab=edited&type=" + type + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		s += "\t\t\t\t\t\t<br />\n";
+		s += "\t\t\t\t\t\t<div style=\"text-align: center;\">\n";
+		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitK\" value=\"Commit all K-Mappings\" />\n";
+		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitKV\" value=\"Commit all KV-Mappings\" />\n";
+		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitDatatype\" value=\"Commit all Datatype-Mappings\" />\n";
+		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitLiteral\" value=\"Commit all Literal-Mappings\" />\n";
+		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitAll\" value=\"Commit all Mappings\" />\n";
+		s += "\t\t\t\t\t\t\t<br />\n";
+		s += "\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
+		s += "\t\t\t\t\t\t</div>";
+		s += "\t\t\t\t\t\t<br />\n";
+		s += "\t\t\t\t\t</form>\n";
+		s += "\t\t\t\t</fieldset>\n";
+
+		return s;
+	}
+
 	/**
 	 * Template for EditHistory.
 	 * @param type k or kv mapping

@@ -55,7 +55,7 @@ public class TemplatesEditHistory {
 	 * @param sort sort object
 	 * @return 
 	 */
-	static public String editHistory(String type, String site, String search, String sort) throws Exception {
+	public static String editHistory(String type, String site, String search, String sort) throws Exception {
 		DatabaseBremen.getInstance().connect();// make sure database is connected
 		String s = "";
                 
@@ -77,7 +77,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>action</th>\n";
 			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("user_id") ? "duser_id" : "user_id") + "&site=" + site + "\">user</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
 			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
@@ -99,7 +99,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>action</th>\n";
 			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=kv" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("user_id") ? "duser_id" : "user_id") + "&site=" + site + "\">user</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
 			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
@@ -119,7 +119,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>action</th>\n";
 			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=datatype" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("user_id") ? "duser_id" : "user_id") + "&site=" + site + "\">user</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
 			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
@@ -140,7 +140,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "&site=" + site + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>action</th>\n";
 			if ( User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
-				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("username") ? "dusername" : "username") + "&site=" + site + "\">user</a></th>\n";
+				s += "\t\t\t\t\t\t\t<th><a href=\"?tab=history&type=literal" + (search.equals("") ? "" : "&search=" + search) + "&sort=" + (sort.equals("user_id") ? "duser_id" : "user_id") + "&site=" + site + "\">user</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>comment</th>\n";
 			s += "\t\t\t\t\t\t\t<th>restore</th>\n";
 			s += "\t\t\t\t\t\t</tr>\n";
@@ -259,7 +259,7 @@ public class TemplatesEditHistory {
     s += "\t\t\t\t\t\t<td>" + comment + "</td>\n";
     s += "\t\t\t\t\t\t<td><a onclick=\"toggle_visibility('k" + i + "')\">restore</a></td>\n";
     s += "\t\t\t\t\t</tr>\n";
-    s += "\t\t\t\t\t<form action=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&site="+ site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";  
+    s += "\t\t\t\t\t<form action=\"?tab=history&type=k" + (search.equals("") ? "" : "&search=" + search) + (sort.equals("") ? "" : "&sort=" + sort) + "&site="+ site + (User.getInstance().isLoggedIn() ? "" : "&captcha=yes") + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
     s += "\t\t\t\t\t\t<tr id=\"k" + i + "\" style=\"display: none;\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";

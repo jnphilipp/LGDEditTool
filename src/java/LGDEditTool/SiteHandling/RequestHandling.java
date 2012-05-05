@@ -565,7 +565,7 @@ public class RequestHandling {
 			}
 			else {
 				database.execute("UPDATE lgd_user SET email='" + request.getParameter("new") + "' WHERE email='" + a[0][0] + "'");
-				User.getInstance().createUser(request.getParameter("new"), User.getInstance().getView(), true, User.getInstance().isAdmin());
+				User.getInstance().createUser(User.getInstance().getUsername(), User.getInstance().getView(), true, User.getInstance().isAdmin());
 				re = "Email successfully changed.";
 			}
 		}//#########################################################################

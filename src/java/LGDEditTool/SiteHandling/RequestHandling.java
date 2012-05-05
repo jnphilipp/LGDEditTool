@@ -528,7 +528,7 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE email='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE username='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
 
 			md.reset();
 			md.update(request.getParameter("new").getBytes());
@@ -558,7 +558,7 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT email, username FROM lgd_user WHERE email='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT email, username FROM lgd_user WHERE username='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
 
 			if ( a.length == 0 ) {
 				re = "Password incorrect.";

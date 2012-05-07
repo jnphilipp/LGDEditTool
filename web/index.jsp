@@ -177,7 +177,7 @@
 								<input type="text" name="user" required />
 							</li>
 							<li>
-								<label>Password (<a style="font-size: 9pt;">forgot password</a>)</label>
+								<label>Password (<a href="?tab=forgotten" style="font-size: 9pt;">forgot password</a>)</label>
 								<input type="password" name="password" required />
 							</li>
 							<li><input type="submit" name="login" value="Log in" /></li>
@@ -202,18 +202,18 @@
 			<li><a <% if ( tab.equals("all") ) { out.print("class=\"current\""); } %> href="?tab=all&amp;type=k">All Mappings</a></li>
 			<li><a <% if ( tab.equals("history") ) { out.print("class=\"current\""); } %> href="?tab=history&type=k<% out.print((search.equals("") ? "" : "&amp;search=" + search)); %>">Edit-History</a></li>
 			<% if ( !User.getInstance().getView().equals("lgd_user_main") && User.getInstance().isLoggedIn() ) {
-					out.println("<li><a " + (tab.equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Edited Mappings</a></li>");
-				}
-				if ( User.getInstance().isAdmin() ) {
-					out.println("<li><a " + (tab.equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
-				}
-				if ( tab.equals("signup") && !User.getInstance().isLoggedIn() )
-						out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Sign up</a></li>");
-				else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
-					out.println("<li><a class=\"current\" href=\"?tab=account\">Acoount Settings</a></li>");
-				}
-			//}
-		//} %>
+				out.println("<li><a " + (tab.equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Edited Mappings</a></li>");
+			}
+			if ( User.getInstance().isAdmin() ) {
+				out.println("<li><a " + (tab.equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
+			}
+			if ( tab.equals("signup") && !User.getInstance().isLoggedIn() )
+				out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Sign up</a></li>");
+			else if ( tab.equals("forgotten") && !User.getInstance().isLoggedIn() )
+				out.println("<li><a class=\"current\" href=\"?tab=forgotten" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Password forgotten</a></li>");
+			else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
+				out.println("<li><a class=\"current\" href=\"?tab=account\">Acoount Settings</a></li>");
+			} %>
 		</ul>
 
 		<div id="panes">
@@ -316,7 +316,53 @@
 				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : "")));
 				out.println("\t\t\t</div>");
 			}
-			else if ( tab.equals("signup") ) { %>
+			else if ( tab.equals("forgotten") && !type.equals("hash") && !User.getInstance().isLoggedIn() ) { %>
+			<div class="pane">
+				<article style="width: 60%; margin: 0.5em auto;">
+					<p style="padding: 0em 1em;">In order to get a new password, please enter your email address in the field below. You will receive a email, containing a link to a site where you can change your email.</p>
+					<fieldset>
+							<legend>Password forgotten</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>" method="post" accept-charset="UTF-8">
+								<table style="margin: 0 auto;">
+									<tr>
+										<th>Email:</th>
+										<td><input type="email" name="email" required /></td>
+									</tr>
+									<tr><td></td><td><input type="submit" name="forgotten" value="Submit" /></td></tr>
+								</table>
+							</form>
+						</fieldset>
+				</article>
+			</div>
+			<% }
+			else if ( tab.equals("forgotten") && type.equals("hash") && !User.getInstance().isLoggedIn() ) { %>
+			<div class="pane">
+				<article style="width: 60%; margin: 0.5em auto;">
+					<p style="padding: 0em 1em;">Please enter the new password in the fields below.</p>
+					<fieldset>
+							<legend>Change Password</legend>
+							<form action="?tab=search<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>" method="post" accept-charset="UTF-8">
+								<table style="margin: 0 auto;">
+									<tr>
+										<th><label>New password:</label></th>
+										<td><input type="password" name="new" required /></td>
+									</tr>
+									<tr>
+										<th><label>Confirm new password:</label></th>
+										<td><input type="password" name="new2" required /></td>
+									</tr>
+									<tr>
+										<th></th><td><input type="submit" name="password" value="Save" /></td>
+										<input type="hidden" name="hash" value="<% out.print(request.getParameter("hash")); %>" />
+										<input type="hidden" name="user" value="<% out.print(request.getParameter("user")); %>" />
+									</tr>
+								</table>
+							</form>
+						</fieldset>
+				</article>
+			</div>
+			<% }
+			else if ( tab.equals("signup") && !User.getInstance().isLoggedIn() ) { %>
 			<div class="pane">
 				<div class="tlogin">
 					<article>

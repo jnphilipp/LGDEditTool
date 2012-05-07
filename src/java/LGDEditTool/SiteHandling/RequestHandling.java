@@ -17,6 +17,7 @@
 
 package LGDEditTool.SiteHandling;
 
+import LGDEditTool.Email.EmailLGD;
 import LGDEditTool.Functions;
 import LGDEditTool.db.DatabaseBremen;
 import java.security.MessageDigest;
@@ -53,7 +54,7 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			Object[][] a = database.execute("SELECT username, view, admin FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND password='" + sb + "'");
+			Object[][] a = database.execute("SELECT username, view, admin, password FROM lgd_user WHERE (username='" + request.getParameter("user") + "' OR email='" + request.getParameter("user") + "') AND (password='" + sb + "' OR password LIKE '" + sb + "#%')");
 
 			if ( a.length == 0 ) {
 				User.getInstance().createUser("", Functions.MAIN_BRANCH, false, false);
@@ -62,6 +63,10 @@ public class RequestHandling {
 			else {
 				User.getInstance().createUser(a[0][0].toString(), a[0][1].toString(), true, Boolean.parseBoolean(a[0][2].toString()));
 				User.getInstance().createCookie(response);
+
+				if ( a[0][3].toString().contains("#") )
+					database.execute("UPDATE lgd_user SET password='" + sb + "' WHERE username='" + a[0][0] + "'");
+
 				re = "Login successful.";
 			}
 		}//#########################################################################
@@ -514,23 +519,36 @@ public class RequestHandling {
 
 			re = "Userbranch successfully reseted.";
 		}//#########################################################################
-		else if ( request.getParameter("password") != null && request.getParameter("password").equals("Save") && request.getParameter("old") != null && request.getParameter("new") != null && request.getParameter("new2") != null ) {
+		else if ( request.getParameter("password") != null && request.getParameter("password").equals("Save") && (request.getParameter("old") != null || (request.getParameter("hash") != null && request.getParameter("user") != null)) && request.getParameter("new") != null && request.getParameter("new2") != null ) {
 			if ( !request.getParameter("new").equals(request.getParameter("new2")) )
 				return "The two passwords do not match.";
 
 			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(request.getParameter("old").getBytes());
+			byte[] byteData;
+			StringBuffer sb;
+			Object[][] a = null;
 
-			byte[] byteData = md.digest();
-			//convert the byte to hex
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < byteData.length; i++) {
-				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			if ( request.getParameter("old") != null ) {
+				md.update(request.getParameter("old").getBytes());
+				byteData = md.digest();
+				//convert the byte to hex
+				sb = new StringBuffer();
+				for (int i = 0; i < byteData.length; i++) {
+					sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+				}
+
+				a = database.execute("SELECT email FROM lgd_user WHERE username='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
+
+				md.reset();
+			}
+			else if ( request.getParameter("hash") != null ) {
+				a = database.execute("SELECT email, view, admin FROM lgd_user WHERE username='" + request.getParameter("user") + "' AND (password='" + request.getParameter("hash") + "' OR password LIKE '%#" + request.getParameter("hash") + "')");
 			}
 
-			Object[][] a = database.execute("SELECT email FROM lgd_user WHERE username='" + User.getInstance().getUsername() + "' AND password='" + sb + "'");
+			if ( a.length == 0 )
+				return "Password incorrect." + re;
 
-			md.reset();
+
 			md.update(request.getParameter("new").getBytes());
 			byteData = md.digest();
 			//convert the byte to hex
@@ -539,13 +557,15 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			if ( a.length == 0 ) {
-				re = "Password incorrect.";
-			}
-			else {
+			if ( request.getParameter("hash") != null ) {
+				User.getInstance().createUser(request.getParameter("user"), a[0][1].toString(), true, Boolean.parseBoolean(a[0][2].toString()));
+				User.getInstance().createCookie(response);
 				database.execute("UPDATE lgd_user SET password='" + sb + "' WHERE email='" + a[0][0] + "'");
-				re = "Password successfully changed.";
 			}
+			else
+				database.execute("UPDATE lgd_user SET password='" + sb + "' WHERE email='" + a[0][0] + "'");
+
+			re = "Password successfully changed.";
 		}//#########################################################################
 		else if ( request.getParameter("email") != null && request.getParameter("email").equals("Save") && request.getParameter("password") != null && request.getParameter("new") != null ) {
 			MessageDigest md = MessageDigest.getInstance("MD5");
@@ -565,7 +585,7 @@ public class RequestHandling {
 			}
 			else {
 				database.execute("UPDATE lgd_user SET email='" + request.getParameter("new") + "' WHERE email='" + a[0][0] + "'");
-				User.getInstance().createUser(request.getParameter("new"), User.getInstance().getView(), true, User.getInstance().isAdmin());
+				User.getInstance().createUser(User.getInstance().getUsername(), User.getInstance().getView(), true, User.getInstance().isAdmin());
 				re = "Email successfully changed.";
 			}
 		}//#########################################################################
@@ -601,14 +621,41 @@ public class RequestHandling {
 				database.execute("UPDATE lgd_user SET email='" + request.getParameter("email") + "', password='" + sb + "', admin=FALSE, view='lgd_user_" + request.getParameter("user") + "' WHERE username='" + request.getParameter("user") + "'");
 			else
 				database.execute("INSERT INTO lgd_user VALUES ('" + request.getParameter("user") + "', '" + request.getParameter("email") + "', '" + sb + "', FALSE, 'lgd_user_" + request.getParameter("user") + "')");
-			database.execute(Functions.createView(request.getParameter("user")));
-			database.execute(Functions.createViewHistory(request.getParameter("user")));
-			database.execute(Functions.createViewUnmapped(request.getParameter("user")));
+			database.createView(request.getParameter("user"));
+			database.createViewHistory(request.getParameter("user"));
+			database.createViewUnmapped(request.getParameter("user"));
 
 			User.getInstance().createUser(request.getParameter("user"), "lgd_user_" + request.getParameter("email"), true, false);
 			User.getInstance().createCookie(response);
 			re = "Sign up successful.";
 		}//#########################################################################
+		else if ( request.getParameter("forgotten") != null && request.getParameter("email") != null ) {
+			Object[][] a = database.execute("SELECT username, email, password FROM lgd_user WHERE email='" + request.getParameter("email") + "'");
+			if ( a.length == 0 )
+				return "There is no account with the email adress you insert.";
+
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update((Functions.getTimestamp() + "#" + a[0][0].toString()).getBytes());
+
+			byte[] byteData = md.digest();
+			//convert the byte to hex
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			database.execute("UPDATE lgd_user SET password='" + a[0][2] + "#" + sb + "' WHERE username='" + a[0][0] + "'");
+
+			EmailLGD email = EmailLGD.getInstance();
+			email.setProperties();
+			email.sendPasswordForgotten(a[0][1].toString(), a[0][0].toString(), sb.toString());
+
+			re = "You will soon receive an email containig a link to change your password.";
+		}
+
+
+
+		// Commit for all K/KV/Datatype/Literal-Mappings and for all Mappings
 		if ( (request.getParameter("commitK") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
 			Object[][] b = database.execute("SELECT k, property, object FROM lgd_map_resource_k WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')");
 
@@ -625,7 +672,9 @@ public class RequestHandling {
 			}
 
 			re = "All K-Mappings successfully commited.";
-		}//#########################################################################
+		}
+
+		//##########################################################################
 		if ( (request.getParameter("commitKV") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
 			Object[][] b = database.execute("SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')");
 
@@ -642,7 +691,9 @@ public class RequestHandling {
 			}
 
 			re = "All KV-Mappings successfully commited.";
-		}//#########################################################################
+		}
+
+		//##########################################################################
 		if ( (request.getParameter("commitDatatype") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
 			Object[][] b = database.execute("SELECT k, datatype FROM lgd_map_datatype WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')");
 
@@ -659,7 +710,9 @@ public class RequestHandling {
 			}
 
 			re = "All Datatype-Mappings successfully commited.";
-		}//#########################################################################
+		}
+
+		//##########################################################################
 		if ( (request.getParameter("commitLiteral") != null && request.getParameter("comment") != null) || (request.getParameter("commitAll") != null && request.getParameter("comment") != null) ) {
 			Object[][] b = database.execute("SELECT k, property, language FROM lgd_map_literal WHERE user_id = '" + User.getInstance().getUsername() + "' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')");
 
@@ -676,7 +729,9 @@ public class RequestHandling {
 			}
 
 			re = "All Literal-Mappings successfully commited.";
-		}//#########################################################################
+		}
+
+		//##########################################################################
 		if ( request.getParameter("commitAll") != null && request.getParameter("comment") != null ) {
 			re = "All Mappings successfully commited.";
 		}

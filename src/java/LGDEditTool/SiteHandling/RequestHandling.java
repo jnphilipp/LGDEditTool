@@ -593,6 +593,9 @@ public class RequestHandling {
 			if ( !request.getParameter("password").equals(request.getParameter("password2")) )
 				return "The two passwords do not match.";
 
+			if ( request.getParameter("user").contains(".") )
+				return "Please enter a username with '.'.";
+
 			Object[][] a = database.execute("SELECT username, email FROM lgd_user WHERE username='" + request.getParameter("user") + "'");
 			boolean update = false;
 

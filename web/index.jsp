@@ -188,7 +188,7 @@
 		</div>
 		<% } else { %>
 		<div class="login" style="right: 20px; position: absolute;">
-			<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=search&amp;logout=yes<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>">Logout</a>
+			<i><% out.print(User.getInstance().getUsername()); %></i>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=search&amp;logout=yes<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
@@ -267,7 +267,8 @@
 				out.println("\t\t\t\t<div class=\"pane\">");
 				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
 					out.print(TemplatesAllMappings.captcha(request, type, (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
-				out.println(Templates.branch(search));
+				if ( User.getInstance().isLoggedIn() )
+					out.println(Templates.branch(search));
 				out.print(TemplatesAllMappings.listAllMappings(type, (request.getParameter("site") == null ? "1" : request.getParameter("site")), sort));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
@@ -283,7 +284,8 @@
 				out.println("\t\t\t\t<div class=\"pane\">");
 				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
 					out.println(TemplatesEditHistory.captcha(request, type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));
-				out.println(Templates.branch(search));
+				if ( User.getInstance().isLoggedIn() )
+					out.println(Templates.branch(search));
 				out.println(TemplatesEditHistory.search(type));
 				out.println("\t\t\t\t<br /><br />");
 				out.println(TemplatesEditHistory.editHistory(type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));

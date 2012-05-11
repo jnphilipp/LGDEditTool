@@ -40,7 +40,7 @@ public class DatabaseBremen extends DatabasePostgreSQL {
 	 * @return instance
 	 * @throws ClassNotFoundException 
 	 */
-	public static synchronized DatabaseBremen getInstance() throws ClassNotFoundException {
+	public static DatabaseBremen getInstance() throws ClassNotFoundException {
 		if ( bremen == null )
 			bremen = new DatabaseBremen();
 

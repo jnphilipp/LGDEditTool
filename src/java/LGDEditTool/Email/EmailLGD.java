@@ -43,7 +43,7 @@ public class EmailLGD extends EmailYahoo {
 	 * @return instance
 	 * @throws ClassNotFoundException 
 	 */
-	public static synchronized EmailLGD getInstance() {
+	public static EmailLGD getInstance() {
 		if ( email == null )
 			email = new EmailLGD();
 

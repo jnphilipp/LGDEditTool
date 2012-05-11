@@ -61,7 +61,7 @@ public final class User {
 	 * Creates, if necessary, a new instance of the User and returns it.
 	 * @return instance of this class
 	 */
-	public static synchronized User getInstance() {
+	public static User getInstance() {
 		if ( user == null )
 			user = new User();
 

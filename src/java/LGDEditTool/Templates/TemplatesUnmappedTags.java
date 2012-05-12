@@ -174,7 +174,7 @@ public class TemplatesUnmappedTags {
 		s += "\t\t\t\t\t<form action=\"?tab=search&search=" + k + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		s += "\t\t\t\t\t\t<tr id=\"kl" + i + "\" style=\"display: none;\">\n";
 		s += "\t\t\t\t\t\t\t<td colspan=\"3\"><label>Property:</label><input type=\"text\" class=\"property\" name=\"property\" placeholder=\"property\" style=\"width: 27em;\" required /></td>\n";
-		s += "\t\t\t\t\t\t\t<td colspan=\"3\"><label>Language:</label><input type=\"text\" name=\"language\" placeholder=\"language\" style=\"width: 27em;\" required /></td>\n";
+		s += "\t\t\t\t\t\t\t<td colspan=\"3\"><label>Language:</label><input type=\"text\" name=\"language\" placeholder=\"language\" style=\"width: 27em;\" /></td>\n";
 		s += "\t\t\t\t\t\t\t<input type=\"hidden\" name=\"k\" value=\"" + k + "\" />\n";
 		s += "\t\t\t\t\t\t</tr>\n";
 		s += getUserField("kl" + i + "u", "lmapping", "Create", 6);

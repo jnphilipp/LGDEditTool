@@ -37,7 +37,7 @@ public class DatabasePostgreSQL {
 	 */
 	private boolean driver = true;
 	private Connection connection = null;
-	private Statement statement = null;
+	//private Statement statement = null;
 	
 	/**
 	* Creates a new Database and checks the driver.
@@ -79,7 +79,6 @@ public class DatabasePostgreSQL {
 			properties.setProperty("ssl", Boolean.toString(ssl));
 			properties.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
 			this.connection = DriverManager.getConnection((database.startsWith("jdbc:postgresql://") ? database : "jdbc:postgresql://" + database), properties);
-			this.statement = this.connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
 			return true;
 		}
@@ -94,7 +93,6 @@ public class DatabasePostgreSQL {
 	*/
 	public void disconnect() throws SQLException {
 		if ( this.connection != null ) {
-			this.statement.close();
 			this.connection.close();
 			this.connection = null;
 		}
@@ -107,9 +105,10 @@ public class DatabasePostgreSQL {
 	 * @throws SQLException 
 	 */
 	public Object[][] execute(String command) throws SQLException {
-		if ( this.statement != null ) {
-			if ( this.statement.execute(command) ) {
-				ResultSet rs = this.statement.getResultSet();
+		if ( this.connection != null ) {
+			Statement statement = this.connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			if ( statement.execute(command) ) {
+				ResultSet rs = statement.getResultSet();
 
 
 				int row = 0;

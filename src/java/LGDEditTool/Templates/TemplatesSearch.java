@@ -92,7 +92,7 @@ public class TemplatesSearch {
 	private static String kMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) as count FROM lgd_map_resource_k WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND property != '' AND object != '' AND (k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
+		Object[][] a = database.execute("SELECT km.k, property, object, user_id, usage_count as count FROM lgd_map_resource_k AS km INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE " + (search.contains("*") ? "km.k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "km.k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND property != '' AND object != '' AND (km.k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND km.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -104,7 +104,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>edit</th>\n";
 		re += "\t\t\t\t\t\t<th>delete</th>\n";
 		if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
@@ -245,11 +245,11 @@ public class TemplatesSearch {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a;
+		//String sort_tmp = sort.replace("k", "kvm.k").replace("v", "kvm.v");
 		if ( search.contains("~") )
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.contains("k") ? sort + ", v" : sort) + " ASC"));
+			a = database.execute("SELECT kvm.k, kvm.v, property, object, user_id, usage_count FROM lgd_map_resource_kv AS kvm INNER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE kvm.k='" + search.split("~")[0] + "' AND kvm.v='" + search.split("~")[1] + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (kvm.k, kvm.v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (kvm.k, kvm.v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + " DESC, v" : sort.replaceFirst("d", "")) + " DESC" : (sort.contains("k") ? sort + " DESC, v" : sort) + " ASC"));
 		else
-			a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE (" + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " OR " + (search.contains("*") ? "v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "v='" + search + "'") + ") AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, v, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.contains("k") ? sort + ", v" : sort) + " ASC"));
-
+			a = database.execute("SELECT kvm.k, kvm.v, property, object, user_id, usage_count FROM lgd_map_resource_kv AS kvm INNER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE (" + (search.contains("*") ? "kvm.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "kvm.k='" + search + "'") + " OR " + (search.contains("*") ? "kvm.v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "kvm.v='" + search + "'") + ") AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!='' AND object!=''" : "((user_id='main' AND (kvm.k, kvm.v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (kvm.k, kvm.v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + " DESC, v" : sort.replaceFirst("d", "")) + " DESC" : (sort.contains("k") ? sort + " DESC, v" : sort) + " ASC"));
 		if ( a.length == 0 )
 			return "";
 
@@ -261,7 +261,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("v") ? "dv" : "v") + "\">v</a></th>\n";
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>object</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>edit</th>\n";
 		re += "\t\t\t\t\t\t<th>delete</th>\n";
 
@@ -415,7 +415,7 @@ public class TemplatesSearch {
 	private static String datatypeMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND datatype != 'deleted' AND (k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, datatype, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
+		Object[][] a = database.execute("SELECT km.k, datatype, user_id, usage_count FROM lgd_map_datatype AS km INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE " + (search.contains("*") ? "km.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "km.k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND datatype != 'deleted'" : "((user_id='main' AND datatype != 'deleted' AND (km.k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (km.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND km.k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -426,7 +426,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t<tr>\n";
 		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 		re += "\t\t\t\t\t\t<th>datatype</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
 
@@ -560,7 +560,7 @@ public class TemplatesSearch {
 	private static String literalMapping(String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (search.contains("*") ? "k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND property != '' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property!='' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND property != '' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k, property, language, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
+		Object[][] a = database.execute("SELECT lm.k, property, language, user_id, usage_count FROM lgd_map_literal AS lm INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE " + (search.contains("*") ? "lm.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "lm.k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND property != '' AND (lm.k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property!='' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND property != '' AND (lm.k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
 		if ( a.length == 0 )
 			return "";
@@ -572,7 +572,7 @@ public class TemplatesSearch {
 		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 		re += "\t\t\t\t\t\t<th>property</th>\n";
 		re += "\t\t\t\t\t\t<th>language</th>\n";
-		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+		re += "\t\t\t\t\t\t<th><a href=\"?tab=search&search=" + search + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 		re += "\t\t\t\t\t\t<th>Edit</th>\n";
 		re += "\t\t\t\t\t\t<th>Delete</th>\n";
 

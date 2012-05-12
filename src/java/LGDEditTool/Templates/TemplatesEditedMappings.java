@@ -40,7 +40,8 @@ public class TemplatesEditedMappings {
 		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitDatatype\" value=\"Commit all Datatype-Mappings\" />\n";
 		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitLiteral\" value=\"Commit all Literal-Mappings\" />\n";
 		s += "\t\t\t\t\t\t\t<input type=\"submit\" name=\"commitAll\" value=\"Commit all Mappings\" />\n";
-		s += "\t\t\t\t\t\t\t<br />\n";
+		s += "\t\t\t\t\t\t\t<br /><br />\n";
+		s += "\t\t\t\t\t\t\t<label>Comment:</label></br>\n";
 		s += "\t\t\t\t\t\t\t<textarea name=\"comment\" style=\"width: 30em; height: 5em;\" placeholder=\"No comment.\" required></textarea>\n";
 		s += "\t\t\t\t\t\t</div>";
 		s += "\t\t\t\t\t\t<br />\n";
@@ -160,7 +161,7 @@ public class TemplatesEditedMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') GROUP BY k, property, object, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT km.k, property, object, user_id, usage_count FROM lgd_map_resource_k AS km INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addKMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site);

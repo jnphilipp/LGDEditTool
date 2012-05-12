@@ -51,8 +51,11 @@
 	if ( request.getParameter("search") != null )
 		search = request.getParameter("search").substring(0, (request.getParameter("search").indexOf("(") == -1 ? request.getParameter("search").length() : request.getParameter("search").lastIndexOf("(") - 1)) + (request.getParameter("search").contains(",") ? "~" + request.getParameter("search").substring(request.getParameter("search").indexOf("(") + 1, request.getParameter("search").indexOf(",")) : "");
 
-	if ( request.getParameter("tab") != null )
+	if ( request.getParameter("tab") != null ) {
 		tab = request.getParameter("tab");
+		if ( tab.equals("history") )
+			sort = "dtimestamp";
+	}
 
 	if ( request.getParameter("sort") != null )
 		sort = request.getParameter("sort");
@@ -208,7 +211,7 @@
 				out.println("<li><a " + (tab.equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
 			}
 			if ( tab.equals("signup") && !User.getInstance().isLoggedIn() )
-				out.println("<li><a class=\"current\" href=\"?tab=login" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Sign up</a></li>");
+				out.println("<li><a class=\"current\" href=\"?tab=signup" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Sign up</a></li>");
 			else if ( tab.equals("forgotten") && !User.getInstance().isLoggedIn() )
 				out.println("<li><a class=\"current\" href=\"?tab=forgotten" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Password forgotten</a></li>");
 			else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
@@ -232,7 +235,8 @@
 					if ( User.getInstance().isLoggedIn() )
 						out.println(Templates.branch(search));
 					out.println(TemplatesSearch.search());
-					out.println("\t\t\t\t<br /><br />");
+					out.println("\t\t\t\t<p>Listing search results for: " + search + "</p>");
+					out.println("\t\t\t\t<br />");
 					out.println(TemplatesSearch.searchResult(search, sort));
 					out.println("\t\t\t</div>");
 				}
@@ -251,7 +255,8 @@
 				out.println("\t\t\t\t<div class=\"pane\">");
 				out.println(Templates.branch(search));
 				out.println(TemplatesUnmappedTags.search(type));
-				out.println("\t\t\t\t<br /><br />");
+				out.println("\t\t\t\t<p>Listing search results for: " + search + "</p>");
+				out.println("\t\t\t\t<br />");
 				out.println(TemplatesUnmappedTags.unmappedTags(type, (request.getParameter("site") == null ? "1" : request.getParameter("site")), search, sort));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
@@ -287,7 +292,8 @@
 				if ( User.getInstance().isLoggedIn() )
 					out.println(Templates.branch(search));
 				out.println(TemplatesEditHistory.search(type));
-				out.println("\t\t\t\t<br /><br />");
+				out.println("\t\t\t\t<p>Listing search results for: " + search + "</p>");
+				out.println("\t\t\t\t<br />");
 				out.println(TemplatesEditHistory.editHistory(type, (request.getParameter("site") != null ? request.getParameter("site") : "1"), search, sort));
 				out.println("\t\t\t\t</div>");
 				out.println("\t\t\t</div>");
@@ -374,11 +380,11 @@
 								<table>
 									<tr>
 										<th>Username:</th>
-										<td><input type="text" name="user" required /></td>
+										<td><input type="text" name="user" pattern="[A-Za-z0-9@]+{3}" maxlength="100" required /></td>
 									</tr>
 									<tr>
 										<th>Email:</th>
-										<td><input type="email" name="email" required /></td>
+										<td><input type="email" name="email" pattern="[A-Za-z0-9@.-]+{3}" maxlength="100" required /></td>
 									</tr>
 									<tr>
 										<th>Password:</th>

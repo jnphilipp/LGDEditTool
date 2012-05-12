@@ -141,7 +141,7 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("kmapping") != null && request.getParameter("kmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("INSERT INTO lgd_map_resource_k_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '', '', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + ") RETURNING id");
-			database.execute("INSERT INTO lgd_map_resource_k VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			database.execute("INSERT INTO lgd_map_resource_k VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + a[0][0] + ")");
 
 			re = "K-Mapping successfully created.";
 		}//#########################################################################
@@ -218,7 +218,7 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("kvmapping") != null && request.getParameter("kvmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("v") != null && request.getParameter("object") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("INSERT INTO lgd_map_resource_kv_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '', '', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + ") RETURNING id");
-			database.execute("INSERT INTO lgd_map_resource_kv VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			database.execute("INSERT INTO lgd_map_resource_kv VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("v") + "', '" + request.getParameter("property") + "', '" + request.getParameter("object") + "', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + a[0][0] + ")");
 
 			re = "KV-Mapping successfully created.";
 		}//#########################################################################
@@ -358,7 +358,7 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("dmapping") != null && request.getParameter("dmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("datatype") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("INSERT INTO lgd_map_datatype_history VALUES (DEFAULT, '" + request.getParameter("k") + "', 'deleted', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + ") RETURNING id");
-			database.execute("INSERT INTO lgd_map_datatype VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			database.execute("INSERT INTO lgd_map_datatype VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("datatype") + "', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + a[0][0] + ")");
 
 			re = "Datatype-Mapping successfully created.";
 		}//#########################################################################
@@ -462,7 +462,7 @@ public class RequestHandling {
 		}//#########################################################################
 		else if ( request.getParameter("lmapping") != null && request.getParameter("lmapping").equals("Create") && request.getParameter("k") != null && request.getParameter("language") != null && request.getParameter("property") != null && request.getParameter("comment") != null ) {
 			Object[][] a = database.execute("INSERT INTO lgd_map_literal_history VALUES (DEFAULT, '" + request.getParameter("k") + "', '', '', '" + User.getInstance().getUsername() + "','" + request.getParameter("comment") + "', '" + Functions.getTimestamp() + "', 'create', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + ") RETURNING id");
-			database.execute("INSERT INTO lgd_map_literal VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("language") + "', '" + User.getInstance().getUsername() + "', " + a[0][0] + ")");
+			database.execute("INSERT INTO lgd_map_literal VALUES ('" + request.getParameter("k") + "', '" + request.getParameter("property") + "', '" + request.getParameter("language") + "', '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "', " + a[0][0] + ")");
 
 			re = "Literal-Mapping successfully created.";
 		}//#########################################################################
@@ -594,7 +594,7 @@ public class RequestHandling {
 				return "The two passwords do not match.";
 
 			if ( request.getParameter("user").contains(".") )
-				return "Please enter a username with '.'.";
+				return "Please enter a username without '.'.";
 
 			Object[][] a = database.execute("SELECT username, email FROM lgd_user WHERE username='" + request.getParameter("user") + "'");
 			boolean update = false;
@@ -624,12 +624,14 @@ public class RequestHandling {
 				database.execute("UPDATE lgd_user SET email='" + request.getParameter("email") + "', password='" + sb + "', admin=FALSE, view='lgd_user_" + request.getParameter("user") + "' WHERE username='" + request.getParameter("user") + "'");
 			else
 				database.execute("INSERT INTO lgd_user VALUES ('" + request.getParameter("user") + "', '" + request.getParameter("email") + "', '" + sb + "', FALSE, 'lgd_user_" + request.getParameter("user") + "')");
-			database.createView(request.getParameter("user"));
-			database.createViewHistory(request.getParameter("user"));
-			database.createViewUnmapped(request.getParameter("user"));
+			//database.createView(request.getParameter("user"));
+			//database.createViewHistory(request.getParameter("user"));
+			//database.createViewUnmapped(request.getParameter("user"));
 
 			User.getInstance().createUser(request.getParameter("user"), "lgd_user_" + request.getParameter("email"), true, false);
 			User.getInstance().createCookie(response);
+			EmailLGD.getInstance().setProperties();
+			EmailLGD.getInstance().sendSignUP(request.getParameter("email"), request.getParameter("user"));
 			re = "Sign up successful.";
 		}//#########################################################################
 		else if ( request.getParameter("forgotten") != null && request.getParameter("email") != null ) {

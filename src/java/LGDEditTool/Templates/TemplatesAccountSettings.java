@@ -18,6 +18,8 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
+import LGDEditTool.db.DatabaseBremen;
+import java.sql.SQLException;
 
 /**
  *
@@ -25,7 +27,7 @@ import LGDEditTool.SiteHandling.User;
  * @version 2.0
  */
 public class TemplatesAccountSettings {
-	public static String accountSettings(String setting, String search) {
+	public static String accountSettings(String setting, String search) throws ClassNotFoundException, SQLException {
 		String re = "";
 
 		re += "\t\t\t\t<section class=\"account\">\n";
@@ -59,7 +61,11 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t</article>\n";
 		}
 		else if ( setting.equals("email") ) {
+			DatabaseBremen db = DatabaseBremen.getInstance();
+			db.connect();
+			Object[][] a = db.execute("SELECT email FROM lgd_user WHERE username='" + User.getInstance().getUsername() + "'");
 			re += "\t\t\t\t\t<article>\n";
+			re += "\t\t\t\t\t<p>Your current email is: " + a[0][0] + "</p><br />\n";
 			re += "\t\t\t\t\t\t<fieldset style=\"width: 25em;\">\n";
 			re += "\t\t\t\t\t\t\t<legend>Change Email</legend>\n";
 			re += "\t\t\t\t\t\t\t<form action=\"?tab=account&setting=email" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";

@@ -112,4 +112,67 @@ public class TemplatesAccountSettings {
 
 		return re;
 	}
+        
+        public static String accountSettingsAdmin(String setting, String search, String del) throws ClassNotFoundException, SQLException {
+		String re = "";
+                if(del.equalsIgnoreCase("kdel")){
+                    DatabaseBremen db = DatabaseBremen.getInstance();
+                    db.connect();
+                    db.execute("delete from lgd_map_resource_k !=0");
+                    db.execute("DELETE * FROM lgd_map_resource_k_history");
+                    db.disconnect();
+                }else if(del.equalsIgnoreCase("kvdel")){
+                    DatabaseBremen db = DatabaseBremen.getInstance();
+                    db.connect();
+                    db.execute("delete from lgd_map_resource_kv !=0");
+                    db.execute("DELETE * FROM lgd_map_resource_kv_history");
+                    db.disconnect();
+                }else if(del.equalsIgnoreCase("datadel")){
+                    DatabaseBremen db = DatabaseBremen.getInstance();
+                    db.connect();
+                    db.execute("delete from lgd_map_datatype where last_history_id !=0");
+                    db.execute("DELETE * FROM lgd_map_datatype_history");
+                    db.disconnect();
+                }else if(del.equalsIgnoreCase("litdel")){
+                    DatabaseBremen db = DatabaseBremen.getInstance();
+                    db.connect();
+                    db.execute("delete from lgd_map_literal where last_history_id !=0");
+                    db.execute("DELETE FROM lgd_map_literal_history");
+                    db.disconnect();
+                }
+                
+                re += "\t\t\t\t\t<article>\n";
+		re += "\t\t\t\t\t\t<fieldset style=\"width: 25em;\">\n";
+                
+		re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=kdel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t\t\t<ul>\n";
+                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory K-Mappings\" />\n";
+		re += "\t\t\t\t\t\t\t\t</ul>\n";
+		re += "\t\t\t\t\t\t\t</form>\n";
+                
+                re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=kvdel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t\t\t<ul>\n";
+                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory KV-Mappings\" />\n";
+		re += "\t\t\t\t\t\t\t\t</ul>\n";
+		re += "\t\t\t\t\t\t\t</form>\n";
+                
+                re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=datadel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t\t\t<ul>\n";
+                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory Datatype-Mappings\" />\n";
+		re += "\t\t\t\t\t\t\t\t</ul>\n";
+		re += "\t\t\t\t\t\t\t</form>\n";
+                
+                re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=litdel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+		re += "\t\t\t\t\t\t\t\t<ul>\n";
+                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory Literal-Mappings\" />\n";
+		re += "\t\t\t\t\t\t\t\t</ul>\n";
+		re += "\t\t\t\t\t\t\t</form>\n";
+                
+		re += "\t\t\t\t\t\t</fieldset>\n";
+		re += "\t\t\t\t\t</article>\n";
+                
+                
+                
+                return re;
+        }
 }

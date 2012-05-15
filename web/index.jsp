@@ -215,7 +215,7 @@
 			else if ( tab.equals("forgotten") && !User.getInstance().isLoggedIn() )
 				out.println("<li><a class=\"current\" href=\"?tab=forgotten" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Password forgotten</a></li>");
 			else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
-				out.println("<li><a class=\"current\" href=\"?tab=account\">Acoount Settings</a></li>");
+				out.println("<li><a class=\"current\" href=\"?tab=account\">Account Settings</a></li>");
 			} %>
 		</ul>
 
@@ -314,11 +314,9 @@
 				out.println("\t\t\t</div>");
 			}
 			else if ( User.getInstance().isAdmin() && tab.equals("settings") ) {
-			%>
-			<div class="pane">
-				Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-			</div>
-			<%
+                                out.println("<div class=\"pane\">");
+				out.println(TemplatesAccountSettings.accountSettingsAdmin((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : ""),(request.getParameter("del") != null ? request.getParameter("del") : "")));
+                                out.println("\t\t\t</div>");
 			} else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
 				out.println("<div class=\"pane\">");
 				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : "")));

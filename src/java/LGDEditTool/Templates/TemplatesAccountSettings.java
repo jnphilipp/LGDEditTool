@@ -120,7 +120,7 @@ public class TemplatesAccountSettings {
                     db.connect();                  
                     Object[][] a = db.execute("SELECT k, property, object FROM lgd_map_resource_k WHERE where last_history_id !=0");
                     for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_resource_k SET last_history_id=0 WHERE k="+a[i][0]+" and property="+a[i][1]+" and object="+a[i][2]+"");
+			db.execute("UPDATE lgd_map_resource_k SET last_history_id=null WHERE k="+a[i][0]+" and property="+a[i][1]+" and object="+a[i][2]+"");
                     }
                     db.execute("DELETE FROM lgd_map_resource_k_history");
                     db.disconnect();
@@ -129,7 +129,7 @@ public class TemplatesAccountSettings {
                     db.connect();
                     Object[][] a = db.execute("SELECT k,v,property, object FROM lgd_map_resource_kv WHERE where last_history_id !=0");
                     for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_resource_kv SET last_history_id=0 WHERE k="+a[i][0]+" and v="+a[i][1]+"property="+a[i][2]+" and object="+a[i][3]+"");
+			db.execute("UPDATE lgd_map_resource_kv SET last_history_id=null WHERE k="+a[i][0]+" and v="+a[i][1]+"property="+a[i][2]+" and object="+a[i][3]+"");
                     }
                     db.execute("DELETE FROM lgd_map_resource_kv_history");
                     db.disconnect();
@@ -138,7 +138,7 @@ public class TemplatesAccountSettings {
                     db.connect();
                     Object[][] a = db.execute("SELECT k, datatype FROM lgd_map_datatype WHERE where last_history_id !=0");
                     for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_datatype SET last_history_id=0 WHERE k="+a[i][0]+" and datatype="+a[i][1]+"");
+			db.execute("UPDATE lgd_map_datatype SET last_history_id=null WHERE k="+a[i][0]+" and datatype="+a[i][1]+"");
                     }
                     db.execute("DELETE FROM lgd_map_datatype_history");
                     db.disconnect();
@@ -147,7 +147,7 @@ public class TemplatesAccountSettings {
                     db.connect();
                     Object[][] a = db.execute("SELECT k, property, language FROM lgd_map_literal WHERE where last_history_id !=0");
                     for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_literal SET last_history_id=0 WHERE k="+a[i][0]+" and property="+a[i][1]+"and language="+a[i][2]+"");
+			db.execute("UPDATE lgd_map_literal SET last_history_id=null WHERE k="+a[i][0]+" and property="+a[i][1]+"and language="+a[i][2]+"");
                     }
                     db.execute("DELETE FROM lgd_map_literal_history");
                     db.disconnect();

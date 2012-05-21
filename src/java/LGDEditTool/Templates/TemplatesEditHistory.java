@@ -20,15 +20,22 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
+import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
 
 /**
  *
- * @author Alexander Richter
+ * @author Alexander Richter, J. Nathanael Philipp
+ * @version 1.3
  */
 public class TemplatesEditHistory {
+	/**
+	 * Generating HTML code for a search field in the edit history tab.
+	 * @param type k/kv/datatype/literal
+	 * @return HTML code
+	 */
 	public static String search(String type) {
 		String re = "\t\t\t\t<fieldset class=\"search\">\n";
 		re += "\t\t\t\t\t<legend>Search</legend>\n";
@@ -48,14 +55,17 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * Template for EditHistory.
-	 * @param ksite current site k-mappings
-	 * @param kvsite current site kv-mappings
-	 * @param user user-session
-	 * @param sort sort object
-	 * @return 
+	 * Template for EditHistory, generates HTML code. 
+	 * @param type k/kv/datatype/literal
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
+	 * @throws Exception
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	public static String editHistory(String type, String site, String search, String sort) throws Exception {
+	public static String editHistory(String type, String site, String search, String sort) throws ClassNotFoundException, SQLException, Exception {
 		DatabaseBremen.getInstance().connect();// make sure database is connected
 		String s = "";
                 
@@ -170,9 +180,10 @@ public class TemplatesEditHistory {
 	 * @param search search
 	 * @param sort sort
 	 * @return HTML code
-	 * @throws Exception 
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	static private String searchKHistoryDB(int site, String search, String sort) throws Exception {
+	private static String searchKHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
 		Object[][] a = database.execute("SELECT kmh.k, property, object, usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history AS kmh INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND kmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND kmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
@@ -190,9 +201,10 @@ public class TemplatesEditHistory {
 	 * @param search search
 	 * @param sort sort
 	 * @return HTML code
-	 * @throws Exception 
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	private static String searchKVHistoryDB(int site, String search, String sort) throws Exception {
+	private static String searchKVHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
@@ -210,9 +222,10 @@ public class TemplatesEditHistory {
 	 * @param search search
 	 * @param sort sort
 	 * @return HTML code
-	 * @throws Exception 
+	 * @throws ClassNotFoundException
+	 * @throws SQLException  
 	 */
-	private static String searchDatatypeHistoryDB(int site, String search, String sort) throws Exception {
+	private static String searchDatatypeHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 		Object[][] a = database.execute("SELECT dmh.k, datatype, usage_count, user_id, comment, timestamp, action, id FROM lgd_map_datatype_history AS dmh INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND dmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND dmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
@@ -229,9 +242,10 @@ public class TemplatesEditHistory {
 	 * @param search search
 	 * @param sort sort
 	 * @return HTML code
-	 * @throws Exception 
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	private static String searchLiteralHistoryDB(int site, String search, String sort) throws Exception {
+	private static String searchLiteralHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 		Object[][] a = database.execute("SELECT lmh.k, property, language, usage_count, user_id, comment, timestamp, action, id FROM lgd_map_literal_history AS lmh INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND lmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND lmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
@@ -243,8 +257,9 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * Template for K-Mappings.
-	 * @param id
+	 * Generates HTML code for K-Mappings.
+	 * @param i i
+	 * @param id id
 	 * @param k k
 	 * @param property property
 	 * @param object object
@@ -253,11 +268,10 @@ public class TemplatesEditHistory {
 	 * @param user_id user
 	 * @param comment comment
 	 * @param timestamp timestamp
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
-	 * @return 
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
 	 */
 	private static String addkMapping(int i, String id, String k, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
 		String s = "\t\t\t\t\t<tr id=\"k" + i + "a\">\n";
@@ -297,8 +311,9 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * Template for KV-Mappings.
-	 * @param id
+	 * Generates HTML code for KV-Mappings.
+	 * @param i i
+	 * @param id id
 	 * @param k k
 	 * @param v v
 	 * @param property property
@@ -308,13 +323,12 @@ public class TemplatesEditHistory {
 	 * @param user_id user
 	 * @param comment comment
 	 * @param timestamp timestamp
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
-	 * @return 
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
 	 */
-	static private String addkvMapping(int i, String id, String k, String v, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
+	private static String addkvMapping(int i, String id, String k, String v, String property, String object, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
     String s = "\t\t\t\t\t<tr id=\"kv" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -354,7 +368,23 @@ public class TemplatesEditHistory {
 		return s;
 	}
 
-	static private String addDatatypeMapping(int i, String id, String k, String datatype, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
+	/**
+	 * Generates HTML code for Datatype-Mappings.
+	 * @param i i
+	 * @param id id
+	 * @param k k
+	 * @param datatype datatype
+	 * @param affectedEntities affected entities
+	 * @param action action
+	 * @param user_id user
+	 * @param comment comment
+	 * @param timestamp timestamp
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
+	 */
+	private static String addDatatypeMapping(int i, String id, String k, String datatype, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
     String s = "\t\t\t\t\t<tr id=\"tk" + i + "a\">\n";
     s += "\t\t\t\t\t\t<td style=\"text-align: right;\">" + Functions.showTimestamp(timestamp) + "</td>\n";
     s += "\t\t\t\t\t\t<td><a href=\"?tab=search&search=" + k + "\">" + k + "</a></td>\n";
@@ -389,21 +419,21 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * Template for K-Mappings.
-	 * @param id
+	 * Generates HTML code for Literal-Mappings.
+	 * @param i i
+	 * @param id id
 	 * @param k k
 	 * @param property property
-	 * @param language object
+	 * @param language language
 	 * @param affectedEntities affected entities
 	 * @param action action
 	 * @param user_id user
 	 * @param comment comment
 	 * @param timestamp timestamp
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
-	 * @return 
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
 	 */
 	private static String addLiteralMapping(int i, String id, String k, String property, String language, String affectedEntities, String action, String user_id, String comment, String timestamp, int site, String search, String sort) {
 		String s = "\t\t\t\t\t<tr id=\"lk" + i + "a\">\n";
@@ -448,7 +478,7 @@ public class TemplatesEditHistory {
 	 * @param submitName submit name
 	 * @param submitValue submit value
 	 * @param columns column count
-	 * @return String
+	 * @return HTML code
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re;
@@ -481,10 +511,11 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * reCatpcha
+	 * Generating HTML code for reCatpcha formular.
 	 * @param request request
-	 * @param ksite current K-mappings Site
-	 * @param kvsite current KV-mappings Site
+	 * @param type k/kv/datatype/literal
+	 * @param site site
+	 * @param sort sort
 	 * @return Returns a String with HTML-code.
 	 */
 	public static String captcha(HttpServletRequest request, String type, String site, String search, String sort) {

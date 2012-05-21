@@ -56,7 +56,7 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception
 	 * @return Returns a String with HTML-code.
 	 */
-	static public String unmappedTags(String type, String site, String search, String sort) throws Exception {
+	public static String unmappedTags(String type, String site, String search, String sort) throws Exception {
 		DatabaseBremen.getInstance().connect();// make sure database is connected
 		String s = "";
                 
@@ -213,7 +213,7 @@ public class TemplatesUnmappedTags {
 	 * @throws Exception 
          * @return Returns a String with HTML-code.
 	 */
-	static private String listAllKV(int site, String search, String sort) throws Exception {
+	private static String listAllKV(int site, String search, String sort) throws Exception {
 		String s = new String();
 		DatabaseBremen database = DatabaseBremen.getInstance();
 

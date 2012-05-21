@@ -27,6 +27,11 @@ import LGDEditTool.SiteHandling.User;
  * @version 1.0
  */
 public class Templates {
+	/**
+	 * Creating HTML code for a message box.
+	 * @param message message
+	 * @return HTML code
+	 */
 	public static String showMessage(String message) {
 		String re = "\t\t\t\t<article class=\"message\">\n";
 		re += "\t\t\t\t\t<p>" + message + "</p>\n";
@@ -34,6 +39,11 @@ public class Templates {
 		return re;
 	}
 
+	/**
+	 * Creating HTML code containing which branch is currently using.
+	 * @param search search
+	 * @return  HTML code
+	 */
 	public static String branch(String search) {
 		return "\t\t\t\t<p>You are currently working on " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? " the main branch." : "your user branch.") + " (<a href=\"?tab=account&setting=branch" + (search.equals("") ? "" : "&search=" + search) + "\">Change</a>)</p>";
 	}

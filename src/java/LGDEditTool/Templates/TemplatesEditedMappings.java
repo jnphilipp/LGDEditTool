@@ -20,6 +20,7 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
+import java.sql.SQLException;
 
 /**
 *
@@ -27,6 +28,13 @@ import LGDEditTool.db.DatabaseBremen;
 * @version 1.0
 */
 public class TemplatesEditedMappings {
+	/**
+	 * Generates HTML code for buttons to comment all K/KV/Datatype/Literal-Mappings or for all mappings.
+	 * @param type k/kv/datatype/literal
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
+	 */
 	public static String commit(String type, String search, String sort) {
 		String s = "";
 
@@ -52,13 +60,15 @@ public class TemplatesEditedMappings {
 	}
 
 	/**
-	 * Template for EditHistory.
-	 * @param type k or kv mapping
+	 * Generating HTML code for the edited mappings tab.
+	 * @param type k/kv/datatype/literal
 	 * @param site current displsyed site
-	 * @return
-	 * @throws Exception 
+	 * @return HTML code
+	 * @throws Exception
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	static public String listEditedMappings(String type, String site) throws Exception {
+	public static String listEditedMappings(String type, String site) throws Exception, ClassNotFoundException, SQLException {
 		DatabaseBremen.getInstance().connect();// make sure database is connected
 		String s = "";
 
@@ -152,90 +162,96 @@ public class TemplatesEditedMappings {
 
 
 	/**
-	 * SQL query to get all k-mappings
+	 * Generates the HTML code for K-Mappings.
 	 * @param site current site
-	 * @return String
-	 * @throws Exception 
+	 * @return HTML code
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	static private String listAllKMappings(int site) throws Exception {
+	private static String listAllKMappings(int site) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT km.k, property, object, user_id, usage_count FROM lgd_map_resource_k AS km INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT km.k, property, object, usage_count FROM lgd_map_resource_k AS km INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addKMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site);
+			s += addKMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), site);
 		}
 
 		return s;
 	}
 
 	/**
-	 * SQL query to get all K-Mappings.
+	 * Generates the HTML code for KV-Mappings.
 	 * @param site current site
-	 * @throws Exception 
+	 * @return HTML code
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	static private String listAllKVMappings(int site) throws Exception {
+	private static String listAllKVMappings(int site) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main') GROUP BY k, v, property, object, user_id ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT kvm.k, kvm.v, property, object, usage_count FROM lgd_map_resource_kv AS kvm INNER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE user_id='" + User.getInstance().getUsername() + "' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main') ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString(), a[i][4].toString(), site);
+			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), site);
 		}
 
 		return s;
 	}
 
 	/**
-	 * SQL query to get all Datatype-Mappings.
+	 * Generates the HTML code for Datatype-Mappings.
 	 * @param site current site
-	 * @throws Exception 
+	 * @return HTML code
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	static private String listAllDatatypeMappings(int site) throws Exception {
+	private static String listAllDatatypeMappings(int site) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main') GROUP BY k, datatype, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT dm.k, datatype, usage_count FROM lgd_map_datatype AS dm INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (dm.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString(), a[i][2].toString(), site);
+			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), site);
 		}
 
 		return s;
 	}
 
 	/**
-	 * SQL query to get all k-mappings
+	 * Generates the HTML code for Literal-Mappings.
 	 * @param site current site
-	 * @return String
-	 * @throws Exception 
+	 * @return HTML code
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	private static String listAllLiteralMappings(int site) throws Exception {
+	private static String listAllLiteralMappings(int site) throws ClassNotFoundException, SQLException {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main') GROUP BY k, property, language, user_id ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT lm.k, property, language, usage_count FROM lgd_map_literal AS lm INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
-			s += addLiteralMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site);
+			s += addLiteralMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), site);
 		}
 
 		return s;
 	}
 
 	/**
-	 * Template for K-Mappings.
+	 * Generates the HTML code for K-Mappings.
 	 * @param id id
 	 * @param k k
 	 * @param property property
 	 * @param object object
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * @param affectedEntities affected entities
+	 * @param site site
+	 * @return HTML code
 	 */
-	static private String addKMapping(int id, String k, String property, String object, String affectedEntities, String user, int site) {
+	private static String addKMapping(int id, String k, String property, String object, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"k" + id + "a\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		if ( property.equals("") && object.equals("") )
@@ -291,17 +307,17 @@ public class TemplatesEditedMappings {
 	}
 
 	/**
-	 * Template for KV-Mappings.
+	 * Generates the HTML code for KV-Mappings.
 	 * @param id id
 	 * @param k k
 	 * @param v v
 	 * @param property property
 	 * @param object object
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * @param affectedEntities affected entities
+	 * @param site site
+	 * @return HTML code
 	 */
-	static private String addKVMapping(int id, String k, String v, String property, String object, String affectedEntities, String user, int site) {
+	private static String addKVMapping(int id, String k, String v, String property, String object, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t<tr id=\"kv" + id + "a\">\n";
     s += "\t\t\t\t\t\t<td>" + k + "</td>\n";
     s += "\t\t\t\t\t\t<td>" + v + "</td>\n";
@@ -362,15 +378,15 @@ public class TemplatesEditedMappings {
 	}
 
 	/**
-	 * Template for Datatype-Mappings.
+	 * Generates the HTML code for Datatype-Mappings.
 	 * @param id id
 	 * @param k k
 	 * @param datatype datatype
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * @param affectedEntities affected entities
+	 * @param site site
+	 * @return HTML code
 	 */
-	static private String addDatatypeMapping(int id, String k, String datatype, String affectedEntities, String user, int site) {
+	private static String addDatatypeMapping(int id, String k, String datatype, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"tk" + id + "a\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		s += "\t\t\t\t\t\t\t<td>" + datatype + "</td>\n";
@@ -409,16 +425,16 @@ public class TemplatesEditedMappings {
 	}
 
 	/**
-	 * Template for Literal-Mappings.
+	 * Generates the HTML code for Language-Mappings.
 	 * @param id id
 	 * @param k k
 	 * @param property property
 	 * @param language language
-	 * @param affectedEntities affected Entities
-	 * @param site current site
-	 * @return String
+	 * @param affectedEntities affected entities
+	 * @param site site
+	 * @return HTML code
 	 */
-	private static String addLiteralMapping(int id, String k, String property, String language ,String affectedEntities, String user, int site) {
+	private static String addLiteralMapping(int id, String k, String property, String language, String affectedEntities, int site) {
 		String s = "\t\t\t\t\t\t<tr id=\"lk" + id + "a\">\n";
 		s += "\t\t\t\t\t\t\t<td>" + k + "</td>\n";
 		if ( property.equals("") )
@@ -479,7 +495,7 @@ public class TemplatesEditedMappings {
 	 * @param submitName submit name
 	 * @param submitValue submit value
 	 * @param columns column count
-	 * @return String
+	 * @return HTML code
 	 */
 	private static String getUserField(String id, String submitName, String submitValue, int columns) {
 		String re = "\t\t\t\t\t\t\t<tr id=\"" + id + "\" style=\"display: none;\">\n";

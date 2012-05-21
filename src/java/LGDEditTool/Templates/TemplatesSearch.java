@@ -20,6 +20,7 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
+import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
 import net.tanesha.recaptcha.ReCaptchaFactory;
@@ -32,7 +33,7 @@ import net.tanesha.recaptcha.ReCaptchaFactory;
 public class TemplatesSearch {
 	/**
 	 * Template for search field.
-	 * @return String
+	 * @return HTML code
 	 */
 	public static String search() {
 		String re = "\t\t\t\t<fieldset class=\"search\">\n";
@@ -53,11 +54,14 @@ public class TemplatesSearch {
 
 	/**
 	 * Template for search results.
-	 * @param search search query
-	 * @return String
-	 * @throws Exception 
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
+	 * @throws Exception
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
 	 */
-	public static String searchResult(String search, String sort) throws Exception {
+	public static String searchResult(String search, String sort) throws Exception, ClassNotFoundException, SQLException {
 		DatabaseBremen.getInstance().connect();
 		String re = "", tmp;
 
@@ -86,6 +90,7 @@ public class TemplatesSearch {
 	/**
 	 * Template for K-Mapping results.
 	 * @param search search query
+	 * @param sort sort
 	 * @return String
 	 * @throws Exception 
 	 */

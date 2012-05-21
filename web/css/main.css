@@ -39,6 +39,15 @@ a { font-family: monospace;
 a:hover { color: blue;
 	font-weight: bold;}
 
+div { font-family: monospace;
+	font-size: 10pt;}
+
+small { font-family: monospace;}
+
+
+/*############################################################################*/
+/*****  table  *****/
+
 table.table { border-collapse: collapse;
 	width: 100%;
 	max-width: 100%;}
@@ -55,10 +64,54 @@ table.table td:hover { background: white;
 	color: red;
 	overflow: visible;}
 
-div { font-family: monospace;
-	font-size: 10pt;}
 
-small { font-family: monospace;}
+/*############################################################################*/
+/*****  tabs  *****/
+
+#tabs { margin: 0 !important;
+	padding: 0;
+	height: 30px;
+	border-bottom: 1px solid #666;}
+
+#tabs li { float: left;
+	padding: 0;
+	margin: 0;
+	list-style-type: none;}
+
+#tabs a { float: left;
+	font-size: 13px;
+	display: block;
+	padding: 5px 30px;
+	text-decoration: none;
+	border: 1px solid #666;
+	border-bottom: 0px;
+	height: 18px;
+	background-color: #efefef;
+	color: #777;
+	margin-right: 2px;
+	position: relative;
+	top: 1px;
+	outline: 0;
+	-moz-border-radius: 4px 4px 0 0;}
+
+#tabs a:hover { background-color: #F7F7F7;
+	color: #333;}
+
+#tabs a.current { background-color: #ddd;
+	border-bottom: 1px solid #ddd;
+	color: #000;
+	cursor: default;}
+
+#panes div.pane { border: 1px solid #666;
+	border-width: 0 1px 1px 1px;
+	min-height: 150px;
+	padding: 15px 20px;
+	background-color: #ddd;
+	width: auto;}
+
+
+/*############################################################################*/
+/*****  message  *****/
 
 article.message { display: block;
 	z-index: 1;
@@ -82,6 +135,39 @@ article.message { display: block;
 
 article.message p { text-align: center;}
 
+
+/*############################################################################*/
+/*****  formular  *****/
+
+fieldset { font-family: monospace;
+	font-size: 10pt;
+	font-weight: normal;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	border: 1px solid rgba(106, 105, 106, 0.6);
+	webkit-box-shadow: 0px 0px 0px 0px rgba(106, 105, 106, 0.5);
+	-moz-box-shadow: 0px 0px 0px 0px rgba(106, 105, 106, 0.5);
+	box-shadow: 0px 0px 0px 0px rgba(106, 105, 106, 0.5);}
+
+fieldset legend { margin-left: 2em;}
+fieldset.search ul { list-style: none;}
+fieldset.search input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;
+	width: 40em;}
+
+div.select select { background: transparent;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   border: 1px solid rgba(106, 105, 106, 0.6);
+   height: 34px;}
+
+div.select { width: 240px;
+   height: 34px;
+   overflow: hidden;
+   background: url(../images/down_arrow_select.jpg) no-repeat right #ddd;}
+
 input[type=submit] { font-family: monospace;
 	font-size: 11pt;
 	font-weight: normal;
@@ -104,6 +190,10 @@ textarea { resize: none;
 	border: 1px solid rgba(106, 105, 106, 0.6);
 	font-family: monospace;}
 
+
+/*############################################################################*/
+/*****  ontology  *****/
+
 #ontology { display: table;
 	width: 100%;}
 #ontology section { display: table-cell;
@@ -111,3 +201,195 @@ textarea { resize: none;
 
 #ontology aside { display: table-cell;
 	padding-left: 2em;}
+
+
+/*############################################################################*/
+/*****  account settings  *****/
+
+section.account { display: table;}
+section.account aside { display: table-cell;
+	padding-right: 10em;}
+section.account article { display: table-cell;}
+article.admin ul,
+section.account ul { list-style: none;}
+
+article.admin li,
+section.account li { margin-bottom: 0.5em;}
+
+section.account fieldset input[type=password],
+section.account fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);
+	font-family: monospace;
+	width: 15em;}
+
+section.account fieldset input[type=submit] { font-family: monospace;
+	font-size: 11pt;
+	text-align: center;
+	border: 1px solid #666;
+	background: #efefef;
+	color: #777;}
+
+section.account fieldset input[type=submit]:hover { background: #F7F7F7;
+	color: #333;
+	font-weight: bold;}
+
+
+/*############################################################################*/
+/*****  login fields  *****/
+
+div.login article { display: none;
+	position: fixed;
+	-o-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-icab-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-khtml-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-moz-box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	-webkit-box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	-o-border-radius: 8px;
+	-icab-border-radius: 8px;
+	-khtml-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	-webkit-transition: visibility 0s ease-in-out 0.7s, opacity 0.7s ease-in-out;
+	-moz-transition: visibility 0s ease-in-out 0.7s, opacity 0.7s ease-in-out;
+	transition: visibility 0s ease-in-out 7.5s, opacity 0.7s ease-in-out;}
+
+div.login:hover article { display: block;
+	z-index: 1;
+	top: 0.5em;
+	right: 0.5em;
+	width: 23em;
+	padding: 8px;
+	border: 1px solid rgba(93, 87, 98, 0.6);
+	background: rgba(200, 200, 200, 0.5);
+	-webkit-transition-delay: 0s;
+	-moz-transition-delay: 0s;
+	transition-delay: 0s;}
+
+div.login fieldset legend { margin-left: 1em;
+	font-family: monospace;
+	font-size: 11pt;
+	color: black;}
+
+div.login fieldset ul { list-style: none;
+	padding-left: 0;}
+div.login fieldset li { margin-top: 0.5em;}
+div.login fieldset label { font-family: monospace;
+	color: black;}
+
+div.tlogin table { border-collapse: collapse;
+	width: 100%;
+	max-width: 100%;}
+
+div.tlogin article { display: block;
+	position: relative;
+	width: 30em;
+	margin-top: 3em;
+	margin-left: -15em;
+	margin-bottom: 5em;
+	left: 50%;
+	-o-border-radius: 8px;
+	-icab-border-radius: 8px;
+	-khtml-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;}
+
+div.tlogin fieldset legend { margin-left: 1em;
+	font-family: monospace;
+	font-size: 11pt;
+	color: black;}
+
+div.tlogin fieldset ul { list-style: none;}
+div.tlogin fieldset li { margin-top: 0.5em;}
+div.tlogin fieldset label { font-family: monospace;
+	color: black;}
+
+div.login fieldset input[type=password],
+div.login fieldset input[type=text],
+div.tlogin fieldset input[type=password],
+div.tlogin fieldset input[type=email],
+div.tlogin fieldset input[type=text] { width: 100%;}
+
+
+/*############################################################################*/
+/*****  captcha  *****/
+
+article.captcha { display: block;
+	z-index: 1;
+	position: fixed;
+	top: 0em;
+	left: 0em;
+	width: 100%;
+	height: 98%;
+	padding: 8px;
+	border: 1px solid rgba(93, 87, 98, 0.6);
+	background: rgba(150, 150, 150, 0.7);
+	-o-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-icab-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-khtml-box-shadow: 5px 5px 2px rgba(106, 105, 106, 0.5);
+	-moz-box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	-webkit-box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	box-shadow: 0px 0px 10px 3px rgba(106, 105, 106, 0.5);
+	-o-border-radius: 8px;
+	-icab-border-radius: 8px;
+	-khtml-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;}
+
+article.captcha form { position: fixed;
+	left: 35%;
+	top: 20%;}
+article.captcha ul { list-style: none;}
+article.captcha li { margin-top: 0.5em;}
+article.captcha label { font-family: monospace;
+	color: black;}
+
+article.captcha input[type=submit] { font-family: monospace;
+	font-size: 11pt;
+	text-align: center;
+	border: 1px solid #666;
+	background: #efefef;
+	color: #777;
+	width: 10em;}
+
+article.captcha input[type=submit]:hover { background: #F7F7F7;
+	color: #333;
+	font-weight: bold;}
+
+
+/*############################################################################*/
+/*****  autocomplete  *****/
+
+.ac_results { padding: 0px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;}
+
+.ac_results ul { width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;}
+
+.ac_results li { margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	font: menu;
+	font-size: 12px;
+	line-height: 16px;
+	overflow: hidden;}
+
+.ac_loading { background: white url(../images/indicator.gif) right center no-repeat;}
+.ac_odd { background-color: #eee;}
+.ac_over { background-color: #0A246A;
+	color: white;}
+
+
+/*############################################################################*/
+/*****  treeview  *****/
+
+div.hidden { display:none;}

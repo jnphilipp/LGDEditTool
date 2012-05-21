@@ -17,12 +17,7 @@
 
 package LGDEditTool.db;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -132,6 +127,47 @@ public class DatabasePostgreSQL {
 				return null;
 		}
 
+		return null;
+	}
+
+	/**
+	 * Executes the SQL command and returns the value with a prepared statement.
+	 * @param command SQL query
+	 * @param arg arguments
+	 * @return values
+	 * @throws SQLException 
+	 */
+	public Object[][] executePrepared(String query, String[] arg) throws SQLException {
+		if ( this.connection != null ) {
+			PreparedStatement statement = this.connection.prepareStatement(query);
+
+			for ( int i = 1; i <= arg.length; i++ )
+				statement.setString(i, arg[i - 1]);
+
+			if ( statement.execute() ) {
+				ResultSet rs = statement.getResultSet();
+
+
+				int row = 0;
+				for ( row = 0; rs.next(); row++);
+				rs.beforeFirst();
+
+				ResultSetMetaData rsmd = rs.getMetaData();
+
+				Object[][]  value = new Object[row][rsmd.getColumnCount()];
+
+				for (int i = 0; rs.next(); i++) {
+					for (int j = 0; j < rsmd.getColumnCount(); j++)
+						value[i][j] = rs.getObject(j + 1);
+				}
+
+				rs.close();
+
+				return value;
+			}
+			else
+				return null;
+		}
 		return null;
 	}
 }

@@ -165,19 +165,17 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * gets edithistory from DB
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
+	 * Generates the HTML code for the edit history of the k mappings tab.
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
 	 * @throws Exception 
 	 */
 	static private String searchKHistoryDB(int site, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String re = "";
-		Object[][] a;
-
-			a = database.execute("SELECT kmh.k, property, object, usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history AS kmh INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND kmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND kmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+		Object[][] a = database.execute("SELECT kmh.k, property, object, usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history AS kmh INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND kmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND kmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			re += addkMapping(i, a[i][8].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][7].toString(), a[i][4].toString(), a[i][5].toString(), a[i][6].toString(), site, search, sort);
@@ -187,14 +185,14 @@ public class TemplatesEditHistory {
 	}
 
 	/**
-	 * gets edithistory from DB
-	 * @param ksite
-	 * @param kvsite
-	 * @param search search query
-	 * @param sort sort element
+	 * Generates the HTML code for the edit history of the kv mappings tab.
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
 	 * @throws Exception 
 	 */
-	static private String searchKVHistoryDB(int site, String search, String sort) throws Exception {
+	private static String searchKVHistoryDB(int site, String search, String sort) throws Exception {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
 
@@ -206,7 +204,15 @@ public class TemplatesEditHistory {
 		return s;
 	}
 
-	static private String searchDatatypeHistoryDB(int site, String search, String sort) throws Exception {
+	/**
+	 * Generates the HTML code for the edit history of the datatype mappings tab.
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
+	 * @throws Exception 
+	 */
+	private static String searchDatatypeHistoryDB(int site, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 		Object[][] a = database.execute("SELECT dmh.k, datatype, usage_count, user_id, comment, timestamp, action, id FROM lgd_map_datatype_history AS dmh INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND dmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND dmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
@@ -217,6 +223,14 @@ public class TemplatesEditHistory {
 		return s;
 	}
 
+	/**
+	 * Generates the HTML code for the edit history of the literal mappings tab.
+	 * @param site site
+	 * @param search search
+	 * @param sort sort
+	 * @return HTML code
+	 * @throws Exception 
+	 */
 	private static String searchLiteralHistoryDB(int site, String search, String sort) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";

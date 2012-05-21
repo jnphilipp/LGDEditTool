@@ -27,6 +27,14 @@ import java.sql.SQLException;
  * @version 2.0
  */
 public class TemplatesAccountSettings {
+	/**
+	 * Returns the HTML code for the Account Settings tab.
+	 * @param setting settings
+	 * @param search search
+	 * @return HTML code
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
+	 */
 	public static String accountSettings(String setting, String search) throws ClassNotFoundException, SQLException {
 		String re = "";
 
@@ -112,79 +120,53 @@ public class TemplatesAccountSettings {
 
 		return re;
 	}
-        
-        public static String accountSettingsAdmin(String setting, String search, String del) throws ClassNotFoundException, SQLException {
+
+	/**
+	 * Returns the HTML code for the settings tab.
+	 * @param search search
+	 * @return HTML code
+	 * @throws ClassNotFoundException
+	 * @throws SQLException 
+	 */
+	public static String accountSettingsAdmin(String search) throws ClassNotFoundException, SQLException {
 		String re = "";
-                if(del.equalsIgnoreCase("kdel")){
-                    DatabaseBremen db = DatabaseBremen.getInstance();
-                    db.connect();                  
-                    Object[][] a = db.execute("SELECT k, property, object FROM lgd_map_resource_k WHERE where last_history_id !=0");
-                    for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_resource_k SET last_history_id=null WHERE k="+a[i][0]+" and property="+a[i][1]+" and object="+a[i][2]+"");
-                    }
-                    db.execute("DELETE FROM lgd_map_resource_k_history");
-                    db.disconnect();
-                }else if(del.equalsIgnoreCase("kvdel")){
-                    DatabaseBremen db = DatabaseBremen.getInstance();
-                    db.connect();
-                    Object[][] a = db.execute("SELECT k,v,property, object FROM lgd_map_resource_kv WHERE where last_history_id !=0");
-                    for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_resource_kv SET last_history_id=null WHERE k="+a[i][0]+" and v="+a[i][1]+"property="+a[i][2]+" and object="+a[i][3]+"");
-                    }
-                    db.execute("DELETE FROM lgd_map_resource_kv_history");
-                    db.disconnect();
-                }else if(del.equalsIgnoreCase("datadel")){
-                    DatabaseBremen db = DatabaseBremen.getInstance();
-                    db.connect();
-                    Object[][] a = db.execute("SELECT k, datatype FROM lgd_map_datatype WHERE where last_history_id !=0");
-                    for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_datatype SET last_history_id=null WHERE k="+a[i][0]+" and datatype="+a[i][1]+"");
-                    }
-                    db.execute("DELETE FROM lgd_map_datatype_history");
-                    db.disconnect();
-                }else if(del.equalsIgnoreCase("litdel")){
-                    DatabaseBremen db = DatabaseBremen.getInstance();
-                    db.connect();
-                    Object[][] a = db.execute("SELECT k, property, language FROM lgd_map_literal WHERE where last_history_id !=0");
-                    for ( int i = 0; i <  a.length; i++ ) {
-			db.execute("UPDATE lgd_map_literal SET last_history_id=null WHERE k="+a[i][0]+" and property="+a[i][1]+"and language="+a[i][2]+"");
-                    }
-                    db.execute("DELETE FROM lgd_map_literal_history");
-                    db.disconnect();
-                }
-                
-                re += "\t\t\t\t\t<article>\n";
-		re += "\t\t\t\t\t\t<fieldset style=\"width: 25em;\">\n";
-                
-		re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=kdel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+
+		DatabaseBremen db = DatabaseBremen.getInstance();
+		db.connect();
+		Object[][] a = db.execute("Select max(timestamp) FROM lgd_map_resource_k_history WHERE userspace='main'");
+		String s = (a[0][0] != null ? a[0][0].toString() : "");
+		a = db.execute("Select max(timestamp) FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp >= '" + a[0][0] +"'");
+		if ( a[0][0] != null )
+			s = a[0][0].toString();
+		a = db.execute("Select max(timestamp) FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp >= '" + a[0][0] +"'");
+		if ( a[0][0] != null )
+			s = a[0][0].toString();
+		a = db.execute("Select max(timestamp) FROM lgd_map_literal_history WHERE userspace='main' AND timestamp >= '" + a[0][0] +"'");
+		if ( a[0][0] != null )
+			s = a[0][0].toString();
+
+		re += "\t\t\t\t\t<article class=\"admin\" >\n";
+		re += "\t\t\t\t\t\t<fieldset style=\"width: 25em; margin=0 auto;\">\n";
+		re += "\t\t\t\t\t\t\t<legend>Delete Edit-History</legend>\n";
+		re += "\t\t\t\t\t\t\t<form action=\"?tab=settings" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
 		re += "\t\t\t\t\t\t\t\t<ul>\n";
-                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory K-Mappings\" />\n";
+		re += "\t\t\t\t\t\t\t\t\t<li><input type=\"date\" name=\"date\" value=\"" + (s.equals("") ? "" : Functions.date(s)) + "\" /></li>\n";
+		re += "\t\t\t\t\t\t\t\t\t<li>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t<div class=\"select\">";
+		re += "\t\t\t\t\t\t\t\t\t\t\t<select name=\"history\">\n";
+		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"k\">K-Mapping Edit-History</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"kv\">KV-Mapping Edit-History</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"datatype\">Datatype-Mapping Edit-History</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"literal\">Literal-Mapping Edit-History</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"complete\" selected>Complete Edit-History</option>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t\t</select>\n";
+		re += "\t\t\t\t\t\t\t\t\t\t</div>\n";
+		re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"delhistory\" value=\"Delete\" /></li>\n";
 		re += "\t\t\t\t\t\t\t\t</ul>\n";
 		re += "\t\t\t\t\t\t\t</form>\n";
-                
-                re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=kvdel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		re += "\t\t\t\t\t\t\t\t<ul>\n";
-                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory KV-Mappings\" />\n";
-		re += "\t\t\t\t\t\t\t\t</ul>\n";
-		re += "\t\t\t\t\t\t\t</form>\n";
-                
-                re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=datadel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		re += "\t\t\t\t\t\t\t\t<ul>\n";
-                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory Datatype-Mappings\" />\n";
-		re += "\t\t\t\t\t\t\t\t</ul>\n";
-		re += "\t\t\t\t\t\t\t</form>\n";
-                
-                re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&del=litdel" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		re += "\t\t\t\t\t\t\t\t<ul>\n";
-                re += "\t\t\t\t\t\t\t\t\t<input type=\"submit\" name=\"deletek\" value=\"Delete Edithistory Literal-Mappings\" />\n";
-		re += "\t\t\t\t\t\t\t\t</ul>\n";
-		re += "\t\t\t\t\t\t\t</form>\n";
-                
 		re += "\t\t\t\t\t\t</fieldset>\n";
 		re += "\t\t\t\t\t</article>\n";
-                
-                
-                
-                return re;
-        }
+
+		return re;
+	}
 }

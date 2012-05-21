@@ -53,35 +53,27 @@ public class DatabaseBremen extends DatabasePostgreSQL {
 	* @throws SQLException
 	*/
 	public boolean connect() throws SQLException {
-		return super.connect("jnphilipp.dyndns.org:5432/bremen", "lgd", "lgd", true);
+		return super.connect("localhost:5432/bremen", "lgd", "lgd", true);
 	}
 
 	/**
-	 * Creates a new view, containing the K/KV/Datatype/Literal-Mappings, for the specified user.
-	 * @param username Username
+	 * Creates a new user or updates if a username exists but no email is stored.
+	 * @param update update or insert
+	 * @param user username
+	 * @param email email
+	 * @param pw password
 	 * @throws SQLException 
 	 */
-	/*public void createView(String username) throws SQLException {
-		super.execute("CREATE VIEW lgd_user_" + username + " AS SELECT k, v, COUNT(k) FROM lgd_map_resource_kv WHERE (user_id = '" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id = '" + username + "')) GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv WHERE k=lgd_map_resource_k.k AND ((user_id = '" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND (k, v) NOT IN (SELECT k, v FROM  lgd_map_resource_kv WHERE user_id = '" + username + "')))) + (SELECT COUNT(k) FROM lgd_map_datatype WHERE k=lgd_map_resource_k.k AND ((user_id = '" + username + "' AND datatype != 'deleted') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = '" + username + "')))) + (SELECT COUNT(k) FROM lgd_map_literal WHERE k=lgd_map_resource_k.k AND ((user_id = '" + username + "' AND property != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id = '" + username + "')))) FROM lgd_map_resource_k WHERE (user_id='" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + username + "')) GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_datatype WHERE ((user_id = '" + username + "' AND datatype != 'deleted') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = '" + username + "'))) AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE (user_id='" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + username + "'))) GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_literal WHERE ((user_id = '" + username + "' AND property != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id = '" + username + "'))) AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE (user_id='" + username + "' AND property != '' AND object != '') OR (user_id = 'main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + username + "'))) GROUP BY k ORDER BY k, v");
-	}*/
-
-	/**
-	 * Creates a new view, containing the history tables, for the specified user.
-	 * @param username Username
-	 * @throws SQLException 
-	 */
-	/*public void createViewHistory(String username) throws SQLException {
-		super.execute("CREATE VIEW lgd_user_" + username + "_history AS SELECT k, v, COUNT(k) FROM lgd_map_resource_kv_history WHERE userspace='" + username + "' GROUP BY k, v UNION ALL SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_map_resource_kv_history WHERE k=lgd_map_resource_k_history.k AND userspace='" + username + "') + (SELECT COUNT(k) FROM lgd_map_datatype_history WHERE k=lgd_map_resource_k_history.k AND userspace='" + username + "') + (SELECT COUNT(k) FROM lgd_map_literal_history WHERE k=lgd_map_resource_k_history.k AND userspace='" + username + "') FROM lgd_map_resource_k_history WHERE userspace='" + username + "' GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_datatype_history WHERE userspace='" + username + "' AND k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + username + "') GROUP BY k UNION ALL SELECT k, '' AS v, COUNT(k) FROM lgd_map_literal_history WHERE userspace='" + username + "' AND k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + username + "') GROUP BY k ORDER BY k, v");
-	}*/
-
-	/**
-	 * Creates a new view, containing the unmapped tags, for the specified user.
-	 * @param username Username
-	 * @throws SQLException 
-	 */
-	/*public void createViewUnmapped(String username) throws SQLException {
-		super.execute("CREATE VIEW lgd_user_" + username + "_unmapped AS SELECT k, '' AS v, COUNT(k) + (SELECT COUNT(k) FROM lgd_stat_tags_kv c WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='main' OR user_id='" + username + "') b WHERE c.k=b.k) AND c.k=a.k) AS count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM ( Select k FROM lgd_map_datatype WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='main' OR user_id='" + username + "' UNION ALL SELECT k FROM lgd_map_resource_prefix ) b WHERE a.k=b.k) GROUP BY k UNION ALL SELECT k, v, COUNT(k) AS count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE user_id='main' OR user_id='" + username + "') b WHERE a.k=b.k) GROUP BY k, v ORDER BY k, v");
-	}*/
+	public void createUser(boolean update, String user, String email, String pw) throws SQLException {
+		if ( update ) {
+			String arg[] = {email, pw, "lgd_user" + user, user};
+			this.executePrepared("UPDATE lgd_user SET email=?, password=?, admin=FALSE, view=? WHERE username=?", arg);
+		}
+		else {
+			String arg[] = {user, email, pw, "lgd_user_" + user};
+			this.executePrepared("INSERT INTO lgd_user VALUES (?, ?, ?, FALSE, ?)", arg);
+		}
+	}
 
 	/**
 	 * Returns all administrators with username and email address.
@@ -89,7 +81,7 @@ public class DatabaseBremen extends DatabasePostgreSQL {
 	 * @throws SQLException 
 	 */
 	public String[][] getAdministatorEmailAddresses() throws SQLException {
-		Object[][] a = super.execute("SELECT email, username FROM lgd_user WHERE admin ORDER BY username");
+		Object[][] a = this.execute("SELECT email, username FROM lgd_user WHERE admin ORDER BY username");
 		String[][] email = new String[a.length][2];
 
 		for ( int i = 0; i < email.length; i++ ) {

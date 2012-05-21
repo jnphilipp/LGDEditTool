@@ -10,7 +10,11 @@ section.account { display: table;}
 section.account aside { display: table-cell;
 	padding-right: 10em;}
 section.account article { display: table-cell;}
+article.admin ul,
 section.account ul { list-style: none;}
+
+article.admin li,
+section.account li { margin-bottom: 0.5em;}
 
 section.account fieldset input[type=password],
 section.account fieldset input[type=text] { border: 1px solid rgba(106, 105, 106, 0.6);

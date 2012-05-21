@@ -89,6 +89,25 @@ public class Functions {
 	}
 
 	/**
+	 * Returns the date of the timestamp in fomat dd.mm.yyyy.
+	 * @param timestamp timestamp
+	 * @return date
+	 */
+	public static String date(String timestamp) {
+		String sp[] = timestamp.substring(0, timestamp.indexOf("T")).split("-");
+		return sp[2] + "." + sp[1] + "." + sp[0];
+	}
+
+	/**
+	 * Makes a timestamp from the date.
+	 * @param date date
+	 * @return timestamp
+	 */
+	public static String dateToTimestamp(String date) {
+		return date.substring(date.lastIndexOf(".") + 1) + "-" + date.substring(date.indexOf(".") + 1, date.lastIndexOf(".")) + "-" + date.substring(0, date.indexOf(".")) + "T23:59:59";
+	}
+
+	/**
 	 * Expands the namespaces, such as lgd to the full URL, specified by the namespaces.properties-file.
 	 * @param servlet ServletContext
 	 * @param key Key, which is to be expanded.

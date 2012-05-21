@@ -314,9 +314,9 @@
 				out.println("\t\t\t</div>");
 			}
 			else if ( User.getInstance().isAdmin() && tab.equals("settings") ) {
-                                out.println("<div class=\"pane\">");
-				out.println(TemplatesAccountSettings.accountSettingsAdmin((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : ""),(request.getParameter("del") != null ? request.getParameter("del") : "")));
-                                out.println("\t\t\t</div>");
+				out.println("<div class=\"pane\">");
+				out.println(TemplatesAccountSettings.accountSettingsAdmin(search));
+				out.println("\t\t\t</div>");
 			} else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
 				out.println("<div class=\"pane\">");
 				out.println(TemplatesAccountSettings.accountSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), (request.getParameter("search") != null ? request.getParameter("search") : "")));
@@ -378,11 +378,11 @@
 								<table>
 									<tr>
 										<th>Username:</th>
-										<td><input type="text" name="user" pattern="[A-Za-z0-9@]+{3}" maxlength="100" required /></td>
+										<td><input type="text" name="user" required /></td>
 									</tr>
 									<tr>
 										<th>Email:</th>
-										<td><input type="email" name="email" pattern="[A-Za-z0-9@.-]+{3}" maxlength="100" required /></td>
+										<td><input type="email" name="email" required /></td>
 									</tr>
 									<tr>
 										<th>Password:</th>

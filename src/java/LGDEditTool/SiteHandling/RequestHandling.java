@@ -620,13 +620,7 @@ public class RequestHandling {
 				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			if ( update )
-				database.execute("UPDATE lgd_user SET email='" + request.getParameter("email") + "', password='" + sb + "', admin=FALSE, view='lgd_user_" + request.getParameter("user") + "' WHERE username='" + request.getParameter("user") + "'");
-			else
-				database.execute("INSERT INTO lgd_user VALUES ('" + request.getParameter("user") + "', '" + request.getParameter("email") + "', '" + sb + "', FALSE, 'lgd_user_" + request.getParameter("user") + "')");
-			//database.createView(request.getParameter("user"));
-			//database.createViewHistory(request.getParameter("user"));
-			//database.createViewUnmapped(request.getParameter("user"));
+			database.createUser(update, request.getParameter("user"), request.getParameter("email"), sb.toString());
 
 			User.getInstance().createUser(request.getParameter("user"), "lgd_user_" + request.getParameter("email"), true, false);
 			User.getInstance().createCookie(response);
@@ -655,7 +649,35 @@ public class RequestHandling {
 			email.setProperties();
 			email.sendPasswordForgotten(a[0][1].toString(), a[0][0].toString(), sb.toString());
 
-			re = "You will soon receive an email containig a link to change your password.";
+			re = "You will soon receive an email containing a link to change your password.";
+		}//#########################################################################
+		else if ( request.getParameter("delhistory") != null && request.getParameter("delhistory").equals("Delete") && request.getParameter("history") != null && request.getParameter("date") != null ) {
+			if ( request.getParameter("history").equals("k") || request.getParameter("history").equals("complete") ) {
+				database.execute("UPDATE lgd_map_resource_k SET last_history_id=null WHERE user_id='main'");
+				database.execute("DELETE FROM lgd_map_resource_k_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+
+					re = "K-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
+			}
+			if ( request.getParameter("history").equals("kv") || request.getParameter("history").equals("complete") ) {
+				database.execute("UPDATE lgd_map_resource_kv SET last_history_id=null WHERE user_id='main'");
+				database.execute("DELETE FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+
+					re = "KV-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
+			}
+			if ( request.getParameter("history").equals("datatype") || request.getParameter("history").equals("complete") ) {
+				database.execute("UPDATE lgd_map_datatype SET last_history_id=null WHERE user_id='main'");
+				database.execute("DELETE FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+
+					re = "Datatype-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
+			}
+			if ( request.getParameter("history").equals("literal") || request.getParameter("history").equals("complete") ) {
+				database.execute("UPDATE lgd_map_literal SET last_history_id=null WHERE user_id='main'");
+				database.execute("DELETE FROM lgd_map_literal_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+
+					re = "Literal-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
+			}
+			if ( request.getParameter("history").equals("complete") )
+				re = "Complete Edit-History successfully deleted until " + request.getParameter("date") + ".";
 		}
 
 

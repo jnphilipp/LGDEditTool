@@ -101,10 +101,11 @@ public class Functions {
 	/**
 	 * Makes a timestamp from the date.
 	 * @param date date
+	 * @param begin If <code>true</code> the timestamp will end with T00:00:00 else it will end with T23:59:59.
 	 * @return timestamp
 	 */
-	public static String dateToTimestamp(String date) {
-		return date.substring(date.lastIndexOf(".") + 1) + "-" + date.substring(date.indexOf(".") + 1, date.lastIndexOf(".")) + "-" + date.substring(0, date.indexOf(".")) + "T23:59:59";
+	public static String dateToTimestamp(String date, boolean begin) {
+		return date.substring(date.lastIndexOf(".") + 1) + "-" + date.substring(date.indexOf(".") + 1, date.lastIndexOf(".")) + "-" + date.substring(0, date.indexOf(".")) + (begin ? "T00:00:00" : "T23:59:59");
 	}
 
 	/**

@@ -77,9 +77,6 @@
 	<head>
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="./css/main.css" />
-		<!--<link rel="stylesheet" href="./css/mapping.css" />
-		<link rel="stylesheet" href="./css/login.css" />
-		<!--<link rel="stylesheet" href="./css/treeview.css" />-->
 		<link rel="shortcut icon" href="http://linkedgeodata.org/files/lgdlogo.png" />
 		<title>LGDEditTool</title>
 		<script type="text/javascript" src="./js/jquery.js"></script>

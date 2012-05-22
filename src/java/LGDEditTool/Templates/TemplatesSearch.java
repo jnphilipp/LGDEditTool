@@ -243,7 +243,8 @@ public class TemplatesSearch {
 	/**
 	 * Template for KV-Mapping results.
 	 * @param search search query
-	 * @return String
+	 * @param sort sort
+	 * @return HTML code
 	 * @throws Exception 
 	 */
 	private static String kvMapping(String search, String sort) throws Exception {

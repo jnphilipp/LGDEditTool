@@ -146,6 +146,7 @@ public class TemplatesAccountSettings {
 			s = a[0][0].toString();
 
 		re += "\t\t\t\t\t<article class=\"admin\" >\n";
+		re += "\t\t\t\t\t\t<p>In order to delete the edit history, select which edit history you wish to delete and insert a date which will be the latest entry to delete.</p>\n";
 		re += "\t\t\t\t\t\t<fieldset style=\"width: 25em; margin=0 auto;\">\n";
 		re += "\t\t\t\t\t\t\t<legend>Delete Edit-History</legend>\n";
 		re += "\t\t\t\t\t\t\t<form action=\"?tab=settings" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";

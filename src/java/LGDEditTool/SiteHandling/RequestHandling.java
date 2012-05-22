@@ -654,25 +654,25 @@ public class RequestHandling {
 		else if ( request.getParameter("delhistory") != null && request.getParameter("delhistory").equals("Delete") && request.getParameter("history") != null && request.getParameter("date") != null ) {
 			if ( request.getParameter("history").equals("k") || request.getParameter("history").equals("complete") ) {
 				database.execute("UPDATE lgd_map_resource_k SET last_history_id=null WHERE user_id='main'");
-				database.execute("DELETE FROM lgd_map_resource_k_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+				database.execute("DELETE FROM lgd_map_resource_k_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date"), false) + "'");
 
 					re = "K-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
 			}
 			if ( request.getParameter("history").equals("kv") || request.getParameter("history").equals("complete") ) {
 				database.execute("UPDATE lgd_map_resource_kv SET last_history_id=null WHERE user_id='main'");
-				database.execute("DELETE FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+				database.execute("DELETE FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date"), false) + "'");
 
 					re = "KV-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
 			}
 			if ( request.getParameter("history").equals("datatype") || request.getParameter("history").equals("complete") ) {
 				database.execute("UPDATE lgd_map_datatype SET last_history_id=null WHERE user_id='main'");
-				database.execute("DELETE FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+				database.execute("DELETE FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date"), false) + "'");
 
 					re = "Datatype-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
 			}
 			if ( request.getParameter("history").equals("literal") || request.getParameter("history").equals("complete") ) {
 				database.execute("UPDATE lgd_map_literal SET last_history_id=null WHERE user_id='main'");
-				database.execute("DELETE FROM lgd_map_literal_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date")) + "'");
+				database.execute("DELETE FROM lgd_map_literal_history WHERE userspace='main' AND timestamp <= '" + Functions.dateToTimestamp(request.getParameter("date"), false) + "'");
 
 					re = "Literal-Mapping Edit-History successfully deleted until " + request.getParameter("date") + ".";
 			}

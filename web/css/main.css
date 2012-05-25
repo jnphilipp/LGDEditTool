@@ -122,7 +122,7 @@ article.message { display: block;
 	width: 20em;
 	padding: 8px;
 	border: 1px solid rgba(93, 87, 98, 0.6);
-	background: rgba(150, 150, 150, 0.7);
+	background: rgba(150, 150, 150, 0.8);
 	-webkit-box-shadow: 0px 0px 5px 1px rgba(106, 105, 106, 0.5);
 	-moz-box-shadow: 0px 0px 5px 1px rgba(106, 105, 106, 0.5);
 	box-shadow: 0px 0px 5px 1px rgba(106, 105, 106, 0.5); 

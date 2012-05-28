@@ -135,13 +135,13 @@ public class TemplatesAccountSettings {
 		db.connect();
 		Object[][] a = db.execute("Select max(timestamp) FROM lgd_map_resource_k_history WHERE userspace='main'");
 		String s = (a[0][0] != null ? a[0][0].toString() : "");
-		a = db.execute("Select max(timestamp) FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp >= '" + a[0][0] +"'");
+		a = db.execute("Select max(timestamp) FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp >= '" + s +"'");
 		if ( a[0][0] != null )
 			s = a[0][0].toString();
-		a = db.execute("Select max(timestamp) FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp >= '" + a[0][0] +"'");
+		a = db.execute("Select max(timestamp) FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp >= '" + s +"'");
 		if ( a[0][0] != null )
 			s = a[0][0].toString();
-		a = db.execute("Select max(timestamp) FROM lgd_map_literal_history WHERE userspace='main' AND timestamp >= '" + a[0][0] +"'");
+		a = db.execute("Select max(timestamp) FROM lgd_map_literal_history WHERE userspace='main' AND timestamp >= '" + s +"'");
 		if ( a[0][0] != null )
 			s = a[0][0].toString();
 

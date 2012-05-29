@@ -55,7 +55,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>property</th>\n";
 			s += "\t\t\t\t\t\t\t<th>object</th>\n";
-			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
@@ -74,7 +74,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("v") ? "dv" : "v") + "\">v</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>property</th>\n";
 			s += "\t\t\t\t\t\t\t<th>object</th>\n";
-			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
@@ -91,7 +91,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t<tr>\n";
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>datatype</th>\n";
-			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
@@ -109,7 +109,7 @@ public class TemplatesAllMappings {
 			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("k") ? "dk" : "k") + "\">k</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>property</th>\n";
 			s += "\t\t\t\t\t\t\t<th>language</th>\n";
-			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("count") ? "dcount" : "count") + "\">affected Entities</a></th>\n";
+			s += "\t\t\t\t\t\t\t<th><a href=\"?tab=all&type=" + type + "&sort=" + (sort.equals("usage_count") ? "dusage_count" : "usage_count") + "\">affected Entities</a></th>\n";
 			s += "\t\t\t\t\t\t\t<th>edit</th>\n";
 			s += "\t\t\t\t\t\t\t<th>delete</th>\n";
 			if ( !User.getInstance().getView().equals(Functions.MAIN_BRANCH) )
@@ -146,7 +146,7 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, property, object, user_id, count(k) FROM lgd_map_resource_k WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, property, object, user_id ORDER BY " + (sort.startsWith("d") ? sort.replaceFirst("d", "") + " DESC" : sort + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT km.k, property, object, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k AS km LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (km.k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND km.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "'))") + " ORDER BY " + (sort.startsWith("d") ? sort.replaceFirst("d", "") + " DESC" : sort + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addKMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site, sort);
@@ -164,7 +164,7 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, v, property, object, user_id, count(k) FROM lgd_map_resource_kv WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, v, property, object, user_id ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? "k, v" : sort) + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT kvm.k, kvm.v, property, object, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv AS kvm LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "(user_id='main' AND (kvm.k, kvm.v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND (kvm.k, kvm.v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "'))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? "k, v" : sort) + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][5].toString(), a[i][4].toString(), site, sort);
@@ -182,7 +182,7 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, datatype, user_id, count(k) FROM lgd_map_datatype WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND datatype!='deleted'" : "(user_id='main' AND (k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, datatype, user_id ORDER BY " + (sort.startsWith("d") ? sort.replaceFirst("d", "") + " DESC" : sort + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT dm.k, datatype, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype AS dm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dm.k WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND datatype!='deleted'" : "(user_id='main' AND (dm.k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "' AND datatype != 'deleted')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (dm.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND dm.k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "'))") + " ORDER BY " + (sort.startsWith("d") ? sort.replaceFirst("d", "") + " DESC" : sort + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][3].toString(), a[i][2].toString(), site, sort);
@@ -201,7 +201,7 @@ public class TemplatesAllMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT k, property, language, user_id, count(k) FROM lgd_map_literal WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!=''" : "(user_id='main' AND (k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND (k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main'  AND property != '' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))") + " GROUP BY k, property, language, user_id ORDER BY " + (sort.startsWith("d") ? sort.replaceFirst("d", "") + " DESC" : sort + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT lm.k, property, language, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal AS lm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND property!=''" : "(user_id='main' AND (lm.k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "' AND property != '')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main'  AND property != '' AND lm.k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))") + " ORDER BY " + (sort.startsWith("d") ? sort.replaceFirst("d", "") + " DESC" : sort + " ASC") + " Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addLiteralMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][4].toString(), a[i][3].toString(), site, sort);

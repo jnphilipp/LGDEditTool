@@ -172,7 +172,7 @@ public class TemplatesEditedMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT km.k, property, object, usage_count FROM lgd_map_resource_k AS km INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT km.k, property, object, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k AS km LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addKMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), site);
@@ -192,7 +192,7 @@ public class TemplatesEditedMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT kvm.k, kvm.v, property, object, usage_count FROM lgd_map_resource_kv AS kvm INNER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE user_id='" + User.getInstance().getUsername() + "' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main') ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT kvm.k, kvm.v, property, object, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv AS kvm LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE user_id='" + User.getInstance().getUsername() + "' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main') ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addKVMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), site);
@@ -212,7 +212,7 @@ public class TemplatesEditedMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT dm.k, datatype, usage_count FROM lgd_map_datatype AS dm INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (dm.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT dm.k, datatype, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype AS dm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (dm.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addDatatypeMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), site);
@@ -232,7 +232,7 @@ public class TemplatesEditedMappings {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		String s = "";
 
-		Object[][] a = database.execute("SELECT lm.k, property, language, usage_count FROM lgd_map_literal AS lm INNER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
+		Object[][] a = database.execute("SELECT lm.k, property, language, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal AS lm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
 
 		for ( int i = 0; i < a.length; i++ ) {
 			s += addLiteralMapping(i, a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), site);

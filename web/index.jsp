@@ -183,7 +183,7 @@
 		</div>
 		<% } else { %>
 		<div class="login" style="right: 20px; position: absolute;">
-			<i><% out.print(User.getInstance().getUsername()); %></i>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=account">Account Settings</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=search&amp;logout=yes<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>">Logout</a>
+			<i><% out.print(User.getInstance().getUsername()); %></i>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=account">Account Settings</a><% out.print((User.getInstance().isAdmin() ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"?tab=settings\">Admin</a>" : ""));%>&nbsp;&nbsp;&nbsp;&nbsp;<a href="?tab=search&amp;logout=yes<% out.print(search.equals("") ? "" : "&amp;search=" + search); %>">Logout</a>
 		</div>
 		<% } %>
 		<h1>LGDEditTool</h1>
@@ -199,16 +199,16 @@
 			<% if ( !User.getInstance().getView().equals("lgd_user_main") && User.getInstance().isLoggedIn() ) {
 				out.println("<li><a " + (tab.equals("edited") ? "class=\"current\"" : "") + " href=\"?tab=edited&amp;type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Edited Mappings</a></li>");
 			}
-			if ( User.getInstance().isAdmin() ) {
-				out.println("<li><a " + (tab.equals("settings") ? "class=\"current\"" : "" ) + " href=\"?tab=settings\">Settings</a></li>");
-			}
 			if ( tab.equals("signup") && !User.getInstance().isLoggedIn() )
 				out.println("<li><a class=\"current\" href=\"?tab=signup" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Sign up</a></li>");
 			else if ( tab.equals("forgotten") && !User.getInstance().isLoggedIn() )
 				out.println("<li><a class=\"current\" href=\"?tab=forgotten" + (search.equals("") ? "" : "&amp;search=" + search) + "\">Password forgotten</a></li>");
 			else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
 				out.println("<li><a class=\"current\" href=\"?tab=account\">Account Settings</a></li>");
-			} %>
+			}
+			else if ( User.getInstance().isAdmin() && tab.equals("settings") ) {
+				out.println("<li><a class=\"current\" href=\"?tab=settings\">Admin</a></li>");
+			}%>
 		</ul>
 
 		<div id="panes">

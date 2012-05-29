@@ -54,12 +54,8 @@ public class Functions {
 	 * @return short URL
 	 */
 	public static String shortenURL(String url) {
-		if ( url.contains("w3.org") && url.endsWith("#type") )
-			return "w3#type";
-		else if ( url.equals("http://www.w3.org/2000/01/rdf-schema#label") )
-			return "w3/rdf-schema#label";
-		else if ( url.equals("http://www.w3.org/2004/02/skos/core#altLabel") )
-			return "w3/core#altLabel";
+		if ( url.contains("w3.org") && url.contains("#") )
+			return "rdf:" + url.substring(url.indexOf("#") + 1);
 		else if ( url.contains("linkedgeodata.org") ) {
 			return "LGD:" + url.substring(url.lastIndexOf("/") + 1);
 		}

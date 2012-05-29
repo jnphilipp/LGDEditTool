@@ -69,7 +69,7 @@
 		captcha = RequestHandling.checkCaptcha(request);
 
 	if ( request.getParameter("captcha") == null && captcha )
-		message = RequestHandling.doRequestHandling(request, response);
+		message = RequestHandling.doRequestHandling(request, response, getServletContext());
 %>
 
 <!DOCTYPE HTML>
@@ -169,13 +169,13 @@
 						<ul>
 							<li>
 								<label>Login or Email</label>
-								<input type="text" name="user" required />
+								<input type="text" name="user" tabindex="1" required />
 							</li>
 							<li>
 								<label>Password (<a href="?tab=forgotten" style="font-size: 9pt;">forgot password</a>)</label>
-								<input type="password" name="password" required />
+								<input type="password" name="password" tabindex="2" required />
 							</li>
-							<li><input type="submit" name="login" value="Log in" /></li>
+							<li><input type="submit" name="login" tabindex="3" value="Log in" /></li>
 						</ul>
 					</form>
 				</fieldset>
@@ -307,7 +307,7 @@
 			}
 			else if ( User.getInstance().isAdmin() && tab.equals("settings") ) {
 				out.println("<div class=\"pane\">");
-				out.println(TemplatesAccountSettings.accountSettingsAdmin(search));
+				out.println(TemplatesAccountSettings.adminSettings((request.getParameter("setting") == null ? "start" : request.getParameter("setting")), search, getServletContext()));
 				out.println("\t\t\t</div>");
 			} else if ( User.getInstance().isLoggedIn() && tab.equals("account") ) {
 				out.println("<div class=\"pane\">");
@@ -394,19 +394,6 @@
 		<% } %>
 		</div>
 		<small style="float: right;">© swp12-10 (29.05.2012)</small>
-		<%--
-		/*Properties p = new Properties();
-		FileOutputStream stream = new FileOutputStream("namespaces.properties");
-		p.store(stream, null);
-		String key = "lgd";
-		String val = "http://linkedgeodata.org/ontology/";
-		p.setProperty(key, val);
-		p.store(stream,null);
-		stream.close();*/
-		
-		out.println(Functions.expand(getServletContext(), "lgd"));
-		
-		--%>
 	</body>
 </html>
 <%

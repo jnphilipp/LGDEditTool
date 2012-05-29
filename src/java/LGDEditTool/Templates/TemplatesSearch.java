@@ -763,6 +763,12 @@ public class TemplatesSearch {
 		return re;
 	}
 
+	/**
+	 * Generating HTML code for reCatpcha formular.
+	 * @param request request
+	 * @param search seach query
+	 * @return HTML code
+	 */
 	public static String captcha(HttpServletRequest request, String search) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
 

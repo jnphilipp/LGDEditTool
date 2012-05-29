@@ -21,6 +21,8 @@ import LGDEditTool.Email.EmailLGD;
 import LGDEditTool.Functions;
 import LGDEditTool.db.DatabaseBremen;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.tanesha.recaptcha.ReCaptchaImpl;
@@ -38,7 +40,7 @@ public class RequestHandling {
 	 * @return message
 	 * @throws Exception 
 	 */
-	public static String doRequestHandling(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public static String doRequestHandling(HttpServletRequest request, HttpServletResponse response, ServletContext servlet) throws Exception {
 		DatabaseBremen database = DatabaseBremen.getInstance();
 		database.connect();
 		String re = "";
@@ -678,6 +680,18 @@ public class RequestHandling {
 			}
 			if ( request.getParameter("history").equals("complete") )
 				re = "Complete Edit-History successfully deleted until " + request.getParameter("date") + ".";
+		}//#########################################################################
+		else if ( request.getParameter("namespacesave") != null && request.getParameter("namespacesave").equals("Save") && request.getParameter("namespaces") != null ) {
+			String[] sp = request.getParameter("namespaces").split("\n");
+			HashMap<String, String> namespaces = new HashMap<String, String>();
+
+			for ( int i = 0; i < sp.length; i++ ) {
+				namespaces.put(sp[i].substring(0, sp[i].indexOf("=")), sp[i].substring(sp[i].indexOf("=") + 1));
+			}
+
+			Functions.updateNamespaces(servlet, namespaces);
+
+			re = "Namespaces successfully updated.";
 		}
 
 

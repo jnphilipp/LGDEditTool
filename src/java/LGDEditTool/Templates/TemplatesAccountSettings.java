@@ -19,7 +19,11 @@ package LGDEditTool.Templates;
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
 import LGDEditTool.db.DatabaseBremen;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -48,7 +52,7 @@ public class TemplatesAccountSettings {
 		re += "\t\t\t\t\t\t</ul>\n";
 		re += "\t\t\t\t\t</aside>\n";
 
-		if ( setting.equals("start") ) {
+		if ( setting.equals("start") || setting.equals("") ) {
 			re += "\t\t\t\t\t<article>\n";
 			re += "\t\t\t\t\t\t<p>Please choose the setting you wish to change.</p>\n";
 			re += "\t\t\t\t\t</article>\n";
@@ -128,45 +132,89 @@ public class TemplatesAccountSettings {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException 
 	 */
-	public static String accountSettingsAdmin(String search) throws ClassNotFoundException, SQLException {
+	public static String adminSettings(String setting, String search, ServletContext servlet) throws ClassNotFoundException, SQLException, IOException {
 		String re = "";
 
-		DatabaseBremen db = DatabaseBremen.getInstance();
-		db.connect();
-		Object[][] a = db.execute("Select max(timestamp) FROM lgd_map_resource_k_history WHERE userspace='main'");
-		String s = (a[0][0] != null ? a[0][0].toString() : "");
-		a = db.execute("Select max(timestamp) FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp >= '" + s +"'");
-		if ( a[0][0] != null )
-			s = a[0][0].toString();
-		a = db.execute("Select max(timestamp) FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp >= '" + s +"'");
-		if ( a[0][0] != null )
-			s = a[0][0].toString();
-		a = db.execute("Select max(timestamp) FROM lgd_map_literal_history WHERE userspace='main' AND timestamp >= '" + s +"'");
-		if ( a[0][0] != null )
-			s = a[0][0].toString();
+		re += "\t\t\t\t<section class=\"account\">\n";
+		re += "\t\t\t\t\t<aside>\n";
+		re += "\t\t\t\t\t\t<ul>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=settings&setting=history\">Delete Edit-History</a></li>\n";
+		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=settings&setting=namespaces\">Editing Namespaces</a></li>\n";
+		re += "\t\t\t\t\t\t</ul>\n";
+		re += "\t\t\t\t\t</aside>\n";
 
-		re += "\t\t\t\t\t<article class=\"admin\" >\n";
-		re += "\t\t\t\t\t\t<p>In order to delete the edit history, select which edit history you wish to delete and insert a date which will be the latest entry to delete.</p>\n";
-		re += "\t\t\t\t\t\t<fieldset style=\"width: 25em; margin=0 auto;\">\n";
-		re += "\t\t\t\t\t\t\t<legend>Delete Edit-History</legend>\n";
-		re += "\t\t\t\t\t\t\t<form action=\"?tab=settings" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
-		re += "\t\t\t\t\t\t\t\t<ul>\n";
-		re += "\t\t\t\t\t\t\t\t\t<li><input type=\"date\" name=\"date\" value=\"" + (s.equals("") ? "" : Functions.date(s)) + "\" /></li>\n";
-		re += "\t\t\t\t\t\t\t\t\t<li>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t<div class=\"select\">";
-		re += "\t\t\t\t\t\t\t\t\t\t\t<select name=\"history\">\n";
-		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"k\">K-Mapping Edit-History</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"kv\">KV-Mapping Edit-History</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"datatype\">Datatype-Mapping Edit-History</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"literal\">Literal-Mapping Edit-History</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"complete\" selected>Complete Edit-History</option>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t\t</select>\n";
-		re += "\t\t\t\t\t\t\t\t\t\t</div>\n";
-		re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"delhistory\" value=\"Delete\" /></li>\n";
-		re += "\t\t\t\t\t\t\t\t</ul>\n";
-		re += "\t\t\t\t\t\t\t</form>\n";
-		re += "\t\t\t\t\t\t</fieldset>\n";
-		re += "\t\t\t\t\t</article>\n";
+		if ( setting.equals("start") || setting.equals("") ) {
+			re += "\t\t\t\t\t<article>\n";
+			re += "\t\t\t\t\t\t<p>Please choose the setting you wish to change.</p>\n";
+			re += "\t\t\t\t\t</article>\n";
+		}
+		else if ( setting.equals("history") ) {
+			DatabaseBremen db = DatabaseBremen.getInstance();
+			db.connect();
+
+			Object[][] a = db.execute("Select max(timestamp) FROM lgd_map_resource_k_history WHERE userspace='main'");
+			String s = (a[0][0] != null ? a[0][0].toString() : "");
+			a = db.execute("Select max(timestamp) FROM lgd_map_resource_kv_history WHERE userspace='main' AND timestamp >= '" + s +"'");
+
+			if ( a[0][0] != null )
+				s = a[0][0].toString();
+			a = db.execute("Select max(timestamp) FROM lgd_map_datatype_history WHERE userspace='main' AND timestamp >= '" + s +"'");
+
+			if ( a[0][0] != null )
+				s = a[0][0].toString();
+			a = db.execute("Select max(timestamp) FROM lgd_map_literal_history WHERE userspace='main' AND timestamp >= '" + s +"'");
+
+			if ( a[0][0] != null )
+				s = a[0][0].toString();
+
+			re += "\t\t\t\t\t<article class=\"admin\" >\n";
+			re += "\t\t\t\t\t\t<p>In order to delete the edit history, select which edit history you wish to delete and insert a date which will be the latest entry to delete.</p>\n";
+			re += "\t\t\t\t\t\t<fieldset style=\"width: 25em; margin=0 auto;\">\n";
+			re += "\t\t\t\t\t\t\t<legend>Delete Edit-History</legend>\n";
+			re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&setting=history" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			re += "\t\t\t\t\t\t\t\t<ul>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"date\" name=\"date\" value=\"" + (s.equals("") ? "" : Functions.date(s)) + "\" /></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t<div class=\"select\">";
+			re += "\t\t\t\t\t\t\t\t\t\t\t<select name=\"history\">\n";
+			re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"k\">K-Mapping Edit-History</option>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"kv\">KV-Mapping Edit-History</option>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"datatype\">Datatype-Mapping Edit-History</option>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"literal\">Literal-Mapping Edit-History</option>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t\t\t<option value=\"complete\" selected>Complete Edit-History</option>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t\t</select>\n";
+			re += "\t\t\t\t\t\t\t\t\t\t</div>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"delhistory\" value=\"Delete\" /></li>\n";
+			re += "\t\t\t\t\t\t\t\t</ul>\n";
+			re += "\t\t\t\t\t\t\t</form>\n";
+			re += "\t\t\t\t\t\t</fieldset>\n";
+			re += "\t\t\t\t\t</article>\n";
+		}
+		else if ( setting.equals("namespaces") ) {
+			re += "\t\t\t\t\t<article class=\"admin\" >\n";
+			re += "\t\t\t\t\t\t<p>To edit the namespaces shown as autocomplete fields in property and object fields use the textfield below. (syntax: key=value)</p>\n";
+			re += "\t\t\t\t\t\t<fieldset style=\"width: 25em; margin=0 auto;\">\n";
+			re += "\t\t\t\t\t\t\t<legend>Namespaces</legend>\n";
+			re += "\t\t\t\t\t\t\t<form action=\"?tab=settings&setting=namespaces" + (search.equals("") ? "" : "&search=" + search) + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">\n";
+			re += "\t\t\t\t\t\t\t\t<ul style=\"padding: 0;\">\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><label>Namespaces:</label></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><textarea name=\"namespaces\" style=\"width: 50em; height: 25em;\" >";
+
+			HashMap<String, String> namespaces = Functions.getNamespaces(servlet);
+			Iterator<String> keys = namespaces.keySet().iterator();
+			
+			while ( keys.hasNext() ) {
+				String key = keys.next();
+				re += key + "=" + namespaces.get(key) + "\n";
+			}
+
+			re += "</textarea></li>\n";
+			re += "\t\t\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"namespacesave\" value=\"Save\" /></li>\n";
+			re += "\t\t\t\t\t\t\t\t</ul>\n";
+			re += "\t\t\t\t\t\t\t</form>\n";
+			re += "\t\t\t\t\t\t</fieldset>\n";
+			re += "\t\t\t\t\t</article>\n";
+		}
 
 		return re;
 	}

@@ -18,11 +18,11 @@
 
 package LGDEditTool;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.*;
 import javax.servlet.ServletContext;
 
 /**
@@ -122,7 +122,7 @@ public class Functions {
 	}
 
 	/**
-	 * Returns all key, which can be expanded.
+	 * Returns all keys of the namespaces, which can be expanded.
 	 * @param servlet ServletContext
 	 * @return List of all keys.
 	 * @throws IOException 
@@ -135,5 +135,48 @@ public class Functions {
 		inputStream.close();
 
 		return keys;
+	}
+
+	/**
+	 * Returns all keys and values of the namespaces.
+	 * @param servlet ServletContext
+	 * @return HashMap of all keys and values
+	 * @throws IOException 
+	 */
+	public static HashMap<String, String> getNamespaces(ServletContext servlet) throws IOException {
+		InputStream inputStream = servlet.getResourceAsStream("/WEB-INF/namespaces.properties");
+		Properties props = new Properties();
+		props.load(inputStream);
+		Enumeration<Object> keys = props.keys();
+
+		HashMap<String, String> namespaces = new HashMap<String, String>();
+
+		while ( keys.hasMoreElements() ) {
+			String key = keys.nextElement().toString();
+			namespaces.put(key, props.getProperty(key));
+		}
+
+		inputStream.close();
+
+		return namespaces;
+	}
+
+	/**
+	 * Updates the property file for the namespaces to the given map.
+	 * @param servlet ServletContext
+	 * @param namespaces map of namespaces
+	 * @throws FileNotFoundException
+	 * @throws IOException 
+	 */
+	public static void updateNamespaces(ServletContext servlet, HashMap<String, String> namespaces) throws FileNotFoundException, IOException {
+		Properties props = new Properties();
+		InputStream inputStream = servlet.getResourceAsStream("/WEB-INF/namespaces.properties");
+		FileOutputStream out = new FileOutputStream(servlet.getRealPath("/WEB-INF/namespaces.properties"));
+		props.load(inputStream);
+		props.clear();
+		props.putAll(namespaces);
+		props.store(out, null);
+		inputStream.close();
+		out.close();
 	}
 }

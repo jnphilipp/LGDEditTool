@@ -393,7 +393,7 @@
 			</div>
 		<% } %>
 		</div>
-		<small style="float: right;">© swp12-10 (<% out.print((Calendar.getInstance().get(Calendar.DAY_OF_MONTH) < 10 ? "0" + Calendar.getInstance().get(Calendar.DAY_OF_MONTH) : Calendar.getInstance().get(Calendar.DAY_OF_MONTH) ) + "." + ((Calendar.getInstance().get(Calendar.MONTH) + 1) < 10 ? "0" + (Calendar.getInstance().get(Calendar.MONTH) + 1) : (Calendar.getInstance().get(Calendar.MONTH) + 1)) + "." + Calendar.getInstance().get(Calendar.YEAR)); %>)</small>
+		<small style="float: right;">© swp12-10 (29.05.2012)</small>
 		<%--
 		/*Properties p = new Properties();
 		FileOutputStream stream = new FileOutputStream("namespaces.properties");

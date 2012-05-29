@@ -45,6 +45,7 @@ public class TemplatesEditHistory {
 		re += "\t\t\t\t\t\t\t\t<label>Search:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"text\" id=\"search\" name=\"search\" required />\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"tab\" value=\"history\">\n";
+		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"type\" value=\"" + type + "\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" />\n";
 		re += "\t\t\t\t\t\t\t</li>\n";
 		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=history&type=" + type + "\">Clear search.</a></li>\n";
@@ -93,8 +94,12 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			s += searchKHistoryDB(Integer.parseInt(site), search, sort);
+			String t = searchKHistoryDB(Integer.parseInt(site), (search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : search) : (search.contains("~") ? search.split("~")[0] : search)), sort);
+			s += t;
 			s += "\t\t\t\t\t</table>\n";
+
+			if ( t.equals("") )
+				s = "<p>Your search returned no results.</p>";
 		}
 		else if ( type.equals("kv") ) {//KV-Mappings
 			//insert tablehead
@@ -115,8 +120,12 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			s += searchKVHistoryDB(Integer.parseInt(site), search, sort);
+			String t = searchKVHistoryDB(Integer.parseInt(site), search, sort);
+			s += t;
 			s += "\t\t\t\t\t</table>\n";
+
+			if ( t.equals("") )
+				s = "<p>Your search returned no results.</p>";
 		}
 		else if ( type.equals("datatype") ) {//Datatype-Mappings
 			//insert tablehead
@@ -135,8 +144,12 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			s += searchDatatypeHistoryDB(Integer.parseInt(site), search, sort);
+			String t = searchDatatypeHistoryDB(Integer.parseInt(site), (search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : search) : (search.contains("~") ? search.split("~")[0] : search)), sort);
+			s += t;
 			s += "\t\t\t\t\t</table>\n";
+
+			if ( t.equals("") )
+				s = "<p>Your search returned no results.</p>";
 		}
 		if ( type.equals("literal") ) {//Literal-Mappings
 			//insert tablehead
@@ -156,8 +169,12 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			s += searchLiteralHistoryDB(Integer.parseInt(site), search, sort);
+			String t = searchLiteralHistoryDB(Integer.parseInt(site), (search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : search) : (search.contains("~") ? search.split("~")[0] : search)), sort);
+			s += t;
 			s += "\t\t\t\t\t</table>\n";
+
+			if ( t.equals("") )
+				s = "<p>Your search returned no results.</p>";
 		}
 
 		//next/prev-site links
@@ -207,8 +224,22 @@ public class TemplatesEditHistory {
 	private static String searchKVHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
 		String s = "";
 		DatabaseBremen database = DatabaseBremen.getInstance();
+		Object[][] a;
 
-		Object[][] a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND  kvmh.k LIKE '" + search.replaceAll("\\*", "%") + "%' OR  kvmh.v LIKE '" + search.replaceAll("\\*", "%") + "%'" : (search.contains("~") ? " AND kvmh. k='" + search.split("~")[0] + "' AND  kvmh.v='" + search.split("~")[1] + "'" : " AND  kvmh.k='" + search + "' OR  kvmh.v='" + search + "'"))) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+		if ( search.startsWith("k:") )
+			a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND " + (search.contains("*") ? "kvmh.k LIKE '" + search.replaceAll("\\*", "%").substring(2) + "%'" : "kvmh.k='" + search.substring(2) + "'") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+		else if ( search.startsWith("v:") )
+			a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND " + (search.contains("*") ? "kvmh.v LIKE '" + search.replaceAll("\\*", "%").substring(2) + "%'" : "kvmh.v='" + search.substring(2) + "'") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+		else if ( search.startsWith("l:") )
+			a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND (kvmh.k, kvmh.v) IN (SELECT k, v FROM lgd_map_label WHERE " + (search.contains("*") ? "label LIKE '" + search.replaceAll("\\*", "%").substring(2) + "%'" : "label='" + search.substring(2) + "'") + ") ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+		else {
+			if ( search.contains("~") )
+				a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND kvmh. k='" + search.split("~")[0] + "' AND  kvmh.v='" + search.split("~")[1] + "' ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+			else if ( search.equals("") )
+				a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+			else
+				a = database.execute("SELECT kvmh.k, kvmh.v, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND (" + (search.contains("*") ? "kvmh.k LIKE '" + search.replaceAll("\\*", "%") + "%' OR  kvmh.v LIKE '" + search.replaceAll("\\*", "%") + "%'" : "kvmh.k='" + search + "' OR  kvmh.v='" + search + "'") + ") ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? sort.replaceFirst("d", "") + ", v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? sort + ", v" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
+	}
 
 		for ( int i = 0; i <  a.length; i++ ) {
 			s += addkvMapping(i, a[i][9].toString(), a[i][0].toString(), a[i][1].toString(), a[i][2].toString(), a[i][3].toString(), a[i][4].toString(), a[i][8].toString(), a[i][5].toString(), a[i][6].toString(), a[i][7].toString(), site, search, sort);

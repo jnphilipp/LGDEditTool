@@ -66,6 +66,9 @@ public class TemplatesUnmappedTags {
 			}
 		} //set negativ site value to 1
 
+		if ( search.contains(":") )
+			search = search.substring(search.indexOf(":") + 1);
+
 		if ( type.equals("k") ) {//K-Mappings
 			//insert tablehead
 			s = "\t\t\t\t\t<h2>List of unmapped K-Tags</h2>\n";

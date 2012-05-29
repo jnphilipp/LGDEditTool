@@ -50,14 +50,14 @@ try {
 			Object[][] a = database.execute("SELECT kvm.k, (SELECT SUM(usage_count) FROM lgd_stat_tags_kv WHERE kvm.k=k) AS usage_count FROM lgd_map_resource_kv AS kvm WHERE (user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND property != '' AND object != '') OR (user_id = 'main' AND (kvm.k, kvm.v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "')) AND UPPER(kvm.k) LIKE UPPER('" + query.substring(2) + "') GROUP BY kvm.k UNION ALL SELECT km.k, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k AS km LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND property != '' AND object != '') OR (user_id = 'main' AND km.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "')) AND UPPER(km.k) LIKE UPPER('" + query.substring(2) + "') UNION ALL SELECT dm.k, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype AS dm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dm.k WHERE ((user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND datatype != 'deleted') OR (user_id = 'main' AND dm.k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'))) AND dm.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND property != '' AND object != '') OR (user_id = 'main' AND dm.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'))) AND UPPER(dm.k) LIKE UPPER('" + query.substring(2) + "') UNION ALL SELECT lm.k, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal AS lm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE ((user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND property != '') OR (user_id = 'main' AND lm.k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'))) AND lm.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE (user_id='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND property != '' AND object != '') OR (user_id = 'main' AND lm.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'))) AND UPPER(lm.k) LIKE UPPER('" + query.substring(2) + "') ORDER BY k");
 
 			for ( int i = 0; i < a.length; i++ ) {
-				out.println("k:" + a[i][0].toString() + (a[i][1] == null ? "" : " (" + a[i][1].toString() + ")"));
+				out.println("k:" + a[i][0].toString() + " (" + a[i][1].toString() + ")");
 			}
 		}
 		else if ( query.startsWith("v:") ) {
 			Object[][] a = database.execute("SELECT kvm.v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv AS kvm LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE (user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND property != '' AND object != '') OR (user_id = 'main' AND (kvm.k, kvm.v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id = '" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "')) AND UPPER(kvm.v) LIKE UPPER('" + query.substring(2) + "') ORDER BY v");
 
 			for ( int i = 0; i < a.length; i++ ) {
-				out.println("v:" + a[i][0].toString() + (a[i][1] == null ? "" : " (" + a[i][1].toString() + ")"));
+				out.println("v:" + a[i][0].toString() + " (" + a[i][1].toString() + ")");
 			}
 		}
 		else if ( query.startsWith("l:") ) {
@@ -69,7 +69,7 @@ try {
 		}
 	}
 	else {
-		out.println("");
+		out.println(query);
 		out.println("k:");
 		out.println("v:");
 		out.println("l:");

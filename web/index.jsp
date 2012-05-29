@@ -190,7 +190,7 @@
 
 		<ul id="tabs">
 			<li><a <% if ( tab.equals("search") || tab.equals("") ) { out.print("class=\"current\""); } %> href="<% out.print("?tab=search" + (search.equals("") ? "" : "&amp;search=" + search)); %>">Search</a></li>
-			<% out.print(search.equals("") ? "" : "<li><a  " + (tab.equals("ontology") ? "class=\"current\"" : "") + " href=\"?tab=ontology&amp;search=" + search + "\">Ontology</a></li>");
+			<% //out.print(search.equals("") ? "" : "<li><a  " + (tab.equals("ontology") ? "class=\"current\"" : "") + " href=\"?tab=ontology&amp;search=" + search + "\">Ontology</a></li>");
 			if ( User.getInstance().isLoggedIn() )
 				out.print("<li><a " + (tab.equals("unmapped") ? "class=\"current\"" : "") + " href=\"?tab=unmapped&type=k" + (search.equals("") ? "" : "&amp;search=" + search) + "&amp;sort=dusage_count" + "\">Unmapped Tags</a></li>");
 			%>
@@ -233,11 +233,11 @@
 					out.println("\t\t\t</div>");
 				}
 			}
-			else if ( tab.equals("ontology") ) {
+			/*else if ( tab.equals("ontology") ) {
 				out.println("<div class=\"pane\">\n");
 				out.println(TemplatesOntology.ontology(search));
 				out.println("\t\t\t</div>\n");
-			}
+			}*/
 			else if ( tab.equals("unmapped") && User.getInstance().isLoggedIn() ) {
 				out.println("<div class=\"pane\">");
 				out.println("\t\t\t\t<ul id=\"tabs\">");

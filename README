@@ -14,25 +14,47 @@ VI.  About
 I.    Requirements
 ==================================================
 You need an Java Version 1.6.0_22 or later, an
-Apache Tomcat 7.0.14.0 or later.
+Apache Tomcat 7.0.14.0 or later. Also you need a
+database. You can use a server on the internet or
+your own local installation.
+For a local database you need PostgreSQL 9.1 and
+Postgis. A dump is delivered with the source code.
+The location of the database have to set in the
+LGDDatabase class. To compile it properly you need
+the JDBC driver for PostgresSQL. In order to use
+a full LinkedGeoData-Database view
+http://linkedgeodata.org/Install for more
+informations.
+
+Further libraries:
+ * JavaMail
+ * reCaptcha
+
+ Jar-files of these libraries are included with
+ the source code.
 
 II.   Compiling LGDEditTool
 ==================================================
-NetBeans Project.
+The Project is a NetBeans Project, so it can
+easily compiled with NetBeans. Else you can
+compile it like every Java Web application, make
+sure you have the libraries included.
 
 III.  Start LGDEditTool
 ==================================================
+After starting the web server and including the
+compiled code you can reach the site with the
+web browser of your choice.
 
 IV.   Troubleshooting
 ==================================================
-In need of help or for more information please
-feel free to send a mail to
-philipp@studserv.uni-leipzig.de.
+In need of help or for more information feel free
+to send a mail to jnphilipp@yahoo.com.
 
 V.    Help, Feedback & Bug Reports
 ==================================================
-For Help, Feedback or Bug Reports, please send
-a mail to philipp@studserv.uni-leipzig.de.
+For Help, Feedback or Bug Reports, send a mail to
+jnphilipp@yahoo.com.
 
 
 VI.   About

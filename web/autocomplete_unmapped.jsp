@@ -31,6 +31,8 @@ try {
 	User.getInstance().createUser(request);
 	String query = request.getParameter("q");
 
+	out.println(query);
+
 	if ( query.contains("*") )
 		query = query.replaceAll("\\*", "%");
 

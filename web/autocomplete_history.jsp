@@ -38,14 +38,7 @@ try {
 		if ( !query.endsWith("%") )
 			query += "%";
 
-		if ( !query.contains(":") ) {
-			Object[][] a = database.execute("SELECT kvmh.k, kvmh.v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND (UPPER(kvmh.k) LIKE UPPER('" + query + "') OR UPPER(kvmh.v) LIKE UPPER('" + query + "') OR (kvmh.k, kvmh.v) IN (SELECT k, v FROM lgd_map_label WHERE UPPER(label) LIKE UPPER('" + query + "'))) UNION ALL SELECT kmh.k, '' AS v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k_history AS kmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND UPPER(kmh.k) LIKE UPPER('" + query + "') UNION ALL SELECT dmh.k, '' AS v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype_history AS dmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND dmh.k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') AND UPPER(dmh.k) LIKE UPPER('" + query + "') UNION ALL SELECT lmh.k, '' AS v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal_history AS lmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND lmh.k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') AND UPPER(lmh.k) LIKE UPPER('" + query + "') ORDER BY k, v");
-
-			for ( int i = 0; i < a.length; i++ ) {
-				out.println(a[i][0].toString() + " (" + (a[i][1].toString().equals("") ? "" : (a[i][1].toString() + ", ")) + a[i][2].toString() + ")");
-			}
-		}
-		else if ( query.startsWith("k:") ) {
+		if ( query.startsWith("k:") ) {
 			Object[][] a = database.execute("SELECT kvmh.k, COALESCE((SELECT SUM(usage_count) FROM lgd_stat_tags_kv WHERE kvmh.k=k), 0) AS usage_count FROM lgd_map_resource_kv_history AS kvmh WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND UPPER(kvmh.k) LIKE UPPER('" + query.substring(2) + "') GROUP BY kvmh.k UNION ALL SELECT kmh.k, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k_history AS kmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND UPPER(kmh.k) LIKE UPPER('" + query.substring(2) + "') UNION ALL SELECT dmh.k, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype_history AS dmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND dmh.k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') AND UPPER(dmh.k) LIKE UPPER('" + query.substring(2) + "') UNION ALL SELECT lmh.k, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal_history AS lmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND lmh.k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') AND UPPER(lmh.k) LIKE UPPER('" + query.substring(2) + "') ORDER BY k");
 
 			for ( int i = 0; i < a.length; i++ ) {
@@ -53,7 +46,7 @@ try {
 			}
 		}
 		else if ( query.startsWith("v:") ) {
-			Object[][] a = database.execute("SELECT kvmh.v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND UPPER(kvmh.v) LIKE UPPER('" + query.substring(2) + "') ORDER BY v");
+			Object[][] a = database.execute("SELECT kvmh.v, COALESCE((SELECT SUM(usage_count) FROM lgd_stat_tags_kv WHERE v=kvmh.v AND k IN (SELECT k FROM lgd_map_resource_kv_history WHERE v=kvmh.v)), 0) AS usage_count FROM lgd_map_resource_kv_history AS kvmh WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND UPPER(kvmh.v) LIKE UPPER('" + query.substring(2) + "') GROUP BY v ORDER BY v");
 
 			for ( int i = 0; i < a.length; i++ ) {
 				out.println("v:" + a[i][0].toString() + " (" + a[i][1].toString() + ")");
@@ -64,6 +57,13 @@ try {
 
 			for ( int i = 0; i < a.length; i++ ) {
 				out.println("l:" + a[i][0].toString());
+			}
+		}
+		else {
+			Object[][] a = database.execute("SELECT kvmh.k, kvmh.v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv_history AS kvmh LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvmh.k AND lgd_stat_tags_kv.v=kvmh.v WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND (UPPER(kvmh.k) LIKE UPPER('" + query + "') OR UPPER(kvmh.v) LIKE UPPER('" + query + "') OR (kvmh.k, kvmh.v) IN (SELECT k, v FROM lgd_map_label WHERE UPPER(label) LIKE UPPER('" + query + "'))) UNION ALL SELECT kmh.k, '' AS v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k_history AS kmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND UPPER(kmh.k) LIKE UPPER('" + query + "') UNION ALL SELECT dmh.k, '' AS v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype_history AS dmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND dmh.k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') AND UPPER(dmh.k) LIKE UPPER('" + query + "') UNION ALL SELECT lmh.k, '' AS v, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal_history AS lmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "' AND lmh.k NOT IN (SELECT k FROM lgd_map_resource_k_history WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "') AND UPPER(lmh.k) LIKE UPPER('" + query + "') ORDER BY k, v");
+
+			for ( int i = 0; i < a.length; i++ ) {
+				out.println(a[i][0].toString() + " (" + (a[i][1].toString().equals("") ? "" : (a[i][1].toString() + ", ")) + a[i][2].toString() + ")");
 			}
 		}
 	}

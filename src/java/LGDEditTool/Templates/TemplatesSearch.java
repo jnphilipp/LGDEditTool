@@ -65,7 +65,7 @@ public class TemplatesSearch {
 		DatabaseBremen.getInstance().connect();
 		String re = "", tmp;
 
-		tmp = kMapping((search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : "") : (search.contains("~") ? search.split("~")[0] : search)), sort);
+		tmp = kMapping((search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? "" : search.contains("~") ? search.split("~")[0] : search)), sort);
 		if ( !tmp.equals("") )
 			re += tmp;
 
@@ -73,11 +73,11 @@ public class TemplatesSearch {
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : "") : (search.contains("~") ? search.split("~")[0] : search)), sort);
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + datatypeMapping((search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? "" : search.contains("~") ? search.split("~")[0] : search)), sort);
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 
-		tmp = "\n\t\t\t\t<br /><br />\n\n" + literalMapping((search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : "") : (search.contains("~") ? search.split("~")[0] : search)), sort);
+		tmp = "\n\t\t\t\t<br /><br />\n\n" + literalMapping((search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? "" : search.contains("~") ? search.split("~")[0] : search)), sort);
 		if ( !tmp.equals("\n\t\t\t\t<br /><br />\n\n") )
 			re += tmp;
 

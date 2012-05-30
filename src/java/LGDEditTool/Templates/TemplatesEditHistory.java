@@ -94,7 +94,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			String t = searchKHistoryDB(Integer.parseInt(site), (search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : search) : (search.contains("~") ? search.split("~")[0] : search)), sort);
+			String t = searchKHistoryDB(Integer.parseInt(site), (search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? search : search.contains("~") ? search.split("~")[0] : search)), sort);
 			s += t;
 			s += "\t\t\t\t\t</table>\n";
 
@@ -144,7 +144,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			String t = searchDatatypeHistoryDB(Integer.parseInt(site), (search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : search) : (search.contains("~") ? search.split("~")[0] : search)), sort);
+			String t = searchDatatypeHistoryDB(Integer.parseInt(site), (search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? search : search.contains("~") ? search.split("~")[0] : search)), sort);
 			s += t;
 			s += "\t\t\t\t\t</table>\n";
 
@@ -169,7 +169,7 @@ public class TemplatesEditHistory {
 			s += "\t\t\t\t\t\t</tr>\n";
 
 			//insert history from db
-			String t = searchLiteralHistoryDB(Integer.parseInt(site), (search.contains(":") ? (search.startsWith("k:") ? search.substring(2) : search) : (search.contains("~") ? search.split("~")[0] : search)), sort);
+			String t = searchLiteralHistoryDB(Integer.parseInt(site), (search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? search : search.contains("~") ? search.split("~")[0] : search)), sort);
 			s += t;
 			s += "\t\t\t\t\t</table>\n";
 

@@ -66,8 +66,8 @@ public class TemplatesUnmappedTags {
 			}
 		} //set negativ site value to 1
 
-		if ( search.contains(":") )
-			search = search.substring(search.indexOf(":") + 1);
+		if ( search.startsWith("k:") || search.startsWith("v:") || search.startsWith("l:") )
+			search = search.substring(2);
 
 		if ( type.equals("k") ) {//K-Mappings
 			//insert tablehead

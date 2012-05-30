@@ -20,7 +20,7 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 
 /**
  *
@@ -36,7 +36,7 @@ public class TemplatesOntology {
 	 * @throws Exception 
 	 */
 	public static String ontology(String search) throws Exception {
-		DatabaseBremen.getInstance().connect();
+		LGDDatabase.getInstance().connect();
 		String s = "";
 
 		if ( search.contains("~") )
@@ -59,7 +59,7 @@ public class TemplatesOntology {
 	 * @throws Exception 
 	 */
 	private static String leftside(String search) throws Exception{
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT k, v, language, label FROM lgd_map_label Where k='" + search + "'");
@@ -98,7 +98,7 @@ public class TemplatesOntology {
 	 * @throws Exception
 	 */
 	private static String rightside(String search) throws Exception {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT k FROM lgd_map_resource_kv WHERE v='" + search + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY k ORDER BY k");
@@ -133,7 +133,7 @@ public class TemplatesOntology {
 	}
 
 	private static String addSubClasses(String k, String id, int depth) throws Exception {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT v FROM lgd_map_resource_kv WHERE k='" + k + "' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND (k, v, property, object) IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (k, v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main')) OR (user_id='main' AND (k, v) NOT IN (SELECT k, v FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " GROUP BY v ORDER BY v");

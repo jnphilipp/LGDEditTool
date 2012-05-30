@@ -18,7 +18,7 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t</article>\n";
 		}
 		else if ( setting.equals("email") ) {
-			DatabaseBremen db = DatabaseBremen.getInstance();
+			LGDDatabase db = LGDDatabase.getInstance();
 			db.connect();
 			Object[][] a = db.execute("SELECT email FROM lgd_user WHERE username='" + User.getInstance().getUsername() + "'");
 			re += "\t\t\t\t\t<article>\n";
@@ -149,7 +149,7 @@ public class TemplatesAccountSettings {
 			re += "\t\t\t\t\t</article>\n";
 		}
 		else if ( setting.equals("history") ) {
-			DatabaseBremen db = DatabaseBremen.getInstance();
+			LGDDatabase db = LGDDatabase.getInstance();
 			db.connect();
 
 			Object[][] a = db.execute("Select max(timestamp) FROM lgd_map_resource_k_history WHERE userspace='main'");

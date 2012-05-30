@@ -19,7 +19,7 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
@@ -62,7 +62,7 @@ public class TemplatesSearch {
 	 * @throws SQLException 
 	 */
 	public static String searchResult(String search, String sort) throws Exception, ClassNotFoundException, SQLException {
-		DatabaseBremen.getInstance().connect();
+		LGDDatabase.getInstance().connect();
 		String re = "", tmp;
 
 		tmp = kMapping((search.startsWith("k:") ? search.substring(2) : (search.startsWith("v:") || search.startsWith("l:") ? "" : search.contains("~") ? search.split("~")[0] : search)), sort);
@@ -98,7 +98,7 @@ public class TemplatesSearch {
 		if ( search.equals("") )
 			return "";
 
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String re = "";
 		Object[][] a = database.execute("SELECT km.k, property, object, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k AS km LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE " + (search.contains("*") ? "km.k LIKE '" + search.replaceAll("\\*", "%") + "%' " : "km.k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND object!='' AND property!=''" : "((user_id='main' AND property != '' AND object != '' AND (km.k, property, object) IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property != '' AND object != '' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main')) OR (user_id='main' AND property != '' AND object != '' AND km.k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
@@ -251,7 +251,7 @@ public class TemplatesSearch {
 	 * @throws Exception 
 	 */
 	private static String kvMapping(String search, String sort) throws Exception {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String re = "";
 		Object[][] a;
 
@@ -431,7 +431,7 @@ public class TemplatesSearch {
 	 * @throws Exception 
 	 */
 	private static String datatypeMapping(String search, String sort) throws Exception {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String re = "";
 		Object[][] a = database.execute("SELECT km.k, datatype, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype AS km LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE " + (search.contains("*") ? "km.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "km.k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main' AND datatype != 'deleted'" : "((user_id='main' AND datatype != 'deleted' AND (km.k, datatype) IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND datatype!='deleted' AND (km.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main')) OR (user_id='main' AND datatype != 'deleted' AND km.k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
@@ -576,7 +576,7 @@ public class TemplatesSearch {
 	}
 
 	private static String literalMapping(String search, String sort) throws Exception {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String re = "";
 		Object[][] a = database.execute("SELECT lm.k, property, language, user_id, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal AS lm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE " + (search.contains("*") ? "lm.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "lm.k='" + search + "'") + " AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "((user_id='main' AND property != '' AND (lm.k, property, language) IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')) OR (user_id='" + User.getInstance().getUsername() + "' AND property!='' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main')) OR (user_id='main' AND property != '' AND (lm.k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "'))))") + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC"));
 
@@ -767,11 +767,11 @@ public class TemplatesSearch {
 	 * @param search seach query
 	 * @return HTML code
 	 */
-	public static String captcha(HttpServletRequest request, String search) {
+	public static String captcha(HttpServletRequest request, String search, String sort) {
 		ReCaptcha c = ReCaptchaFactory.newReCaptcha(Functions.PUBLIC_reCAPTCHA_KEY, Functions.PRIVATE_reCAPTCHA_KEY, false);
 
 		String re = "\t\t\t\t<article class=\"captcha\">\n";
-		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
+		re += "\t\t\t\t\t<form action=\"?tab=search&search=" + search + "&sort=" + sort + "\" method=\"post\" accept-charset=\"UTF-8\" autocomplete=\"off\">";
 		re += "\t\t\t\t\t\t<ul>\n";
 		re += "\t\t\t\t\t\t\t<li>"+ c.createRecaptchaHtml(null, null) + "</li>\n";
 		re += "\t\t\t\t\t\t\t<li><input type=\"submit\" name=\"fcaptcha\" value=\"Send\" /></li>\n";

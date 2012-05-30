@@ -19,7 +19,7 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import net.tanesha.recaptcha.ReCaptcha;
@@ -67,7 +67,7 @@ public class TemplatesEditHistory {
 	 * @throws SQLException 
 	 */
 	public static String editHistory(String type, String site, String search, String sort) throws ClassNotFoundException, SQLException, Exception {
-		DatabaseBremen.getInstance().connect();// make sure database is connected
+		LGDDatabase.getInstance().connect();// make sure database is connected
 		String s = "";
                 
 		if ( !site.equals("") ) {
@@ -201,7 +201,7 @@ public class TemplatesEditHistory {
 	 * @throws SQLException 
 	 */
 	private static String searchKHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String re = "";
 		Object[][] a = database.execute("SELECT kmh.k, property, object, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_resource_k_history AS kmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=kmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND kmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND kmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
@@ -223,7 +223,7 @@ public class TemplatesEditHistory {
 	 */
 	private static String searchKVHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
 		String s = "";
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		Object[][] a;
 
 		if ( search.startsWith("k:") )
@@ -257,7 +257,7 @@ public class TemplatesEditHistory {
 	 * @throws SQLException  
 	 */
 	private static String searchDatatypeHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 		Object[][] a = database.execute("SELECT dmh.k, datatype, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_datatype_history AS dmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND dmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND dmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 
@@ -277,7 +277,7 @@ public class TemplatesEditHistory {
 	 * @throws SQLException 
 	 */
 	private static String searchLiteralHistoryDB(int site, String search, String sort) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 		Object[][] a = database.execute("SELECT lmh.k, property, language, COALESCE(usage_count, 0) AS usage_count, user_id, comment, timestamp, action, id FROM lgd_map_literal_history AS lmh LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lmh.k WHERE userspace='" + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "main" : User.getInstance().getUsername()) + "'" + (search.equals("") ? "" : (search.contains("*") ? " AND lmh.k LIKE '" + search.replaceAll("\\*", "%") + "%'" : " AND lmh.k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " Limit 10 OFFSET " + ((site-1)*10));
 

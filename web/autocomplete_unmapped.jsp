@@ -15,18 +15,18 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
-<%@page import="LGDEditTool.Functions"%>
-<%@page import="LGDEditTool.SiteHandling.User"%>
 <%-- 
     Document   : autocomplete_search
     Created on : 17.02.2012, 19:55:28
     Author     : J. Nathanael Philipp
 --%>
 
-<%@page import="LGDEditTool.db.DatabaseBremen"%>
+<%@page import="LGDEditTool.Functions"%>
+<%@page import="LGDEditTool.db.LGDDatabase"%>
+<%@page import="LGDEditTool.SiteHandling.User"%>
 <%
 try {
-	DatabaseBremen database = DatabaseBremen.getInstance();
+	LGDDatabase database = LGDDatabase.getInstance();
 	database.connect();
 	User.getInstance().createUser(request);
 	String query = request.getParameter("q");

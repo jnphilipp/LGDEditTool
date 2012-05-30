@@ -18,7 +18,7 @@
 package LGDEditTool.Email;
 
 import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 import java.sql.SQLException;
 import javax.mail.MessagingException;
 
@@ -70,8 +70,8 @@ public class EmailLGD extends EmailYahoo {
 	public boolean sendPasswordForgotten(String to, String user, String hash) throws MessagingException, ClassNotFoundException, SQLException {
 		String message = "Dear " + user + ",<br /><br />You requested a new password for your LGDEditTool account. Click the following link to create a new password for your account. If you did not request a new password, please ignore this notification.<br /><br /><a href=\"" + Functions.baseURL + "?tab=forgotten&type=hash&user=" + user + "&hash=" + hash + "\">" + Functions.baseURL + "?tab=forgotten&type=hash&user=" + user + "&hash=" + hash + "</a><br /><br /><a href=\"" + Functions.baseURL + "\">LGDEditTool</a><br /><br />";
 
-		DatabaseBremen.getInstance().connect();
-		String[][] admin = DatabaseBremen.getInstance().getAdministatorEmailAddresses();
+		LGDDatabase.getInstance().connect();
+		String[][] admin = LGDDatabase.getInstance().getAdministatorEmailAddresses();
 		if ( admin.length == 1 )
 			message +=  "For questions or in case of any problems feel free to contact the administrator " + admin[0][1] + " (" + admin[0][0] + ").";
 		else {
@@ -95,8 +95,8 @@ public class EmailLGD extends EmailYahoo {
 	public boolean sendSignUP(String to, String user) throws MessagingException, ClassNotFoundException, SQLException {
 		String message = "Dear " + user + ",<br /><br />your user account for the LGDEditTool has successfully been created. Your edits to the LGD mapping will be saved to your user branch. Commit them to the main branch to make them available to other users.";
 
-		DatabaseBremen.getInstance().connect();
-		String[][] admin = DatabaseBremen.getInstance().getAdministatorEmailAddresses();
+		LGDDatabase.getInstance().connect();
+		String[][] admin = LGDDatabase.getInstance().getAdministatorEmailAddresses();
 		if ( admin.length == 1 )
 			message +=  "For questions or in case of any problems feel free to contact the administrator " + admin[0][1] + " (" + admin[0][0] + ").";
 		else {

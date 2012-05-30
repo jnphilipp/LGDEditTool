@@ -19,7 +19,7 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 
 /**
  *
@@ -40,6 +40,7 @@ public class TemplatesUnmappedTags {
 		re += "\t\t\t\t\t\t\t\t<label>Search:</label>\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"text\" id=\"search\" name=\"search\" required />\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"tab\" value=\"unmapped\">\n";
+		re += "\t\t\t\t\t\t\t\t<input type=\"hidden\" name=\"type\" value=\"" + type + "\">\n";
 		re += "\t\t\t\t\t\t\t\t<input type=\"submit\" value=\"Search\" />\n";
 		re += "\t\t\t\t\t\t\t</li>\n";
 		re += "\t\t\t\t\t\t\t<li><a href=\"?tab=unmapped&type=" + type + "&sort=dusage_count\">Clear search.</a></li>\n";
@@ -57,7 +58,7 @@ public class TemplatesUnmappedTags {
 	 * @return Returns a String with HTML-code.
 	 */
 	public static String unmappedTags(String type, String site, String search, String sort) throws Exception {
-		DatabaseBremen.getInstance().connect();// make sure database is connected
+		LGDDatabase.getInstance().connect();// make sure database is connected
 		String s = "";
                 
 		if ( !site.equals("") ) {
@@ -132,7 +133,7 @@ public class TemplatesUnmappedTags {
 	 */
 	private static String listAllK(int site, String search, String sort) throws Exception {
 		String s = "";
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		
 		Object[][] a = database.execute("SELECT k, usage_count, distinct_value_count FROM lgd_stat_tags_k a WHERE NOT EXISTS (Select b.k FROM (Select k FROM lgd_map_datatype WHERE datatype != 'deleted' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "(user_id='" + User.getInstance().getUsername() + "' OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_datatype WHERE user_id='" + User.getInstance().getUsername() + "')))") + " UNION ALL SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_literal WHERE property != '' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "(user_id='" + User.getInstance().getUsername() + "' OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_literal WHERE user_id='" + User.getInstance().getUsername() + "')))") + " UNION ALL SELECT k FROM lgd_map_property UNION ALL SELECT k FROM lgd_map_resource_k WHERE property != '' AND object != '' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "(user_id='" + User.getInstance().getUsername() + "' OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_k WHERE user_id='" + User.getInstance().getUsername() + "')))") + " UNION ALL SELECT k FROM lgd_map_resource_kv WHERE property != '' AND object != '' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "(user_id='" + User.getInstance().getUsername() + "' OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + " UNION ALL SELECT k FROM lgd_map_resource_prefix) b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND k LIKE '" + search.replaceAll("\\*", "%") + "%'" : "AND k='" + (search.contains("~") ? search.split("~")[0] : search) + "'")) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("v") ? "k" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("v") ? "k" : sort) + " ASC") + " LIMIT 20 OFFSET " + (site-1)*20);
 
@@ -226,7 +227,7 @@ public class TemplatesUnmappedTags {
 	 */
 	private static String listAllKV(int site, String search, String sort) throws Exception {
 		String s = new String();
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 
 		Object[][] a = database.execute("SELECT k, v, usage_count FROM lgd_stat_tags_kv a WHERE NOT EXISTS (Select b.k FROM (SELECT k FROM lgd_map_label UNION ALL SELECT k FROM lgd_map_resource_kv WHERE property != '' AND object != '' AND " + (User.getInstance().getView().equals(Functions.MAIN_BRANCH) ? "user_id='main'" : "(user_id='" + User.getInstance().getUsername() + "' OR (user_id='main' AND k NOT IN (SELECT k FROM lgd_map_resource_kv WHERE user_id='" + User.getInstance().getUsername() + "')))") + ") b WHERE a.k=b.k) " + (search.equals("") ? "" : (search.contains("*") ? "AND (k LIKE '" + search.replaceAll("\\*", "%") + "%' OR v LIKE '" + search.replaceAll("\\*", "%") + "%')" : (search.contains("~") ? "AND (k='" + search.split("~")[0] + "' AND v='" + search.split("~")[1] + "')" : "AND (k='" + search + "' OR v='" + search + "')"))) + " ORDER BY " + (sort.startsWith("d") ? (sort.contains("k") ? "k, v" : sort.replaceFirst("d", "")) + " DESC" : (sort.equals("k") ? "k, v" : sort) + " ASC") + " LIMIT 20 OFFSET " + (site-1)*20);
 

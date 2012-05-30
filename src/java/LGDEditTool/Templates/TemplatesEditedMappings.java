@@ -19,7 +19,7 @@ package LGDEditTool.Templates;
 
 import LGDEditTool.Functions;
 import LGDEditTool.SiteHandling.User;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 import java.sql.SQLException;
 
 /**
@@ -69,7 +69,7 @@ public class TemplatesEditedMappings {
 	 * @throws SQLException 
 	 */
 	public static String listEditedMappings(String type, String site) throws Exception, ClassNotFoundException, SQLException {
-		DatabaseBremen.getInstance().connect();// make sure database is connected
+		LGDDatabase.getInstance().connect();// make sure database is connected
 		String s = "";
 
 		if ( !site.equals("") ) {
@@ -169,7 +169,7 @@ public class TemplatesEditedMappings {
 	 * @throws SQLException 
 	 */
 	private static String listAllKMappings(int site) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT km.k, property, object, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_k AS km LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=km.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (km.k, property, object) NOT IN (SELECT k, property, object FROM lgd_map_resource_k WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
@@ -189,7 +189,7 @@ public class TemplatesEditedMappings {
 	 * @throws SQLException 
 	 */
 	private static String listAllKVMappings(int site) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT kvm.k, kvm.v, property, object, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_resource_kv AS kvm LEFT OUTER JOIN lgd_stat_tags_kv ON lgd_stat_tags_kv.k=kvm.k AND lgd_stat_tags_kv.v=kvm.v WHERE user_id='" + User.getInstance().getUsername() + "' AND (kvm.k, kvm.v, property, object) NOT IN (SELECT k, v, property, object FROM lgd_map_resource_kv WHERE user_id='main') ORDER BY k, v Limit 20 OFFSET " + ((site-1)*20));
@@ -209,7 +209,7 @@ public class TemplatesEditedMappings {
 	 * @throws SQLException 
 	 */
 	private static String listAllDatatypeMappings(int site) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT dm.k, datatype, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_datatype AS dm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=dm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (dm.k, datatype) NOT IN (SELECT k, datatype FROM lgd_map_datatype WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));
@@ -229,7 +229,7 @@ public class TemplatesEditedMappings {
 	 * @throws SQLException 
 	 */
 	private static String listAllLiteralMappings(int site) throws ClassNotFoundException, SQLException {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		String s = "";
 
 		Object[][] a = database.execute("SELECT lm.k, property, language, COALESCE(usage_count, 0) AS usage_count FROM lgd_map_literal AS lm LEFT OUTER JOIN lgd_stat_tags_k ON lgd_stat_tags_k.k=lm.k WHERE user_id='" + User.getInstance().getUsername() + "' AND (lm.k, property, language) NOT IN (SELECT k, property, language FROM lgd_map_literal WHERE user_id='main') ORDER BY k Limit 20 OFFSET " + ((site-1)*20));

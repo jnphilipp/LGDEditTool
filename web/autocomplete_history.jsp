@@ -23,10 +23,10 @@
     Author     : J. Nathanael Philipp
 --%>
 
-<%@page import="LGDEditTool.db.DatabaseBremen"%>
+<%@page import="LGDEditTool.db.LGDDatabase"%>
 <%
 try {
-	DatabaseBremen database = DatabaseBremen.getInstance();
+	LGDDatabase database = LGDDatabase.getInstance();
 	database.connect();
 	User.getInstance().createUser(request);
 	String query = request.getParameter("q");

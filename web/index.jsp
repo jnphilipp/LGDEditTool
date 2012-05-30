@@ -15,11 +15,6 @@
     along with LGDET.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
-<%@page import="LGDEditTool.Templates.TemplatesEditedMappings"%>
-<%@page import="LGDEditTool.Templates.TemplatesAccountSettings"%>
-<%@page import="LGDEditTool.db.DatabaseBremen"%>
-<%@page import="LGDEditTool.Templates.Templates"%>
-<%@page import="java.security.MessageDigest"%>
 <%-- 
     Document   : index
     Created on : 02.02.2012, 07:52:15
@@ -27,19 +22,23 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.security.MessageDigest"%>
 <%@page import="java.sql.Connection" %>
 <%@page import="java.sql.DriverManager" %>
 <%@page import="java.sql.SQLException" %>
 <%@page import="java.util.Calendar"%>
 <%@page import="LGDEditTool.Functions"%>
-<%@page import="LGDEditTool.db.DatabasePostgreSQL"%>
+<%@page import="LGDEditTool.db.LGDDatabase"%>
 <%@page import="LGDEditTool.SiteHandling.User"%>
 <%@page import="LGDEditTool.SiteHandling.RequestHandling" %>
+<%@page import="LGDEditTool.Templates.Templates"%>
 <%@page import="LGDEditTool.Templates.TemplatesSearch" %>
 <%@page import="LGDEditTool.Templates.TemplatesUnmappedTags" %>
 <%@page import="LGDEditTool.Templates.TemplatesAllMappings" %>
 <%@page import="LGDEditTool.Templates.TemplatesEditHistory" %>
 <%@page import="LGDEditTool.Templates.TemplatesOntology" %>
+<%@page import="LGDEditTool.Templates.TemplatesEditedMappings"%>
+<%@page import="LGDEditTool.Templates.TemplatesAccountSettings"%>
 <% request.setCharacterEncoding("UTF-8");
 	String search = "";
 	String tab = "";
@@ -223,7 +222,7 @@
 				else {
 					out.println("<div class=\"pane\">");
 					if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-						out.println(TemplatesSearch.captcha(request, search));
+						out.println(TemplatesSearch.captcha(request, search, sort));
 					if ( User.getInstance().isLoggedIn() )
 						out.println(Templates.branch(search));
 					out.println(TemplatesSearch.search());
@@ -263,7 +262,7 @@
 				out.println("\t\t\t\t</ul>");
 				out.println("\t\t\t\t<div class=\"pane\">");
 				if ( (request.getParameter("captcha") != null && request.getParameter("captcha").equals("yes")) || !captcha )
-					out.print(TemplatesAllMappings.captcha(request, type, (request.getParameter("site") == null ? "1" : request.getParameter("site"))));
+					out.print(TemplatesAllMappings.captcha(request, type, (request.getParameter("site") == null ? "1" : request.getParameter("site")), sort));
 				if ( User.getInstance().isLoggedIn() )
 					out.println(Templates.branch(search));
 				out.print(TemplatesAllMappings.listAllMappings(type, (request.getParameter("site") == null ? "1" : request.getParameter("site")), sort));
@@ -393,11 +392,11 @@
 			</div>
 		<% } %>
 		</div>
-		<small style="float: right;">© swp12-10 (29.05.2012)</small>
+		<small style="float: right;">© swp12-10 (30.05.2012)</small>
 	</body>
 </html>
 <%
 User.getInstance().createCookie(response);
-DatabaseBremen db = DatabaseBremen.getInstance();
+LGDDatabase db = LGDDatabase.getInstance();
 db.disconnect();
 %>

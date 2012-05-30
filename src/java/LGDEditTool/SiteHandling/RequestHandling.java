@@ -19,7 +19,7 @@ package LGDEditTool.SiteHandling;
 
 import LGDEditTool.Email.EmailLGD;
 import LGDEditTool.Functions;
-import LGDEditTool.db.DatabaseBremen;
+import LGDEditTool.db.LGDDatabase;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import javax.servlet.ServletContext;
@@ -41,7 +41,7 @@ public class RequestHandling {
 	 * @throws Exception 
 	 */
 	public static String doRequestHandling(HttpServletRequest request, HttpServletResponse response, ServletContext servlet) throws Exception {
-		DatabaseBremen database = DatabaseBremen.getInstance();
+		LGDDatabase database = LGDDatabase.getInstance();
 		database.connect();
 		String re = "";
 

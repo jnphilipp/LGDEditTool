@@ -24,7 +24,8 @@ LGDDatabase class. To compile it properly you need
 the JDBC driver for PostgresSQL. In order to use
 a full LinkedGeoData-Database view
 http://linkedgeodata.org/Install for more
-informations.
+informations. Make sure the additions from the
+SQLCommands-file are applied to the database.
 
 Further libraries:
  * JavaMail

@@ -177,6 +177,9 @@ public class TemplatesEditHistory {
 				s = "<p>Your search returned no results.</p>";
 		}
 
+		if ( s.contains("<p>Your search returned no results.</p>") )
+			return s;
+
 		//next/prev-site links
 		s += "\t\t\t\t\t<div style=\"float: right;\">\n";
 		if ( Integer.valueOf(site) > 1 ) {

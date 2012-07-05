@@ -238,6 +238,9 @@
 				out.println("\t\t\t</div>\n");
 			}*/
 			else if ( tab.equals("unmapped") && User.getInstance().isLoggedIn() ) {
+				if ( search.startsWith("k:") || search.startsWith("v:") || search.startsWith("l:") )
+					search = search.substring(2);
+
 				out.println("<div class=\"pane\">");
 				out.println("\t\t\t\t<ul id=\"tabs\">");
 				out.println("\t\t\t\t\t<li><a " + (type.equals("k") ? "class=\"current\"" : "") + " href=\"?tab=unmapped&amp;type=k&amp;sort=dusage_count" + (search.equals("") ? "" : "&search=" + search) + "\">K-Tags</a></li>");
